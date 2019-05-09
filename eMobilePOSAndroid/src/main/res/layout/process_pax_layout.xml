@@ -31,15 +31,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_margin="5dp"
             android:background="@drawable/action_button_selector"
             android:paddingStart="5dp"
-            android:paddingEnd="14dp"
-            android:text="@string/button_process"
-            android:textSize="@dimen/large_button_text_size"
-            android:layout_alignParentRight="true"
             android:paddingLeft="5dp"
-            android:paddingRight="14dp" />
+            android:paddingEnd="14dp"
+            android:paddingRight="14dp"
+            android:text="@string/button_process"
+            android:textSize="@dimen/large_button_text_size" />
     </RelativeLayout>
 
     <ScrollView
@@ -94,6 +94,47 @@
                 android:textAppearance="@style/black_text_appearance_unbold"
                 android:textColor="#000000"
                 android:textSize="@dimen/field_text_size" />
+
+            <TextView
+                android:id="@+id/tenderTypeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="30dp"
+                android:layout_weight="1"
+                android:text="@string/sp_tender_type"
+                android:textColor="#000000"
+                android:textSize="@dimen/field_label_text_size" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/creditRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/sp_tender_credit"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_text_size" />
+
+                <RadioButton
+                    android:id="@+id/debitRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/sp_tender_debit"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_text_size" />
+            </RadioGroup>
         </LinearLayout>
     </ScrollView>
 

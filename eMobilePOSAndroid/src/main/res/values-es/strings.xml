@@ -1362,6 +1362,9 @@
     <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
+    <string name="sp_tender_type">"Tipo:"</string>
+    <string name="sp_tender_credit">"Crédito"</string>
+    <string name="sp_tender_debit">"Débito"</string>
     <string name="fingerprints">Huellas dactilares</string>
     <string name="information_saved">Informacion grabada.</string>
     <string name="customerBiometrics">Biometría del cliente</string>

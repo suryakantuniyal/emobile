@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.android.dao.ShiftDAO;
@@ -64,6 +65,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     private Global global;
     private Bundle extras;
     private EditText invoiceJobIdTextView, amountTextView;
+    private RadioButton creditRadioButton;
     private ProgressDialog myProgressDialog;
     private Payment payment;
     private boolean hasBeenCreated = false;
@@ -81,6 +83,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         extras = this.getIntent().getExtras();
         invoiceJobIdTextView = findViewById(R.id.invoiceJobIdTextView);
         amountTextView = findViewById(R.id.amountTextView);
+        creditRadioButton = findViewById(R.id.creditRadioButton);
 
         Button btnProcess = findViewById(R.id.processButton);
         btnProcess.setOnClickListener(this);
@@ -187,7 +190,11 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
         poslink = POSLinkCreator.createPoslink(getApplicationContext());
         PaymentRequest payrequest = new PaymentRequest();
-        payrequest.TenderType = 1;
+        if (creditRadioButton.isChecked()) {
+            payrequest.TenderType = 1; // credit
+        } else {
+            payrequest.TenderType = 2; // debit
+        }
         payrequest.TransType = 2;
         payrequest.Amount = String.valueOf(
                 MoneyUtils.convertDollarsToCents(
