@@ -3351,8 +3351,33 @@ public class EMSDeviceDriver {
         sb.append(textHandler.newLines(1));
 
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        String startDate = DateUtils.getDateAsString(shift.getCreationDate(), "yyyy-MM-dd HH:mm");
-        String endDate = DateUtils.getDateAsString(shift.getEndTime(), "yyyy-MM-dd HH:mm");
+        String startDate = DateUtils.getDateAsString(
+                shift.getCreationDate(), "yyyy-MM-dd HH:mm");
+        String endDate = DateUtils.getDateAsString(
+                shift.getEndTime(), "yyyy-MM-dd HH:mm");
+
+        List<OrderProduct> listDeptSalesByClerk = orderProductsHandler
+                .getDepartmentShiftReportByClerk(true, null, startDate, endDate);
+        sb.append(textHandler.centeredString(
+                activity.getString(R.string.eod_report_sales_by_clerk), lineWidth));
+
+        for (OrderProduct product : listDeptSalesByClerk) {
+            Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(product.getCat_id())); // clerk id
+            String clerkName = "";
+            if (reportClerk != null) {
+                clerkName = String.format(
+                        "%s (%s)", reportClerk.getEmpName(), reportClerk.getEmpId());
+            }
+            sb.append(
+                    textHandler.threeColumnLineItem(clerkName, // clerk name
+                            60,
+                            product.getOrdprod_qty(), // total orders
+                            20,
+                            Global.getCurrencyFormat(product.getFinalPrice()), // total
+                            20, lineWidth, 0));
+        }
+        sb.append(textHandler.newLines(1));
+
         List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(
                 true, String.valueOf(shift.getClerkId()), startDate, endDate);
         List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(

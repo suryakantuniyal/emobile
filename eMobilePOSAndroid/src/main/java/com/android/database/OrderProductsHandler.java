@@ -732,6 +732,80 @@ public class OrderProductsHandler {
         }
     }
 
+    public List<OrderProduct> getDepartmentShiftReportByClerk(boolean isSales, String clerk_id,
+                                                              String startDate, String endDate) {
+        Cursor c = null;
+        try {
+            StringBuilder query = new StringBuilder();
+            List<OrderProduct> listOrdProd = new ArrayList<>();
+
+            String sqlDateFunction = "date";
+            if (endDate != null) sqlDateFunction = "datetime";
+
+            query.append(
+                    "SELECT o.clerk_id as 'cat_id', count(DISTINCT o.ord_id) AS 'ordprod_qty', " +
+                            "sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
+                            "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty END) AS 'overwrite_price', ");
+            query.append(sqlDateFunction);
+            query.append("(o.ord_timecreated) as 'date'" +
+                    "FROM " + table_name + " op ");
+            query.append(
+                    "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
+                            "LEFT JOIN Orders o ON op.ord_id = o.ord_id " +
+                            "WHERE o.isVoid = '0' AND o.ord_type IN ");
+
+            if (isSales)
+                query.append("('2','5') ");
+            else// returned items
+                query.append("('1') ");
+
+            ArrayList<String> where_values = new ArrayList<>();
+            if (clerk_id != null && !clerk_id.isEmpty()) {
+                query.append(" AND o.clerk_id = ? ");
+                where_values.add(clerk_id);
+            }
+            if (startDate != null && !startDate.isEmpty()) {
+                if (endDate != null && !endDate.isEmpty()) {
+                    query.append(" AND date >= datetime(?, 'utc') ");
+                    where_values.add(startDate);
+                } else {
+                    query.append(" AND date = ? ");
+                    where_values.add(startDate);
+                }
+            }
+            if (endDate != null && !endDate.isEmpty()) {
+                query.append(" AND date <= datetime(?, 'utc') ");
+                where_values.add(endDate);
+            }
+
+            query.append(" GROUP BY o.clerk_id");
+
+            c = DBManager.getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));
+
+            if (c.moveToFirst()) {
+                int i_cat_id = c.getColumnIndex(cat_id); // clerk_id
+                int i_ordprod_qty = c.getColumnIndex(ordprod_qty); // total items
+                int i_overwrite_price = c.getColumnIndex(overwrite_price); // total
+
+                do {
+                    OrderProduct ordProd = new OrderProduct();
+                    ordProd.setCat_id(c.getString(i_cat_id)); // clerk_id
+                    ordProd.setOverwrite_price(c.getString(i_overwrite_price) == null
+                            ? null : new BigDecimal(c.getString(i_overwrite_price)));
+                    ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
+                    listOrdProd.add(ordProd);
+                } while (c.moveToNext());
+            }
+
+            c.close();
+            return listOrdProd;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+    }
+
     public void completeProductFields(List<OrderProduct> orderProducts, Context activity) {
         ProductsHandler productsHandler = new ProductsHandler(activity);
         for (OrderProduct orderProduct : orderProducts) {
