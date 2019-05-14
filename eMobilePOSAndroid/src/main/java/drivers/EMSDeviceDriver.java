@@ -3435,10 +3435,11 @@ public class EMSDeviceDriver {
 
         sb.append(sb_ord_types);
         sb.append(textHandler.newLines(1));
+
         List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(
-                true, String.valueOf(shift.getClerkId()), startDate, endDate);
+                true, null, startDate, endDate);
         List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(
-                false, String.valueOf(shift.getClerkId()), startDate, endDate);
+                false, null, startDate, endDate);
         if (!listDeptSales.isEmpty()) {
             sb.append(textHandler.centeredString(activity.getString(R.string.eod_report_dept_sales), lineWidth));
             for (OrderProduct product : listDeptSales) {
