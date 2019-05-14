@@ -3245,7 +3245,7 @@ public class EMSDeviceDriver {
         listPayments = paymentHandler.getPaymentsGroupDayReport(1, null, mDate);
         if (listPayments.size() > 0) {
             sb.append(textHandler.newLines(1));
-            sb.append(textHandler.centeredString("Void", lineWidth));
+            sb.append(textHandler.centeredString("Voids", lineWidth));
             for (Payment payment : listPayments) {
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
@@ -3269,7 +3269,7 @@ public class EMSDeviceDriver {
         listPayments = paymentHandler.getPaymentsGroupDayReport(2, null, mDate);
         if (listPayments.size() > 0) {
             sb.append(textHandler.newLines(1));
-            sb.append(textHandler.centeredString("Refund", lineWidth));
+            sb.append(textHandler.centeredString("Refunds", lineWidth));
             for (Payment payment : listPayments) {
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
@@ -3458,6 +3458,41 @@ public class EMSDeviceDriver {
                         20, lineWidth, 0));
             }
         }
+
+        PaymentsHandler paymentHandler = new PaymentsHandler(activity);
+        List<Payment> listPayments = paymentHandler.getPaymentsGroupShiftReport(0, null, startDate, endDate);
+        if (listPayments.size() > 0) {
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.centeredString("Payments", lineWidth));
+            for (Payment payment : listPayments) {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
+            }
+            listPayments.clear();
+        }
+
+        listPayments = paymentHandler.getPaymentsGroupShiftReport(1, null, startDate, endDate);
+        if (listPayments.size() > 0) {
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.centeredString("Voids", lineWidth));
+            for (Payment payment : listPayments) {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
+            }
+            listPayments.clear();
+        }
+
+        listPayments = paymentHandler.getPaymentsGroupShiftReport(2, null, startDate, endDate);
+        if (listPayments.size() > 0) {
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.centeredString("Refunds", lineWidth));
+            for (Payment payment : listPayments) {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
+            }
+            listPayments.clear();
+        }
+
         sb.append(textHandler.newLines(1));
         sb.append(textHandler.centeredString(activity.getString(R.string.endShiftReport), lineWidth));
         sb.append(textHandler.newLines(4));
