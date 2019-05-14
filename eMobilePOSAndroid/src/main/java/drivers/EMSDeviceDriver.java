@@ -3074,6 +3074,7 @@ public class EMSDeviceDriver {
         sb.append(textHandler.newLines(1));
         sb.append(textHandler.centeredString("Summary", lineWidth));
         sb.append(textHandler.newLines(1));
+
         BigDecimal returnAmount = new BigDecimal("0");
         BigDecimal salesAmount = new BigDecimal("0");
         BigDecimal invoiceAmount = new BigDecimal("0");
@@ -3317,6 +3318,7 @@ public class EMSDeviceDriver {
         AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         startReceipt();
         StringBuilder sb = new StringBuilder();
+        StringBuilder sb_ord_types = new StringBuilder();
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         sb.append(textHandler.centeredString(activity.getString(R.string.shift_details), lineWidth));
         Shift shift = ShiftDAO.getShift(shiftID);
@@ -3378,6 +3380,61 @@ public class EMSDeviceDriver {
         }
         sb.append(textHandler.newLines(1));
 
+        OrdersHandler ordHandler = new OrdersHandler(activity);
+
+        sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
+        List<Order> listOrder = ordHandler.getOrderShiftReport(null, startDate, endDate);
+        HashMap<String, List<DataTaxes>> taxesBreakdownHashMap =
+                ordHandler.getOrderShiftReportTaxesBreakdown(null, startDate, endDate);
+
+        for (Order ord : listOrder) {
+            switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
+                case RETURN:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Return", lineWidth, 0));
+                    break;
+                case ESTIMATE:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Estimate", lineWidth, 0));
+                    break;
+                case ORDER:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Order", lineWidth, 0));
+                    break;
+                case SALES_RECEIPT:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Sales Receipt", lineWidth, 0));
+                    break;
+                case INVOICE:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Invoice", lineWidth, 0));
+                    break;
+            }
+
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("SubTotal",
+                    Global.getCurrencyFormat(ord.ord_subtotal), lineWidth, 3));
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discounts",
+                    Global.getCurrencyFormat(ord.ord_discount), lineWidth, 3));
+
+            if (taxesBreakdownHashMap.containsKey(ord.ord_type)) {
+                sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                        "Taxes", lineWidth, 3));
+                for (DataTaxes dataTax : taxesBreakdownHashMap.get(ord.ord_type)) {
+                    sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            dataTax.getTax_name(), Global.getCurrencyFormat(
+                                    dataTax.getTax_amount()), lineWidth, 6));
+                }
+            } else {
+                sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        "Taxes", "N/A", lineWidth, 3));
+            }
+
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                    "Total", Global.getCurrencyFormat(ord.ord_total), lineWidth, 3));
+        }
+
+        sb.append(sb_ord_types);
+        sb.append(textHandler.newLines(1));
         List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(
                 true, String.valueOf(shift.getClerkId()), startDate, endDate);
         List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(

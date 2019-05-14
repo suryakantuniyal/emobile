@@ -911,6 +911,148 @@ public class OrdersHandler {
         }
     }
 
+    public List<Order> getOrderShiftReport(String clerk_id, String startDate, String endDate) {
+        Cursor c = null;
+        try {
+            List<Order> listOrder = new ArrayList<>();
+            StringBuilder query = new StringBuilder();
+            query.append("SELECT ");
+            query.append("sum(ord_subtotal) as 'ord_subtotal', ");
+            query.append("ord_type, ");
+            query.append("sum(ord_discount) as 'ord_discount', ");
+            query.append("sum(ord_taxamount) as 'ord_taxamount', ");
+            query.append("sum(ord_total) as 'ord_total', ");
+            query.append("datetime(ord_timecreated) AS 'date' ");
+            query.append("FROM Orders ");
+            query.append("WHERE isVoid = '0' ");
+
+            ArrayList<String> where_values = new ArrayList<>();
+            if (clerk_id != null && !clerk_id.isEmpty()) {
+                query.append(" AND clerk_id = ? ");
+                where_values.add(clerk_id);
+            }
+
+            if (startDate != null && !startDate.isEmpty()) {
+                if (endDate != null && !endDate.isEmpty()) {
+                    query.append(" AND date >= datetime(?, 'utc') ");
+                    where_values.add(startDate);
+                } else {
+                    query.append(" AND date = ? ");
+                    where_values.add(startDate);
+                }
+            }
+            if (endDate != null && !endDate.isEmpty()) {
+                query.append(" AND date <= datetime(?, 'utc') ");
+                where_values.add(endDate);
+            }
+
+            query.append(" GROUP BY ord_type");
+
+            c = DBManager.getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));
+            if (c.moveToFirst()) {
+                int i_ord_type = c.getColumnIndex(ord_type);
+                int i_ord_subtotal = c.getColumnIndex(ord_subtotal);
+                int i_ord_discount = c.getColumnIndex(ord_discount);
+                int i_ord_taxamount = c.getColumnIndex(ord_taxamount);
+                int i_ord_total = c.getColumnIndex(ord_total);
+                do {
+                    Order ord = new Order(activity);
+                    ord.ord_type = c.getString(i_ord_type);
+                    ord.ord_subtotal = c.getString(i_ord_subtotal);
+                    ord.ord_discount = c.getString(i_ord_discount);
+                    ord.ord_taxamount = c.getString(i_ord_taxamount);
+                    ord.ord_total = c.getString(i_ord_total);
+
+                    listOrder.add(ord);
+                } while (c.moveToNext());
+            }
+
+            c.close();
+            return listOrder;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+    }
+
+    public HashMap<String, List<DataTaxes>> getOrderShiftReportTaxesBreakdown(
+            String clerk_id, String startDate, String endDate) {
+        Cursor c = null;
+        try {
+            HashMap<String, List<DataTaxes>> taxesBreakdownHashMap = new HashMap<>();
+            List<DataTaxes> dataTaxesList = new ArrayList<>();
+            DataTaxes dataTax;
+            StringBuilder query = new StringBuilder();
+
+            query.append("SELECT ");
+            query.append("ord_type, ");
+            query.append("tax_id, ");
+            query.append("tax_name, ");
+            query.append("sum(tax_amount) AS 'tax_amount' , ");
+            query.append("datetime(ord_timecreated) AS 'date' ");
+            query.append("FROM Orders ");
+            query.append("INNER JOIN OrderTaxes ON Orders.ord_id = OrderTaxes.ord_id ");
+            query.append("WHERE isVoid = '0' ");
+
+            ArrayList<String> where_values = new ArrayList<>();
+            if (clerk_id != null && !clerk_id.isEmpty()) {
+                query.append("AND clerk_id = ? ");
+                where_values.add(clerk_id);
+            }
+
+            if (startDate != null && !startDate.isEmpty()) {
+                if (endDate != null && !endDate.isEmpty()) {
+                    query.append(" AND date >= datetime(?, 'utc') ");
+                    where_values.add(startDate);
+                } else {
+                    query.append(" AND date = ? ");
+                    where_values.add(startDate);
+                }
+            }
+            if (endDate != null && !endDate.isEmpty()) {
+                query.append(" AND date <= datetime(?, 'utc') ");
+                where_values.add(endDate);
+            }
+
+            query.append(
+                    "AND Orders.ord_id IN (SELECT job_id FROM Payments GROUP BY job_id) " +
+                    "GROUP BY ord_type, tax_name");
+
+            c = DBManager.getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));
+            if (c.moveToFirst()) {
+                String orderTypeBreaker = "-1";
+                String orderType;
+                int i_ord_type = c.getColumnIndex(ord_type);
+                int i_tax_name = c.getColumnIndex(tax_name);
+                int i_tax_amount = c.getColumnIndex(tax_amount);
+                do {
+                    orderType = c.getString(i_ord_type);
+                    dataTax = new DataTaxes();
+                    dataTax.setTax_name(c.getString(i_tax_name));
+                    dataTax.setTax_amount(c.getString(i_tax_amount));
+
+                    if (!orderType.equalsIgnoreCase(orderTypeBreaker)) {
+                        taxesBreakdownHashMap.put(orderTypeBreaker, dataTaxesList);
+                        dataTaxesList = new ArrayList<>();
+                        orderTypeBreaker = orderType;
+                    }
+
+                    dataTaxesList.add(dataTax);
+
+                } while (c.moveToNext());
+                taxesBreakdownHashMap.put(orderTypeBreaker, dataTaxesList);
+            }
+
+            c.close();
+            return taxesBreakdownHashMap;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+    }
+
     public HashMap<String, List<DataTaxes>> getOrderDayReportTaxesBreakdown(
             String clerk_id, String date) {
         Cursor c = null;
