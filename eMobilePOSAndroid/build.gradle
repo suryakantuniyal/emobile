@@ -160,7 +160,6 @@ dependencies {
     api files('libs/kdcreader.jar')
     api files('libs/hapi-android-3.2.5.jar')
     api files('libs/bixolon_printer.jar')
-
     api files('libs/xerces.jar')
     api files('libs/PAT215Cashdrawer1.0.0.jar')
     api files('libs/PAT215Display.1.0.0.jar')
@@ -202,6 +201,7 @@ dependencies {
     implementation files('libs/SDK4BaseBinderV2.1.3.jar')
     implementation files('libs/SDK4EmvBinderV2.1.3.jar')
     implementation files('libs/SDK4KeyManagerBinderV2.1.3.jar')
+    implementation files('libs/starmgsio.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'
