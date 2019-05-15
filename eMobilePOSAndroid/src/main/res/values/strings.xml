@@ -840,11 +840,12 @@
     <string name="shift_add_expense">Add No-Sale</string>
     <string name="shift_title">Shift</string>
 
-    <string name="report_per_shift">Per-Shift</string>
-    <string name="shift_details">Shift Details</string>
+    <string name="report_per_shift">Per-Shift (Z-Report)</string>
+    <string name="shift_details">Shift Details (Z-Report)</string>
+    <string name="shift_id">Shift #:</string>
     <string name="sales_clerk">Sales Clerk</string>
     <string name="begging_petty_cash">Beginning Petty Cash</string>
-    <string name="total_expenses">Total Expenses</string>
+    <string name="total_expenses">Total No Sale Transactions</string>
     <string name="ending_petty_cash">Ending Petty Cash</string>
     <string name="total_transactions_cash">Total Transactions Cash</string>
     <string name="total_ending_cash">Expected Closeout Cash</string>
@@ -1231,6 +1232,7 @@
     <string name="eod_report_shifts">Shifts</string>
     <string name="eod_report_itemsold">Items Sold</string>
     <string name="eod_report_itemsreturned">Items Returned</string>
+    <string name="eod_report_sales_by_clerk">Sales By Clerk</string>
     <string name="eod_report_dept_sales">Dept Sales</string>
     <string name="eod_report_dept_returns">Dept Returns</string>
     <string name="eod_report_payment">Payments</string>

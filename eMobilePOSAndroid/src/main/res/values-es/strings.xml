@@ -831,11 +831,12 @@
     <string name="shift_add_expense">"Añadir No-Venta"</string>
     <string name="shift_title">"Turno"</string>
 
-    <string name="report_per_shift">"Por turno"</string>
-    <string name="shift_details">"Detalles del turno"</string>
+    <string name="report_per_shift">"Por turno (Reporte Z)"</string>
+    <string name="shift_details">"Detalles del turno (Reporte Z)"</string>
+    <string name="shift_id">"Turno #:"</string>
     <string name="sales_clerk">"Empleado de ventas"</string>
     <string name="begging_petty_cash">"Efectivo inicial en caja"</string>
-    <string name="total_expenses">"Gastos totales"</string>
+    <string name="total_expenses">"Total transacciones sin venta"</string>
     <string name="ending_petty_cash">"Efectivo final en caja"</string>
     <string name="total_transactions_cash">"Total de transacciones en efectivo"</string>
     <string name="total_ending_cash">"Total efectivo final"</string>
@@ -1215,6 +1216,7 @@
     <string name="eod_report_shifts">"Turnos"</string>
     <string name="eod_report_itemsold">"Artículos vendidos"</string>
     <string name="eod_report_itemsreturned">"Artículos devueltos"</string>
+    <string name="eod_report_sales_by_clerk">"Ventas por empleados"</string>
     <string name="eod_report_dept_sales">"Ventas de departamento"</string>
     <string name="eod_report_dept_returns">"Devoluciones de Departamento"</string>
     <string name="eod_report_payment">"Pagos"</string>

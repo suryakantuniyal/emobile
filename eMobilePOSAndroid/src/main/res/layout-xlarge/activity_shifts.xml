@@ -899,6 +899,12 @@
                 </LinearLayout>
 
                 <Button
+                    android:id="@+id/openDrawerButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/config_open_cash_drawer" />
+
+                <Button
                     android:id="@+id/submitShiftbutton"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

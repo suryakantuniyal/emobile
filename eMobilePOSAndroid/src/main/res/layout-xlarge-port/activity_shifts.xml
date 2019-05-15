@@ -102,7 +102,7 @@
                 android:id="@+id/currencieslinearLayout4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="30dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal"
                 app:layout_constraintLeft_toLeftOf="@+id/pettyCashLbltextView27"
@@ -120,8 +120,8 @@
                         android:layout_height="match_parent"
                         android:background="@color/blue_flat"
                         android:gravity="center_horizontal"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/textView29"
@@ -134,8 +134,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/textView33a"
@@ -154,8 +154,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/oneDollarTextView"
@@ -218,8 +218,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/fiveDollarTextView"
@@ -282,8 +282,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/tenDollarTextView"
@@ -345,8 +345,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/twentyDollarTextView"
@@ -408,8 +408,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/fiftyDollarTextView"
@@ -471,8 +471,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/hundredDollarTextView"
@@ -555,8 +555,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/textView33"
@@ -575,8 +575,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/oneCentTextView"
@@ -638,8 +638,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/fiveCentsTextView"
@@ -701,8 +701,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/tenCentsTextView"
@@ -764,8 +764,8 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp">
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
 
                         <TextView
                             android:id="@+id/quartesCentsTextView"
@@ -831,17 +831,18 @@
                 android:id="@+id/closeAmountLynearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:gravity="top|center_vertical"
                 android:orientation="horizontal"
                 app:layout_constraintRight_toRightOf="@+id/textView24"
                 app:layout_constraintTop_toTopOf="@+id/clerkNameShifttextView">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
+                    android:layout_height="match_parent"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginRight="10dp">
+                    android:layout_marginRight="10dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/endingCashAmountLbltextView21"
@@ -853,19 +854,19 @@
 
                     <TextView
                         android:id="@+id/endingCashAmounteditText"
+                        style="@style/black_text_appearance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
                         android:gravity="center_vertical|center_horizontal"
-                        style="@style/black_text_appearance"
                         android:text="@string/add_main_hint2"
-                        android:textSize="@dimen/history_title_text_size"
-                        android:layout_margin="10dp" />
+                        android:textSize="@dimen/history_title_text_size" />
                 </LinearLayout>
 
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
                     android:gravity="center_horizontal"
@@ -897,18 +898,30 @@
                         android:text="@string/short_amount" />
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/openDrawerButton"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/config_open_cash_drawer" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/submitShiftbutton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/shift_close_shift" />
+                    <Button
+                        android:id="@+id/openDrawerButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:text="@string/config_open_cash_drawer"
+                        android:textSize="16sp" />
+
+                    <Button
+                        android:id="@+id/submitShiftbutton"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="@string/shift_close_shift"
+                        android:textSize="16sp" />
+                </LinearLayout>
             </LinearLayout>
+
         </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 </ScrollView>

@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -74,7 +73,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private TextView totalAmountEditText;
     private TextView shortOverStatusTextView;
     private Shift shift;
-    private Button submitShiftbutton;
+    private Button openDrawerButton, submitShiftbutton;
     private TextView openOnLbl;
     private TextView openOnDate;
     private TextView closeAmountLbl;
@@ -96,6 +95,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private void setShiftUI() {
         if (shift == null || shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
             enableCurrencies(true);
+            openDrawerButton.setVisibility(View.VISIBLE);
             submitShiftbutton.setText(getString(R.string.admin_open_shift));
             openOnLbl.setVisibility(View.INVISIBLE);
             openOnDate.setVisibility(View.INVISIBLE);
@@ -104,6 +104,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             closeAmountLbl.setText(getString(R.string.entered_open_amount));
         } else if (shift.getShiftStatus() == Shift.ShiftStatus.OPEN) {
             enableCurrencies(false);
+            openDrawerButton.setVisibility(View.GONE);
             submitShiftbutton.setText(getString(R.string.shift_count_down_shift));
             openOnLbl.setVisibility(View.VISIBLE);
             openOnDate.setVisibility(View.VISIBLE);
@@ -114,6 +115,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             pettyCash.setText(Global.getCurrencyFormat(shift.getBeginningPettyCash()));
         } else if (shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
             enableCurrencies(true);
+            openDrawerButton.setVisibility(View.GONE);
             submitShiftbutton.setText(getString(R.string.shift_close_shift));
             openOnLbl.setVisibility(View.VISIBLE);
             openOnDate.setVisibility(View.VISIBLE);
@@ -158,6 +160,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.openDrawerButton:
+                openDrawer();
+                break;
             case R.id.submitShiftbutton:
                 if (shift == null || shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
                     openShift();
@@ -285,30 +290,27 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    private void openDrawer() {
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                }
+            }).start();
+        }
+    }
+
     private void startCountDownShift() {
         shift.setShiftStatus(Shift.ShiftStatus.PENDING);
         ShiftDAO.insertOrUpdate(shift);
         setShiftUI();
-        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
-                }
-            }).start();
-        }
+        openDrawer();
         new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void openShift() {
-        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
-                }
-            }).start();
-        }
+        openDrawer();
         Date now = new Date();
         shift = new Shift();
         AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
@@ -527,6 +529,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         Button plusFiveCent = findViewById(R.id.fiveCentsPlusbutton);
         Button plusTenCent = findViewById(R.id.tenCentsPlusbutton);
         Button plusQuarterCent = findViewById(R.id.quartesCentsPlusbutton);
+        openDrawerButton = findViewById(R.id.openDrawerButton);
+        openDrawerButton.setOnClickListener(this);
         submitShiftbutton = findViewById(R.id.submitShiftbutton);
         submitShiftbutton.setOnClickListener(this);
         minusOneCent.setOnClickListener(this);

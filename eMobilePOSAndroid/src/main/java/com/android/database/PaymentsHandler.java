@@ -1235,6 +1235,95 @@ public class PaymentsHandler {
 
     }
 
+    public List<Payment> getPaymentsGroupShiftReport(int type, String clerk_id,
+                                                     String startDate, String endDate) {
+        Cursor c = null;
+        try {
+            StringBuilder query = new StringBuilder();
+            List<Payment> listPayment = new ArrayList<>();
+
+            query.append("SELECT ");
+            query.append("pm.paymethod_name || ' - ' || pm.paymentmethod_type AS card_type, ");
+            query.append("SUM(pay_amount) AS 'pay_amount', ");
+            query.append("SUM(pay_tip) AS 'pay_tip', ");
+            query.append("pay_id, ");
+            query.append("p.paymethod_id, ");
+            query.append("CASE WHEN inv_id ='' THEN job_ID ");
+            query.append("ELSE inv_id ");
+            query.append("END AS 'job_id', ");
+            query.append("datetime(pay_timecreated) AS 'date' ");
+            query.append("FROM Payments p ");
+            query.append("LEFT JOIN PayMethods pm ON p.paymethod_id = pm.paymethod_id ");
+            query.append("WHERE ");
+
+            switch (type) {
+                case 0:// Payments
+                    query.append("isVoid = '0' AND is_refund = '0' ");
+                    break;
+                case 1:// Voids
+                    query.append("isVoid = '1' AND pay_type = '1' ");
+                    break;
+                case 2:// Refunds
+                    query.append("isVoid = '0' AND is_refund = '1' ");
+                    break;
+            }
+
+            ArrayList<String> where_values = new ArrayList<>();
+            if (clerk_id != null && !clerk_id.isEmpty()) {
+                query.append(" AND clerk_id = ? ");
+                where_values.add(clerk_id);
+            }
+
+            if (startDate != null && !startDate.isEmpty()) {
+                if (endDate != null && !endDate.isEmpty()) {
+                    query.append(" AND date >= datetime(?, 'utc') ");
+                    where_values.add(startDate);
+                } else {
+                    query.append(" AND date = ? ");
+                    where_values.add(startDate);
+                }
+            }
+            if (endDate != null && !endDate.isEmpty()) {
+                query.append(" AND date <= datetime(?, 'utc') ");
+                where_values.add(endDate);
+            }
+
+            query.append(" GROUP BY p.paymethod_id");
+
+            c = getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));
+
+            if (c.moveToFirst()) {
+                int i_card_type = c.getColumnIndex(card_type);
+                int i_pay_amount = c.getColumnIndex(pay_amount);
+                int i_pay_tip = c.getColumnIndex(pay_tip);
+                int i_pay_id = c.getColumnIndex(pay_id);
+                int i_job_id = c.getColumnIndex(job_id);
+                int i_paymethod_id = c.getColumnIndex(paymethod_id);
+                do {
+                    Payment payment = new Payment(activity);
+
+                    payment.setCard_type(c.getString(i_card_type));
+                    payment.setPay_amount(c.getString(i_pay_amount));
+                    payment.setPay_tip(c.getString(i_pay_tip));
+                    payment.setPay_id(c.getString(i_pay_id));
+                    payment.setJob_id(c.getString(i_job_id));
+                    payment.setPaymethod_id(c.getString(i_paymethod_id));
+
+                    listPayment.add(payment);
+
+                } while (c.moveToNext());
+            }
+
+            c.close();
+            return listPayment;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+
+    }
+
     public List<Payment> getPaymentsGroupDayReport(int type, String clerk_id, String date) {
         Cursor c = null;
         try {
