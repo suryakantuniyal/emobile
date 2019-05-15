@@ -128,6 +128,7 @@ import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
 import wangpos.sdk4.libbasebinder.Core;
 
+import static com.android.support.DateUtils.getEpochTime;
 import static drivers.EMSGPrinterPT380.PRINTER_ID;
 import static jpos.POSPrinterConst.PTR_BM_ASIS;
 import static jpos.POSPrinterConst.PTR_BM_CENTER;
@@ -3324,6 +3325,9 @@ public class EMSDeviceDriver {
         Shift shift = ShiftDAO.getShift(shiftID);
         Clerk clerk = ClerkDAO.getByEmpId(shift.getClerkId());
         sb.append(textHandler.newLines(1));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.shift_id),
+                String.format("%s-%s", clerk.getEmpId(), getEpochTime(shift.getCreationDate())),
+                lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.sales_clerk), clerk == null ?
                 shift.getAssigneeName() : clerk.getEmpName(), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.receipt_employee), employee.getEmpName(), lineWidth, 0));

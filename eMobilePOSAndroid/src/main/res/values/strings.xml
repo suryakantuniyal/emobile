@@ -842,6 +842,7 @@
 
     <string name="report_per_shift">Per-Shift (Z-Report)</string>
     <string name="shift_details">Shift Details (Z-Report)</string>
+    <string name="shift_id">Shift #:</string>
     <string name="sales_clerk">Sales Clerk</string>
     <string name="begging_petty_cash">Beginning Petty Cash</string>
     <string name="total_expenses">Total No Sale Transactions</string>

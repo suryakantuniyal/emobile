@@ -833,6 +833,7 @@
 
     <string name="report_per_shift">"Por turno (Reporte Z)"</string>
     <string name="shift_details">"Detalles del turno (Reporte Z)"</string>
+    <string name="shift_id">"Turno #:"</string>
     <string name="sales_clerk">"Empleado de ventas"</string>
     <string name="begging_petty_cash">"Efectivo inicial en caja"</string>
     <string name="total_expenses">"Total transacciones sin venta"</string>
