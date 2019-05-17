@@ -139,6 +139,7 @@ public class MyPreferences {
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     private static final String pref_retail_taxes = "pref_retail_taxes";
     private static final String pref_use_clerks = "pref_use_clerks";
+    private static final String pref_use_clerks_autologout = "pref_use_clerks_autologout";
     private static final String pref_use_syncplus_services = "pref_use_syncplus_services";
     private static final String pref_syncplus_mode = "pref_syncplus_mode";
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
@@ -1272,6 +1273,10 @@ public class MyPreferences {
 
     public boolean isUseClerks() {
         return getPreferences(MyPreferences.pref_use_clerks);
+    }
+
+    public boolean isUseClerksAutoLogout() {
+        return getPreferences(MyPreferences.pref_use_clerks_autologout);
     }
 
     public String getGeniusIP() {

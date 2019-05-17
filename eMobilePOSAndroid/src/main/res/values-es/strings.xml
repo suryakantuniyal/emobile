@@ -881,6 +881,7 @@
     <string name="config_gift_card_settings">"Configuración de la tarjeta de regalo"</string>
     <string name="config_open_cash_drawer">"Abrir cajón de efectivo"</string>
     <string name="config_use_clerks">"Uso de Empleados de servicio"</string>
+    <string name="config_use_clerks_autologout">"Cierre automático de sesión después de cada transacción"</string>
 
     <string name="config_change_password">"Cambiar la contraseña"</string>
     <string name="config_configure_cash_drawer">"Configurar cajón de efectivo"</string>

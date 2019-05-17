@@ -77,6 +77,11 @@
             android:key="pref_use_clerks"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_clerks" />
+        <CheckBoxPreference
+            android:dependency="pref_use_clerks"
+            android:key="pref_use_clerks_autologout"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_clerks_autologout" />
 
         <Preference
             android:key="pref_clerk_management"

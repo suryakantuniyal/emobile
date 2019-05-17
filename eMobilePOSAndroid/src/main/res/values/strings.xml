@@ -890,6 +890,7 @@
     <string name="config_gift_card_settings">Gift Card Settings</string>
     <string name="config_open_cash_drawer">Open Cash Drawer</string>
     <string name="config_use_clerks">Use Clerks</string>
+    <string name="config_use_clerks_autologout">Clerk Auto Logout After Every Transaction</string>
 
     <string name="config_change_password">Change Password</string>
     <string name="config_configure_cash_drawer">Configure Cash Drawer</string>
