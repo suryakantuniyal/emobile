@@ -64,6 +64,7 @@ import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
+import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -2305,6 +2306,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     showSplitedOrderPreview();
                 } else if (getOrderingMainFa().orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT) {
                     getActivity().finish();
+                    SalesTab_FR.checkAutoLogout(getActivity());
                 }
             }
         }

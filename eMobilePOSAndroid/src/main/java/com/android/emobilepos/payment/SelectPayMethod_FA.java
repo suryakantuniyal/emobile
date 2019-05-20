@@ -41,6 +41,7 @@ import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.cardmanager.CardManager_FA;
+import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.orders.Order;
@@ -123,6 +124,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private int totalPayCount = 0;
     private String order_email = "";
     private String order_phone = "";
+    private int splitPaymentsCount = 1;
     private Global.OrderType orderType;
     private boolean skipLogin;
     private Dialog dlog;
@@ -261,6 +263,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         }
         orderType = (Global.OrderType) extras.get("ord_type");
+        splitPaymentsCount = extras.getInt("splitPaymentsCount", 1);
         paymentHandlerDB = new PaymentsHandler(this);
         GenerateNewID generator = new GenerateNewID(this);
         pay_id = generator.getNextID(IdType.PAYMENT_ID);
@@ -782,6 +785,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 } else if (overAllRemainingBalance <= 0) {
                     boolean addBalance = openGiftCardAddBalance();
                     finish();
+                    if (splitPaymentsCount == 1) {
+                        SalesTab_FR.checkAutoLogout(this);
+                    }
                     if (!addBalance) {
                         resetCustomer();
                     }
@@ -792,6 +798,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 resetCustomer();
             }
             finish();
+            SalesTab_FR.checkAutoLogout(this);
         }
         handler.removeCallbacks(runnable);
     }
