@@ -424,6 +424,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         intent.putExtra("ord_type", Global.OrderType.SALES_RECEIPT);
         intent.putExtra("ord_email", "");
         intent.putExtra("subTotal", order.ord_subtotal);
+        SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
+        if (summaryFa != null) {
+            intent.putExtra("splitPaymentsCount", summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount());
+        }
         if (myPref.isCustSelected()) {
             intent.putExtra("cust_id", myPref.getCustID());
             intent.putExtra("custidkey", myPref.getCustIDKey());

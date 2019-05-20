@@ -88,6 +88,8 @@ import util.StringUtil;
 import util.json.JsonUtils;
 import util.json.UIUtils;
 
+import static com.android.support.Global.FROM_CUSTOMER_SELECTION_ACTIVITY;
+
 public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCallbacks, EMSCallBack {
     EMSCallBack emsCallBack;
     private SalesMenuAdapter myAdapter;
@@ -127,6 +129,14 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         }
     };
 
+    public static void checkAutoLogout(Activity activity) {
+        MyPreferences myPref = new MyPreferences(activity);
+        if (myPref.isUseClerksAutoLogout() && Global.loggedIn) {
+            Global.loggedIn = false;
+            Global global = (Global) activity.getApplication();
+            global.promptForMandatoryLogin(activity);
+        }
+    }
 
     public static void startDefault(Activity activity, Global.TransactionType type) {
         if (type != null) {
@@ -203,7 +213,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(thisContext, ViewCustomers_FA.class);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, FROM_CUSTOMER_SELECTION_ACTIVITY);
             }
         });
 
