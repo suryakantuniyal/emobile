@@ -878,6 +878,8 @@
     <string name="config_account_settings">Account Settings</string>
     <string name="config_product_settings">Product Settings</string>
     <string name="config_printing_settings">Printing Settings</string>
+    <string name="config_weight_scale_settings">Weight Scale Settings</string>
+    <string name="config_weight_scale_settings_scale_selection">Select Weight Scale</string>
     <string name="config_other_settings">Other Settings</string>
     <string name="config_shifts">Shifts</string>
     <string name="config_cash_drawer">Cash Drawer</string>

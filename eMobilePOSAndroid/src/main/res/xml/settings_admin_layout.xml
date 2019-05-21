@@ -392,6 +392,17 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_weight_scale_settings">
+        <ListPreference
+            android:key="pref_choose_weight_scale"
+            android:title="@string/config_weight_scale_settings_scale_selection"
+            android:layout="@layout/settings_custom_layout"
+            android:defaultValue="-1"
+            android:entries="@array/weightScaleEntries"
+            android:entryValues="@array/weightScaleValues" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
         android:title="@string/config_printing_settings">
         <CheckBoxPreference
             android:key="pref_enable_printing"

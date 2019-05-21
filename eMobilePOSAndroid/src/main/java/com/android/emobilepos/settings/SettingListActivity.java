@@ -197,9 +197,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     }
 
     public enum SettingSection {
-        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
-        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIPPING_CALCULATION(10),
-        TRANSACTION(11), HANPOINT(12), SUPPORT(13), OTHERS(14);
+        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5),WEIGHTSCALE(6), PRODUCTS(7),
+        ACCOUNT(8), CASH_DRAWER(9), KIOSK(10), SHIPPING_CALCULATION(11),
+        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15);
         int code;
 
         SettingSection(int code) {
@@ -220,23 +220,25 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return PAYMENT_PROCESSING;
                 case 5:
                     return PRINTING;
-                case 6:
-                    return PRODUCTS;
+                case 6 :
+                    return WEIGHTSCALE;
                 case 7:
-                    return ACCOUNT;
+                    return PRODUCTS;
                 case 8:
-                    return CASH_DRAWER;
+                    return ACCOUNT;
                 case 9:
-                    return KIOSK;
+                    return CASH_DRAWER;
                 case 10:
-                    return SHIPPING_CALCULATION;
+                    return KIOSK;
                 case 11:
-                    return TRANSACTION;
+                    return SHIPPING_CALCULATION;
                 case 12:
-                    return HANPOINT;
+                    return TRANSACTION;
                 case 13:
-                    return SUPPORT;
+                    return HANPOINT;
                 case 14:
+                    return SUPPORT;
+                case 15:
                     return OTHERS;
                 default:
                     return GENERAL;
@@ -301,6 +303,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         default:
                             return R.xml.settings_admin_printing_layout;
                     }
+                case WEIGHTSCALE:
+                    return R.xml.settings_admin_weight_scale_layout;
                 case PRODUCTS:
                     return R.xml.settings_admin_products_layout;
                 case OTHERS:
@@ -369,6 +373,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
+                    break;
+                case WEIGHTSCALE:
+                    prefManager.findPreference("weight_scale_selection").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object o) {
+
+                            return true;
+                        }
+                    });
                     break;
                 case PRODUCTS:
                     configureDefaultCategory();

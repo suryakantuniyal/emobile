@@ -869,6 +869,8 @@
     <string name="config_account_settings">"Configuraciones de la cuenta"</string>
     <string name="config_product_settings">"Configuración del producto"</string>
     <string name="config_printing_settings">"Configuración de impresora"</string>
+    <string name="config_weight_scale_settings">Configuración de Pesas</string>
+    <string name="config_weight_scale_settings_scale_selection">Seleccionar Pesa</string>
     <string name="config_other_settings">"Otros ajustes"</string>
     <string name="config_shifts">"Turnos"</string>
     <string name="config_cash_drawer">"Cajón de dinero"</string>
