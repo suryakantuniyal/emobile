@@ -2,21 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-      android:background="@drawable/bg_white_page"
-    android:orientation="vertical" >
-    
-<RelativeLayout
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical">
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/blue_gradient_header_horizontal" >
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView6"
-        android:src="@drawable/logo"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true" />
-    
+        android:background="@drawable/blue_gradient_header_horizontal">
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/logo" />
+
         <TextView
             android:id="@+id/HeaderTitle"
             android:layout_width="wrap_content"
@@ -27,61 +29,62 @@
             android:textSize="@dimen/header_txt_size" />
 
         <Button
-            style="@style/action_button_text_appearance"
             android:id="@+id/processButton"
+            style="@style/action_button_text_appearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_margin="5dp"
             android:background="@drawable/action_button_selector"
+            android:paddingStart="5dp"
             android:paddingLeft="5dp"
+            android:paddingEnd="14dp"
             android:paddingRight="14dp"
             android:text="@string/card_button_process"
             android:textSize="@dimen/large_button_text_size" />
     </RelativeLayout>
-    
 
- <ScrollView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                 android:layout_marginTop="@dimen/input_field_holder_top_margin"
                 android:layout_marginLeft="@dimen/input_field_holder_lr_margin"
+                android:layout_marginTop="@dimen/input_field_holder_top_margin"
                 android:layout_marginRight="@dimen/input_field_holder_lr_margin"
                 android:layout_marginBottom="@dimen/input_field_holder_top_margin"
                 android:background="@drawable/light_grey_background"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/account_information"
-                    android:textSize="@dimen/list_view_header_txt_size"
-                    android:textAppearance="@style/blue_txt_appearance_bold" />
+                    android:textAppearance="@style/blue_txt_appearance_bold"
+                    android:textSize="@dimen/list_view_header_txt_size" />
 
                 <CheckBox
                     android:id="@+id/checkboxCardSwipe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
+                    android:layout_gravity="end"
                     android:layout_marginBottom="20dp"
-                    android:textSize="@dimen/list_view_general_txt_size"
-                    android:text="@string/card_card_swipe" />
+                    android:text="@string/card_card_swipe"
+                    android:textSize="@dimen/list_view_general_txt_size" />
 
                 <EditText
                     android:id="@+id/hiddenField"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:ems="10" >
-                </EditText>
+                    android:ems="10" />
 
                 <com.android.support.MyEditText
                     android:id="@+id/cardNumEdit"
@@ -90,63 +93,73 @@
                     android:layout_gravity="center_vertical"
                     android:hint="@string/card_number"
                     android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textPassword"
                     android:nextFocusDown="@+id/fieldCardCCV"
-                    android:password="true"
                     android:singleLine="true"
                     android:textAppearance="@style/black_text_appearance_unbold"
                     android:textColor="#000000"
-                    android:textSize="@dimen/field_general_txt_size" >
-                </com.android.support.MyEditText>
+                    android:textSize="@dimen/field_general_txt_size" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <Button
+                    android:id="@+id/paxSwipe"
+                    style="@style/action_button_text_appearance"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-                </LinearLayout>
-
-                
+                    android:layout_gravity="center"
+                    android:background="@drawable/action_button_selector"
+                    android:nextFocusDown="@+id/fieldTipAmount"
+                    android:paddingStart="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingRight="10dp"
+                    android:singleLine="true"
+                    android:text="@string/card_swipe"
+                    android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
                     android:text="@string/general_information"
-                    android:textSize="@dimen/list_view_header_txt_size"
-                    android:textAppearance="@style/blue_txt_appearance_bold" />
-                
+                    android:textAppearance="@style/blue_txt_appearance_bold"
+                    android:textSize="@dimen/list_view_header_txt_size" />
+
                 <CheckBox
                     android:id="@+id/checkboxRedeemAll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
+                    android:layout_gravity="end"
                     android:layout_marginBottom="20dp"
-                    android:textSize="@dimen/list_view_general_txt_size"
-                    android:text="Redeem All" />
+                    android:text="Redeem All"
+                    android:textSize="@dimen/list_view_general_txt_size" />
 
                 <TableLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <TableRow
+                        android:id="@+id/row1Gift"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/row1Gift">
+                        android:layout_height="match_parent">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center|start"
                             android:text="@string/paymethod_subtotal_amount_label"
                             android:textAppearance="@style/black_text_appearance_unbold"
-                            android:textSize="@dimen/list_view_general_txt_size"
-                            android:layout_gravity="center|left" />
+                            android:textSize="@dimen/list_view_general_txt_size" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/subtotalGiftAmount"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
                             android:digits="0123456789"
                             android:imeOptions="flagNoExtractUi|actionNext"
                             android:inputType="numberDecimal"
@@ -154,30 +167,31 @@
                             android:singleLine="true"
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
-                            android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                            android:textSize="@dimen/field_general_txt_size" />
                     </TableRow>
 
                     <TableRow
+                        android:id="@+id/row2Gift"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/row2Gift">
+                        android:layout_height="match_parent">
 
                         <TextView
+                            android:id="@+id/tax1GiftCardLbl"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center|start"
                             android:text="@string/paymethod_tax1_amount_label"
                             android:textAppearance="@style/black_text_appearance_unbold"
-                            android:textSize="@dimen/list_view_general_txt_size"
-                            android:layout_gravity="center|left"
-                            android:id="@+id/tax1GiftCardLbl" />
+                            android:textSize="@dimen/list_view_general_txt_size" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/tax1GiftAmount"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
                             android:digits="0123456789"
                             android:imeOptions="flagNoExtractUi|actionNext"
                             android:inputType="numberDecimal"
@@ -185,30 +199,31 @@
                             android:singleLine="true"
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
-                            android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                            android:textSize="@dimen/field_general_txt_size" />
                     </TableRow>
 
                     <TableRow
+                        android:id="@+id/row3Gift"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/row3Gift">
+                        android:layout_height="match_parent">
 
                         <TextView
+                            android:id="@+id/tax2GiftCardLbl"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center|start"
                             android:text="@string/paymethod_tax2_amount_label"
                             android:textAppearance="@style/black_text_appearance_unbold"
-                            android:textSize="@dimen/list_view_general_txt_size"
-                            android:layout_gravity="center|left"
-                            android:id="@+id/tax2GiftCardLbl" />
+                            android:textSize="@dimen/list_view_general_txt_size" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/tax2GiftAmount"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
                             android:digits="0123456789"
                             android:imeOptions="flagNoExtractUi|actionNext"
                             android:inputType="numberDecimal"
@@ -216,9 +231,7 @@
                             android:singleLine="true"
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
-                            android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                            android:textSize="@dimen/field_general_txt_size" />
                     </TableRow>
 
                     <TableRow
@@ -228,16 +241,19 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/black_text_appearance_unbold"
-                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_gravity="center|start"
                             android:text="@string/paymethod_due_amount_label"
-                            android:layout_gravity="center|left" />
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/amountDueGiftCard"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
                             android:digits="0123456789"
                             android:imeOptions="flagNoExtractUi|actionNext"
                             android:inputType="numberDecimal"
@@ -245,9 +261,7 @@
                             android:singleLine="true"
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
-                            android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                            android:textSize="@dimen/field_general_txt_size" />
                     </TableRow>
 
                     <TableRow
@@ -257,12 +271,13 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
                             android:layout_marginRight="10dp"
-                            android:textAppearance="@style/black_text_appearance_unbold"
-                            android:textSize="@dimen/list_view_general_txt_size"
-                            android:text="@string/cash_amount_paid"
                             android:layout_span="2"
-                            android:layout_weight="1" />
+                            android:layout_weight="1"
+                            android:text="@string/cash_amount_paid"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size" />
                     </TableRow>
 
                     <TableRow
@@ -270,48 +285,40 @@
                         android:layout_height="match_parent">
 
                         <Button
-                            style="@style/action_button_text_appearance"
                             android:id="@+id/exactAmountBut"
+                            style="@style/action_button_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:background="@drawable/action_button_selector"
                             android:nextFocusDown="@+id/fieldTipAmount"
+                            android:paddingStart="5dp"
+                            android:paddingLeft="5dp"
+                            android:paddingEnd="14dp"
+                            android:paddingRight="14dp"
                             android:singleLine="true"
                             android:text="@string/cash_exact"
-                            android:textSize="@dimen/ordering_checkout_btn_txt_size"
-                            android:layout_gravity="center"
-                            android:paddingRight="14dp"
-                            android:paddingLeft="5dp" />
+                            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/amountTendered"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
                             android:digits="0123456789"
                             android:imeOptions="flagNoExtractUi|actionNext"
                             android:inputType="numberDecimal"
-                            android:singleLine="true"
                             android:nextFocusDown="@+id/fieldTipAmount"
+                            android:singleLine="true"
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
-                            android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                            android:textSize="@dimen/field_general_txt_size" />
                     </TableRow>
 
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
                 </TableLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>

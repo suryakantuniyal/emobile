@@ -633,6 +633,7 @@
     <string name="card_trans_id">TransID</string>
     <string name="error_wrong_amount">Amount to be paid must be greater than 0\u002E\u002E\u002E</string>
     <string name="account_information">Account Information</string>
+    <string name="card_swipe">"SWIPE"</string>
     <string name="general_information">General Information</string>
     <string name="card_information">Card Information</string>
     <string name="paymethod_due_amount_label">Amount Due</string>
