@@ -598,6 +598,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))) {
                     finish();
+                    if (splitPaymentsCount == 1) {
+                        SalesTab_FR.checkAutoLogout(SelectPayMethod_FA.this);
+                    }
                 }
             }
         });
@@ -1287,6 +1290,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         showPrintDlg(true, false, null);
                     } else {
                         finish();
+                        if (splitPaymentsCount == 1) {
+                            SalesTab_FR.checkAutoLogout(SelectPayMethod_FA.this);
+                        }
                     }
                 } else {
                     showPrintDlg(wasReprint, false, null);
