@@ -139,6 +139,8 @@ public class EMSDeviceDriver {
     /*static PrinterApiContext printerApi;*/
     static Object printerTFHKA;
     private static int PAPER_WIDTH;
+    private final int SIZE_LIMIT = 20;
+    private final int SLEEP_TIME = 100;
     protected final String FORMAT = "windows-1252";
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -1331,6 +1333,11 @@ public class EMSDeviceDriver {
                     }
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
+
+                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                        // wait to fix printing incomplete issues on SM-T300i models.
+                        Thread.sleep(SLEEP_TIME);
+                    }
                 }
             } else {
                 int padding = lineWidth / 4;
@@ -1357,9 +1364,9 @@ public class EMSDeviceDriver {
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
 
-                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > 20) {
+                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
                         // wait to fix printing incomplete issues on SM-T300i models.
-                        Thread.sleep(100);
+                        Thread.sleep(SLEEP_TIME);
                     }
                 }
             }
@@ -2767,6 +2774,12 @@ public class EMSDeviceDriver {
                             .append("\n\n");
                 } else
                     sb.append(textHandler.newLines(1));
+
+                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    // wait to fix printing incomplete issues on SM-T300i models.
+                    Thread.sleep(SLEEP_TIME);
+                }
+
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
             }
@@ -2784,6 +2797,8 @@ public class EMSDeviceDriver {
             cutPaper();
         } catch (JAException e) {
             Crashlytics.logException(e);
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2857,6 +2872,11 @@ public class EMSDeviceDriver {
                     ordTotal += Double.parseDouble(myConsignment.get(i).invoice_total);
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
+
+                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                        // wait to fix printing incomplete issues on SM-T300i models.
+                        Thread.sleep(SLEEP_TIME);
+                    }
                 }
             }
 
@@ -2884,6 +2904,8 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
         } catch (JAException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2964,6 +2986,11 @@ public class EMSDeviceDriver {
                 }
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
+
+                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    // wait to fix printing incomplete issues on SM-T300i models.
+                    Thread.sleep(SLEEP_TIME);
+                }
             }
             sb.append(textHandler.lines(lineWidth));
             if (!isPickup) {
@@ -2987,6 +3014,8 @@ public class EMSDeviceDriver {
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (JAException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -3032,6 +3061,11 @@ public class EMSDeviceDriver {
                         lineWidth, 3)).append("\n\n\n");
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
+
+                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    // wait to fix printing incomplete issues on SM-T300i models.
+                    Thread.sleep(SLEEP_TIME);
+                }
             }
 
             if (printPref.contains(MyPreferences.print_footer))
@@ -3048,6 +3082,8 @@ public class EMSDeviceDriver {
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (JAException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
