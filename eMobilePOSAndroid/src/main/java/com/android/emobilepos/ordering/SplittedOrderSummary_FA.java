@@ -47,6 +47,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Guarionex on 2/8/2016.
@@ -214,6 +215,9 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         for (OrderSeatProduct product : orderSeatProducts) {
             if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && product.getSeatGroupId() == groupId) {
                 try {
+                    UUID uuid = UUID.randomUUID();
+                    String randomUUIDString = uuid.toString();
+                    product.orderProduct.setOrdprod_id(randomUUIDString);
                     seatProducts.add((OrderProduct) product.orderProduct.clone());
                 } catch (CloneNotSupportedException e) {
                     e.printStackTrace();
