@@ -103,6 +103,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import drivers.digitalpersona.DigitalPersona;
+import drivers.weightScales.WSDeviceManager;
 import interfaces.BiometricCallbacks;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
@@ -140,8 +141,10 @@ public class Global extends MultiDexApplication {
     public static final int INGENICOMOBY85 = 26;
     public static final int PAX_A920 = 27;
     public static final int HP_EONEPRIME = 28;
-
     public static final int APT_50 = 29;
+
+    //Weight Scale Devices
+    public static final int STARSCALE_S8200 = 0;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -245,6 +248,7 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager mainPrinterManager;
     public static Set<Device> printerDevices = new HashSet();
     public static EMSDeviceManager embededMSR;
+    public static WSDeviceManager mainWeightScaleManager;
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
     public static OrderType consignmentType = OrderType.ORDER;

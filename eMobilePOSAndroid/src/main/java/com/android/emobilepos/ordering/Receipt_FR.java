@@ -104,6 +104,9 @@ import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
 import drivers.star.utils.PrinterFunctions;
+import drivers.weightScales.StarScaleS8200;
+import drivers.weightScales.WSDeviceDriver;
+import drivers.weightScales.WSDeviceManager;
 import interfaces.PayWithLoyalty;
 import main.EMSDeviceManager;
 import util.StringUtil;
@@ -641,6 +644,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                                 startActivityForResult(intent, 0);
                                 break;
+                            case R.id.weightProduct:
+                                Product mproduct = prodHandler.getProductDetails(orderSeatProduct.orderProduct.getProd_id());
+                                startWeightScale(orderProductIdx, mproduct.getFinalPrice());
+                                break;
                             case R.id.removeProduct:
                                 if (hasRemoveItemPermission) {
                                     boolean printed = orderSeatProduct.orderProduct.isPrinted();
@@ -700,12 +707,29 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 popup.getMenu().findItem(R.id.overridePrice).setEnabled(hasOverwritePermission);
                 popup.getMenu().findItem(R.id.removeProduct).setEnabled(hasRemoveItemPermission);
                 popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Double.parseDouble(orderSeatProduct.orderProduct.getProd_price_points()) > 0);
+                popup.getMenu().findItem(R.id.weightProduct).setEnabled(Global.mainWeightScaleManager.isWeightScaleConnected());
                 popup.show();
             }
         }
         receiptListView.smoothScrollToPosition(position);
     }
 
+    private void startWeightScale(int orderProductIndexPos, String basePrice) {
+        double w = Global.mainWeightScaleManager.getWeightFromScale();
+        if (w < 0) {
+            Log.e("WEIGHT_SCALE", "***PLEASE TARE SCALE***");
+        } else {
+            double newPrice = Double.parseDouble(basePrice) * w;
+            String newWeightedPrice = String.valueOf(newPrice);
+            String value = NumberUtils.cleanCurrencyFormatedNumber(newWeightedPrice);
+            if (!value.isEmpty()) {
+                getOrderingMainFa().global.order.getOrderProducts().get(orderProductIndexPos).setOverwritePrice(Global.getBigDecimalNum(value), getActivity());
+                receiptListView.invalidateViews();
+                reCalculate();
+            }
+        }
+
+    }
 
     @Override
     public void processPayWithLoyalty(OrderSeatProduct orderSeatProduct) {
@@ -2065,249 +2089,249 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
     }
 
-    public interface AddProductBtnCallback {
-        void addProductServices();
+public interface AddProductBtnCallback {
+    void addProductServices();
+}
+
+public interface RecalculateCallback {
+    void recalculateTotal();
+}
+
+public interface UpdateHeaderTitleCallback {
+    void updateHeaderTitle(String val);
+}
+
+private class ReceiptPagerAdapter extends FragmentPagerAdapter {
+    public ReceiptPagerAdapter(FragmentManager fragmentManager) {
+        super(fragmentManager);
     }
 
-    public interface RecalculateCallback {
-        void recalculateTotal();
+    @Override
+    public int getCount() {
+        return 3;
     }
 
-    public interface UpdateHeaderTitleCallback {
-        void updateHeaderTitle(String val);
-    }
+    @Override
+    public Fragment getItem(int position) {
+        Fragment frag;
 
-    private class ReceiptPagerAdapter extends FragmentPagerAdapter {
-        public ReceiptPagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
+        switch (position) {
+            case 0:
+                if (orderTotalDetailsFr == null) {
+                    frag = OrderTotalDetails_FR.init(position);
+                } else
+                    frag = orderTotalDetailsFr;
+                callBackRecalculate = (RecalculateCallback) frag;
+                orderTotalDetailsFr = (OrderTotalDetails_FR) frag;
+                return frag;
+            case 1:
+                OrderLoyalty_FR loyaltyFr = OrderLoyalty_FR.init(position);
+                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+                mainFa.setLoyaltyFragment(loyaltyFr);
+                return loyaltyFr;
+            default:
+                orderRewardsFr = OrderRewards_FR.init(position);
+                return orderRewardsFr;
+
+        }
+    }
+}
+
+public class OnHoldAsync extends AsyncTask<Object, Integer, Boolean> {
+    private ProgressDialog myProgressDialog;
+
+    @Override
+    protected void onPreExecute() {
+        myProgressDialog = new ProgressDialog(getActivity());
+        myProgressDialog.setMessage(getString(R.string.sending));
+        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myProgressDialog.setCancelable(false);
+        if (!Global.isActivityDestroyed(getActivity())) {
+            myProgressDialog.show();
         }
 
-        @Override
-        public int getCount() {
-            return 3;
-        }
+    }
 
-        @Override
-        public Fragment getItem(int position) {
-            Fragment frag;
+    @Override
+    protected Boolean doInBackground(Object... arg0) {
 
-            switch (position) {
-                case 0:
-                    if (orderTotalDetailsFr == null) {
-                        frag = OrderTotalDetails_FR.init(position);
-                    } else
-                        frag = orderTotalDetailsFr;
-                    callBackRecalculate = (RecalculateCallback) frag;
-                    orderTotalDetailsFr = (OrderTotalDetails_FR) frag;
-                    return frag;
-                case 1:
-                    OrderLoyalty_FR loyaltyFr = OrderLoyalty_FR.init(position);
-                    OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
-                    mainFa.setLoyaltyFragment(loyaltyFr);
-                    return loyaltyFr;
-                default:
-                    orderRewardsFr = OrderRewards_FR.init(position);
-                    return orderRewardsFr;
-
+        if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(getActivity()))
+                || NetworkUtils.isConnectedToInternet(getActivity())) {
+            switch ((Integer) arg0[0]) {
+                case UPDATE_HOLD_STATUS:
+                    try {
+                        OnHoldsManager.updateStatusOnHold(Global.lastOrdID, getActivity());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Crashlytics.logException(e);
+                    }
+                    break;
+                case CHECK_OUT_HOLD:
+                    try {
+                        OnHoldsManager.checkoutOnHold(Global.lastOrdID, getActivity());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Crashlytics.logException(e);
+                    }
+                    break;
             }
         }
+        return (Boolean) arg0[1];
     }
 
-    public class OnHoldAsync extends AsyncTask<Object, Integer, Boolean> {
-        private ProgressDialog myProgressDialog;
+    @Override
+    protected void onPostExecute(Boolean voidOnHold) {
+        Global.dismissDialog(getActivity(), myProgressDialog);
 
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(getActivity());
-            myProgressDialog.setMessage(getString(R.string.sending));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            if (!Global.isActivityDestroyed(getActivity())) {
-                myProgressDialog.show();
-            }
-
-        }
-
-        @Override
-        protected Boolean doInBackground(Object... arg0) {
-
-            if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(getActivity()))
-                    || NetworkUtils.isConnectedToInternet(getActivity())) {
-                switch ((Integer) arg0[0]) {
-                    case UPDATE_HOLD_STATUS:
-                        try {
-                            OnHoldsManager.updateStatusOnHold(Global.lastOrdID, getActivity());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Crashlytics.logException(e);
-                        }
-                        break;
-                    case CHECK_OUT_HOLD:
-                        try {
-                            OnHoldsManager.checkoutOnHold(Global.lastOrdID, getActivity());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Crashlytics.logException(e);
-                        }
-                        break;
-                }
-            }
-            return (Boolean) arg0[1];
-        }
-
-        @Override
-        protected void onPostExecute(Boolean voidOnHold) {
-            Global.dismissDialog(getActivity(), myProgressDialog);
-
-            if (Global.isFromOnHold) {
-                if (caseSelected != Global.TransactionType.SALE_RECEIPT &&
-                        caseSelected != Global.TransactionType.RETURN &&
-                        caseSelected != Global.TransactionType.INVOICE) {
-                    getActivity().finish();
-                }
-            } else if (caseSelected != Global.TransactionType.RETURN &&
+        if (Global.isFromOnHold) {
+            if (caseSelected != Global.TransactionType.SALE_RECEIPT &&
+                    caseSelected != Global.TransactionType.RETURN &&
                     caseSelected != Global.TransactionType.INVOICE) {
+                getActivity().finish();
+            }
+        } else if (caseSelected != Global.TransactionType.RETURN &&
+                caseSelected != Global.TransactionType.INVOICE) {
+            getActivity().finish();
+        }
+    }
+}
+
+private class PrintAsync extends AsyncTask<Boolean, Integer, String> {
+    boolean isPrintStationPrinter = false;
+    boolean printSuccessful = true;
+    private ProgressDialog myProgressDialog;
+    private OrderingMain_FA.OrderingAction orderingAction;
+    private String orderId;
+
+    public PrintAsync(OrderingMain_FA.OrderingAction orderingAction) {
+        this.orderingAction = orderingAction;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        myProgressDialog = new ProgressDialog(getActivity());
+        myProgressDialog.setMessage(getString(R.string.printing_message));
+        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myProgressDialog.setCancelable(false);
+        if (!Global.isActivityDestroyed(getActivity())) {
+            myProgressDialog.show();
+        }
+
+        if (getOrderingMainFa()._msrUsbSams != null
+                && getOrderingMainFa()._msrUsbSams.isDeviceOpen()) {
+            getOrderingMainFa()._msrUsbSams.CloseTheDevice();
+        }
+        orderId = getOrderingMainFa().global.order.ord_id;
+    }
+
+    @Override
+    protected String doInBackground(Boolean... params) {
+        isPrintStationPrinter = params[0];
+        if (!isPrintStationPrinter) {
+            publishProgress();
+            Global.OrderType type = Global.ord_type;
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null
+                    && emsDeviceManager.getCurrentDevice() != null) {
+                printSuccessful = emsDeviceManager.getCurrentDevice()
+                        .printTransaction(orderId, type, false,
+                                false);
+            }
+        } else {
+            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
+                    getActivity());
+            HashMap<String, List<Orders>> temp = orderProductsHandler
+                    .getStationPrinterProducts(orderId);
+
+            String[] sArr = temp.keySet().toArray(
+                    new String[temp.keySet().size()]);
+            int printMap;
+            boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
+            EMSBluetoothStarPrinter currentDevice = null;
+            boolean printHeader = true;
+            StringBuffer receipt = new StringBuffer();
+            for (String aSArr : sArr) {
+                if (Global.multiPrinterMap.containsKey(aSArr)) {
+                    printMap = Global.multiPrinterMap.get(aSArr);
+                    if (Global.multiPrinterManager.get(printMap) != null
+                            && Global.multiPrinterManager.get(printMap).getCurrentDevice() != null) {
+
+                        currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).getCurrentDevice();
+                        if (currentDevice != null) {
+                            receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
+                                    orderId, splitByCat, printHeader));
+                            currentDevice.printRemote(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
+                            receipt.setLength(0);
+                        }
+                    }
+                }
+            }
+            // mark all as printed (todo: improve this loop)
+            for (OrderProduct op : getOrderingMainFa().global.order.getOrderProducts()) {
+                op.setPrinted(true);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(String unused) {
+        Global.dismissDialog(getActivity(), myProgressDialog);
+        if (!isPrintStationPrinter) {
+            if (printSuccessful) {
+                if (myPref.isMultiplePrints()) {
+                    showPrintDlg(false);
+                } else {
+                    reloadDefaultTransaction();
+                }
+            } else {
+                showPrintDlg(true);
+            }
+        }
+        if (orderingAction == OrderingMain_FA.OrderingAction.HOLD) {
+            new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+}
+
+private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+    ProgressDialog dialog;
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        Global.lockOrientation(getActivity());
+        dialog = new ProgressDialog(getActivity());
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
+        dialog.setMessage(getString(R.string.sync_sending_orders));
+        if (!Global.isActivityDestroyed(getActivity())) {
+            dialog.show();
+        }
+    }
+
+    @Override
+    protected Boolean doInBackground(Void... params) {
+        DBManager dbManager = new DBManager(getActivity());
+        SynchMethods sm = new SynchMethods(dbManager);
+        return sm.synchSendOnHold(false, true, getActivity(), null);
+    }
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
+        Global.dismissDialog(getActivity(), dialog);
+        if (getActivity() != null) {
+            getOrderingMainFa().buildOrderStarted = false;
+            if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
+                    && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+                    ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
+                showSplitedOrderPreview();
+            } else if (getOrderingMainFa().orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT) {
                 getActivity().finish();
             }
         }
     }
-
-    private class PrintAsync extends AsyncTask<Boolean, Integer, String> {
-        boolean isPrintStationPrinter = false;
-        boolean printSuccessful = true;
-        private ProgressDialog myProgressDialog;
-        private OrderingMain_FA.OrderingAction orderingAction;
-        private String orderId;
-
-        public PrintAsync(OrderingMain_FA.OrderingAction orderingAction) {
-            this.orderingAction = orderingAction;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(getActivity());
-            myProgressDialog.setMessage(getString(R.string.printing_message));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            if (!Global.isActivityDestroyed(getActivity())) {
-                myProgressDialog.show();
-            }
-
-            if (getOrderingMainFa()._msrUsbSams != null
-                    && getOrderingMainFa()._msrUsbSams.isDeviceOpen()) {
-                getOrderingMainFa()._msrUsbSams.CloseTheDevice();
-            }
-            orderId = getOrderingMainFa().global.order.ord_id;
-        }
-
-        @Override
-        protected String doInBackground(Boolean... params) {
-            isPrintStationPrinter = params[0];
-            if (!isPrintStationPrinter) {
-                publishProgress();
-                Global.OrderType type = Global.ord_type;
-                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
-                if (emsDeviceManager != null
-                        && emsDeviceManager.getCurrentDevice() != null) {
-                    printSuccessful = emsDeviceManager.getCurrentDevice()
-                            .printTransaction(orderId, type, false,
-                                    false);
-                }
-            } else {
-                OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
-                        getActivity());
-                HashMap<String, List<Orders>> temp = orderProductsHandler
-                        .getStationPrinterProducts(orderId);
-
-                String[] sArr = temp.keySet().toArray(
-                        new String[temp.keySet().size()]);
-                int printMap;
-                boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
-                EMSBluetoothStarPrinter currentDevice = null;
-                boolean printHeader = true;
-                StringBuffer receipt = new StringBuffer();
-                for (String aSArr : sArr) {
-                    if (Global.multiPrinterMap.containsKey(aSArr)) {
-                        printMap = Global.multiPrinterMap.get(aSArr);
-                        if (Global.multiPrinterManager.get(printMap) != null
-                                && Global.multiPrinterManager.get(printMap).getCurrentDevice() != null) {
-
-                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).getCurrentDevice();
-                            if (currentDevice != null) {
-                                receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
-                                        orderId, splitByCat, printHeader));
-                                currentDevice.printRemote(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
-                                receipt.setLength(0);
-                            }
-                        }
-                    }
-                }
-                // mark all as printed (todo: improve this loop)
-                for (OrderProduct op : getOrderingMainFa().global.order.getOrderProducts()) {
-                    op.setPrinted(true);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            Global.dismissDialog(getActivity(), myProgressDialog);
-            if (!isPrintStationPrinter) {
-                if (printSuccessful) {
-                    if (myPref.isMultiplePrints()) {
-                        showPrintDlg(false);
-                    } else {
-                        reloadDefaultTransaction();
-                    }
-                } else {
-                    showPrintDlg(true);
-                }
-            }
-            if (orderingAction == OrderingMain_FA.OrderingAction.HOLD) {
-                new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        }
-    }
-
-    private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
-        ProgressDialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Global.lockOrientation(getActivity());
-            dialog = new ProgressDialog(getActivity());
-            dialog.setIndeterminate(true);
-            dialog.setCancelable(false);
-            dialog.setMessage(getString(R.string.sync_sending_orders));
-            if (!Global.isActivityDestroyed(getActivity())) {
-                dialog.show();
-            }
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            DBManager dbManager = new DBManager(getActivity());
-            SynchMethods sm = new SynchMethods(dbManager);
-            return sm.synchSendOnHold(false, true, getActivity(), null);
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            Global.dismissDialog(getActivity(), dialog);
-            if (getActivity() != null) {
-                getOrderingMainFa().buildOrderStarted = false;
-                if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
-                        && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
-                        ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
-                    showSplitedOrderPreview();
-                } else if (getOrderingMainFa().orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT) {
-                    getActivity().finish();
-                }
-            }
-        }
-    }
+}
 
 }

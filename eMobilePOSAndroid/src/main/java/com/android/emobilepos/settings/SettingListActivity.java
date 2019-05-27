@@ -34,6 +34,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +94,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import drivers.weightScales.StarScaleS8200;
+import drivers.weightScales.WSDeviceManager;
 import io.realm.Realm;
 import main.EMSDeviceManager;
 
@@ -197,7 +200,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     }
 
     public enum SettingSection {
-        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5),WEIGHTSCALE(6), PRODUCTS(7),
+        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), WEIGHTSCALE(6), PRODUCTS(7),
         ACCOUNT(8), CASH_DRAWER(9), KIOSK(10), SHIPPING_CALCULATION(11),
         TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15);
         int code;
@@ -220,7 +223,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return PAYMENT_PROCESSING;
                 case 5:
                     return PRINTING;
-                case 6 :
+                case 6:
                     return WEIGHTSCALE;
                 case 7:
                     return PRODUCTS;
@@ -378,7 +381,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("weight_scale_selection").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                         @Override
                         public boolean onPreferenceChange(Preference preference, Object o) {
-
+                            new ConnectWeightScale().execute(getActivity(), o);
                             return true;
                         }
                     });
@@ -1863,4 +1866,57 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             }
         }
     }
+
+    public static class ConnectWeightScale extends AsyncTask<Object, String, Void> {
+
+        private ProgressDialog loadingScaleDriverdLog;
+        private Activity activity;
+        WSDeviceManager wsDeviceManager;
+        private boolean connection = false;
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Void doInBackground(Object... strings) {
+            activity = (Activity) strings[0];
+            String weightTypeIndex = (String) strings[1];
+//            showProgressDialog(activity);
+            //LOADS WEIGHT SCALE DRIVER HERE!!
+
+            wsDeviceManager = new WSDeviceManager();
+            if (Global.mainWeightScaleManager != null) {
+                Global.mainWeightScaleManager.disconnectWeightScaleDriver();
+            }
+            if (wsDeviceManager.loadWeightScaleDriver(activity, Integer.parseInt(weightTypeIndex))) {
+                while(!connection){
+                    connection = wsDeviceManager.isWeightScaleConnected();
+                    if(connection) {
+                        Global.mainWeightScaleManager = wsDeviceManager.getManagerWS();
+                    }
+                }
+                Log.e("AsyncConnectWS", "Connected to " + weightTypeIndex);
+            } else {
+                Log.e("AsyncConnectWS", "Connection for " + weightTypeIndex + " failed");
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+//            Global.dismissDialog(activity, loadingScaleDriverdLog);
+        }
+
+        private void showProgressDialog(Activity activity) {
+            if (loadingScaleDriverdLog == null) {
+                loadingScaleDriverdLog = new ProgressDialog(activity);
+                loadingScaleDriverdLog.setMessage(String.valueOf(R.string.connecting_devices));
+                loadingScaleDriverdLog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                loadingScaleDriverdLog.setCancelable(true);
+            }
+            loadingScaleDriverdLog.show();
+        }
+    }
+
 }

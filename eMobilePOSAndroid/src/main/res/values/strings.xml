@@ -1456,5 +1456,6 @@
     <string name="seconds">Seconds</string>
     <string name="config_customer_settings">Customer Settings</string>
     <string name="config_default_customer_display_name">Select Customer Name</string>
+    <string name="picked_dlog_weight">Weight</string>
 
 </resources>
