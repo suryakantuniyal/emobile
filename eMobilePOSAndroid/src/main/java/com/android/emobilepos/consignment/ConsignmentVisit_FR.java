@@ -346,14 +346,9 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             product.setItemTotal(hash.get("invoice_total"));
         }
         orderProductsHandler.insert(Global.consignment_products);
-        if (global.order.getListOrderTaxes() != null
-                && global.order.getListOrderTaxes().size() > 0
-                ) {
-            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-            ordTaxesDB.insert(global.order.getListOrderTaxes(), global.order.ord_id);
-        }
+        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
+        ordTaxesDB.insert(global.order.getListOrderTaxes(), global.order.ord_id);
     }
-
 
     private void showYesNoPrompt(final boolean isPrintPrompt, int title, int msg) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);

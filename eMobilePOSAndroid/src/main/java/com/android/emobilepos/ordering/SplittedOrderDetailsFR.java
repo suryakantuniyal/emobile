@@ -377,14 +377,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 }
                 global.encodedImage = "";
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                if (splitedOrder.getListOrderTaxes() != null && splitedOrder.getListOrderTaxes().size() > 0) {
-                    if (splitedOrder.ord_id != null) {
-                        ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
-                    }
+                if (splitedOrder.ord_id != null) {
+                    ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
                 }
-//                DBManager dbManager = new DBManager(getActivity());
-//                SynchMethods sm = new SynchMethods(dbManager);
-//                sm.synchSendOnHold(false, true, getActivity());
             } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                 splitedOrder.processed = "10";
                 splitedOrder.isOnHold = "0";

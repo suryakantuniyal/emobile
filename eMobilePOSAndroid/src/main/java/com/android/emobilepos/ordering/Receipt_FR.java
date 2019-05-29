@@ -954,7 +954,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                               boolean isFromOnHold, boolean voidOnHold) {
         TaxesCalculator.calculateOrderTaxesAmount(order);
         OrdersHandler ordersHandler = new OrdersHandler(getActivity());
-        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
+        if (typeOfProcedure != Global.TransactionType.REFUND) {
+            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
+            ordTaxesDB.insert(order.getListOrderTaxes(), order.ord_id);
+        }
         getOrderingMainFa().global.order = order;
         order_email = emailHolder;
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(getActivity());
@@ -1002,11 +1005,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
 
-                    if (getOrderingMainFa().global.order.getListOrderTaxes() != null
-                            && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
-                            && typeOfProcedure != Global.TransactionType.REFUND)
-                        ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
-                                getOrderingMainFa().global.order.ord_id);
                     if (myPref.isRestaurantMode())
                         new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
@@ -1018,12 +1016,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     getOrderingMainFa().global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
-
-                    if (getOrderingMainFa().global.order.getListOrderTaxes() != null
-                            && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
-                            && typeOfProcedure != Global.TransactionType.REFUND)
-                        ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
-                                getOrderingMainFa().global.order.ord_id);
                     new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
                 }
             } else {
@@ -1044,12 +1036,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             orderProductsHandler.insert(getOrderingMainFa().global.order.getOrderProducts());
                         }
                         productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
-                        if (getOrderingMainFa().global.order.getListOrderTaxes() != null
-                                && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
-                                && typeOfProcedure != Global.TransactionType.REFUND) {
-                            ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
-                                    getOrderingMainFa().global.order.ord_id);
-                        }
                     }
                 }
                 if (myPref.isRestaurantMode())
