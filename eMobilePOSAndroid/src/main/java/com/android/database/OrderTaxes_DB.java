@@ -58,13 +58,12 @@ public class OrderTaxes_DB {
             try {
                 delete(_ord_id);
                 insert = DBManager.getDatabase().compileStatement("INSERT OR REPLACE INTO " + TABLE_NAME + " (" + mainSB1.toString() + ") " + "VALUES (" + mainSB2.toString() + ")");
-                int size = dataTaxes.size();
-                for (int j = 0; j < size; j++) {
-                    insert.bindString(index(ord_tax_id), dataTaxes.get(j).getOrd_tax_id());
+                for (DataTaxes dataTax : dataTaxes) {
+                    insert.bindString(index(ord_tax_id), dataTax.getOrd_tax_id());
                     insert.bindString(index(ord_id), _ord_id);
-                    insert.bindString(index(tax_name), dataTaxes.get(j).getTax_name());
-                    insert.bindString(index(tax_amount), dataTaxes.get(j).getTax_amount());
-                    insert.bindString(index(tax_rate), dataTaxes.get(j).getTax_rate());
+                    insert.bindString(index(tax_name), dataTax.getTax_name());
+                    insert.bindString(index(tax_amount), dataTax.getTax_amount());
+                    insert.bindString(index(tax_rate), dataTax.getTax_rate());
                     insert.execute();
                     insert.clearBindings();
                 }
