@@ -3404,11 +3404,15 @@ public class EMSDeviceDriver {
                 activity.getString(R.string.eod_report_sales_by_clerk), lineWidth));
 
         for (OrderProduct product : listDeptSalesByClerk) {
-            Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(product.getCat_id())); // clerk id
             String clerkName = "";
-            if (reportClerk != null) {
-                clerkName = String.format(
-                        "%s (%s)", reportClerk.getEmpName(), reportClerk.getEmpId());
+            if (!product.getCat_id().isEmpty()) {
+                Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(product.getCat_id())); // clerk id
+                if (reportClerk != null) {
+                    clerkName = String.format(
+                            "%s (%s)", reportClerk.getEmpName(), reportClerk.getEmpId());
+                }
+            } else {
+                clerkName = employee.getEmpName();
             }
             sb.append(
                     textHandler.threeColumnLineItem(clerkName, // clerk name
