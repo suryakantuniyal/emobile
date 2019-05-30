@@ -278,7 +278,7 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
-        if (myPref.getPreferences(MyPreferences.pref_print_taxes_brake_down)) {
+        if (myPref.getPreferences(MyPreferences.pref_print_taxes_breakdown)) {
             if (myPref.isRetailTaxes()) {
                 HashMap<String, String[]> prodTaxes = new HashMap<>();
                 for (OrderProduct product : order.getOrderProducts()) {

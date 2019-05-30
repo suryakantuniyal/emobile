@@ -955,7 +955,7 @@
     <string name="config_wholesale_printout">"Impresión al por mayor"</string>
     <string name="config_prompt_customer_copy">"Solicitar copia de recibo de impresión para los pagos de CC"</string>
     <string name="config_print_receipt_transaction_payments">"Imprimir recibo de pagos de transacciones"</string>
-    <string name="config_print_taxes_brake_down">"Imprimir desglose de impuestos"</string>
+    <string name="config_print_taxes_breakdown">"Imprimir desglose de impuestos"</string>
     <string name="config_handwritten_signature">"Firma manuscrita"</string>
 
     <string name="config_allow_decimal_quantities">"Permitir cantidades decimales"</string>

@@ -97,7 +97,7 @@ public class MyPreferences {
     public static final String pref_handwritten_signature = "pref_handwritten_signature";
     public static final String pref_prompt_customer_copy = "pref_prompt_customer_copy";
     public static final String pref_print_receipt_transaction_payment = "pref_print_receipt_transaction_payment";
-    public static final String pref_print_taxes_brake_down = "pref_print_taxes_brake_down";
+    public static final String pref_print_taxes_breakdown = "pref_print_taxes_breakdown";
     public static final String pref_allow_decimal_quantities = "pref_allow_decimal_quantities";
     public static final String pref_group_receipt_by_sku = "pref_group_receipt_by_sku";
     public static final String pref_require_password_to_remove_void = "pref_require_password_to_remove_void";
