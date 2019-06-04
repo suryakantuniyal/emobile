@@ -143,6 +143,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Global.isCheckoutInProgress = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splitted_order_summary);
         Bundle extras = this.getIntent().getExtras();
@@ -457,6 +458,12 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             }
             getOrderDetailsFR().setReceiptOrder(splitedOrder);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Global.isCheckoutInProgress = false;
+        super.onDestroy();
     }
 
     @Override
