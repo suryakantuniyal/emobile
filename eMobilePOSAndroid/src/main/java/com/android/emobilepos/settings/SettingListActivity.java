@@ -94,7 +94,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import drivers.weightScales.StarScaleS8200;
 import drivers.weightScales.WSDeviceManager;
 import io.realm.Realm;
 import main.EMSDeviceManager;
@@ -378,10 +377,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
                     break;
                 case WEIGHTSCALE:
+                    prefManager.findPreference("weight_scale_selection").setDefaultValue(myPref.getSelectedBTweight());
                     prefManager.findPreference("weight_scale_selection").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                         @Override
                         public boolean onPreferenceChange(Preference preference, Object o) {
-                            new ConnectWeightScale().execute(getActivity(), o);
+                            new ConnectWeightScale().execute(getActivity(), o, myPref);
                             return true;
                         }
                     });
@@ -1873,39 +1873,61 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private Activity activity;
         WSDeviceManager wsDeviceManager;
         private boolean connection = false;
+        MyPreferences mPref;
 
         @Override
         protected void onPreExecute() {
+//            showProgressDialog(activity);
         }
 
         @Override
         protected Void doInBackground(Object... strings) {
             activity = (Activity) strings[0];
             String weightTypeIndex = (String) strings[1];
-//            showProgressDialog(activity);
-            //LOADS WEIGHT SCALE DRIVER HERE!!
+            mPref = (MyPreferences)strings[2];
 
+        //START LOADING BLUETOOTH WEIGHT SCALE DRIVER HERE!!
             wsDeviceManager = new WSDeviceManager();
+
+            //Disconnect and reset from any current connected weight scales
             if (Global.mainWeightScaleManager != null) {
                 Global.mainWeightScaleManager.disconnectWeightScaleDriver();
+                if(mPref.getSelectedBTweight() != -1){
+                    mPref.setSelectedBTweight(-1);                                                  //Reset to none
+                }
             }
-            if (wsDeviceManager.loadWeightScaleDriver(activity, Integer.parseInt(weightTypeIndex))) {
-                while(!connection){
+
+            //Connect to new selected Weight Scale
+            if (wsDeviceManager.loadWeightScaleDriver(activity, Integer.parseInt(weightTypeIndex),false,null)) {
+                while(!connection){                                                                 //wait for a solid connection...
                     connection = wsDeviceManager.isWeightScaleConnected();
-                    if(connection) {
-                        Global.mainWeightScaleManager = wsDeviceManager.getManagerWS();
+                    if(connection) {                                                                //when connected,
+                        mPref.setSelectedBTweight(Integer.parseInt(weightTypeIndex));               //remember my selected option and
+                        List<Device> list = new ArrayList<>();
+                        Device device = DeviceTableDAO.getByName(wsDeviceManager.GetDeviceName());  // get devices connection info for faster connections in
+                        if (device == null) {                                                       // the future (Like autoConnection...)
+                            device = new Device();
+                        }
+                        device.setId(String.format("BT-scale:%s", wsDeviceManager.GetDeviceName()));
+                        device.setMacAddress(wsDeviceManager.GetMacAddress());
+                        device.setName(wsDeviceManager.GetDeviceName());
+                        device.setType(String.valueOf(wsDeviceManager.getDeviceType()));
+                        list.add(device);
+                        DeviceTableDAO.insert(list);
+                        Global.weightDevices.add(device);
+                        Global.mainWeightScaleManager = wsDeviceManager.getManagerWS();             //Once finished, set this scale as my current main WeightScale
+                        Log.e("AsyncConnectWS", "Connected to " + weightTypeIndex);
                     }
                 }
-                Log.e("AsyncConnectWS", "Connected to " + weightTypeIndex);
             } else {
-                Log.e("AsyncConnectWS", "Connection for " + weightTypeIndex + " failed");
+                Log.e("AsyncConnectWS", "Connection for " + weightTypeIndex + " failed");   //If Drivers failed to load, Print message and return null
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void v) {
-//            Global.dismissDialog(activity, loadingScaleDriverdLog);
+            Global.dismissDialog(activity, loadingScaleDriverdLog);
         }
 
         private void showProgressDialog(Activity activity) {

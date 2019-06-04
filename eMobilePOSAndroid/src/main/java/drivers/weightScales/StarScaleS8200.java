@@ -21,20 +21,25 @@ public class StarScaleS8200 extends WSDeviceDriver implements EMSDeviceManagerWe
 
     private StarDeviceManager mStarDeviceManager;
     private final Context context;
+    private final boolean autoConnect;
 
     private Scale mScale;
-    private String macAddress, weightUnit, weightStringResult;
+    private String macAddress, weightUnit, weightStringResult, name;
     private double weightResult;
     private boolean connection;
 
-    public StarScaleS8200(Context context, WSDeviceManager wsdm) {
+    public StarScaleS8200(Context context, WSDeviceManager wsdm, boolean autoConnect, String macAddress) {
         this.context = context;
         this.wsdm = wsdm;
+        this.autoConnect = autoConnect;
+        this.macAddress = macAddress;
     }
 
     @Override
     public void connect() {
-        if (!isConnected()) {
+        if (autoConnect) {
+            startScale(macAddress, true);
+        } else if (!isConnected()) {
             scanForStarScaleDevice();
         }
     }
@@ -48,7 +53,7 @@ public class StarScaleS8200 extends WSDeviceDriver implements EMSDeviceManagerWe
 
     @Override
     public boolean isConnected() {
-        setConnectionStatus(connection);
+        setConnectionDetails(connection, name, macAddress);
         return connection;
     }
 
@@ -64,7 +69,10 @@ public class StarScaleS8200 extends WSDeviceDriver implements EMSDeviceManagerWe
         mStarDeviceManager.scanForScales(mStarDeviceManagerCallback);
     }
 
-    private void startScale(String macAddress) {
+    private void startScale(String macAddress, boolean auto) {
+        if (auto || mStarDeviceManager == null) {
+            mStarDeviceManager = new StarDeviceManager(context);
+        }
         if (mScale == null) {
             ConnectionInfo connectionInfo = new ConnectionInfo.Builder()
                     .setBleInfo(macAddress)
@@ -203,11 +211,22 @@ public class StarScaleS8200 extends WSDeviceDriver implements EMSDeviceManagerWe
         public void onDiscoverScale(@NonNull ConnectionInfo connectionInfo) {
             if (connectionInfo.getDeviceName().contains("MG-S8200")) {
                 macAddress = connectionInfo.getMacAddress();
+                name = connectionInfo.getDeviceName();
                 mStarDeviceManager.stopScan();
-                startScale(macAddress);
+                startScale(macAddress,false);
             }
         }
     };
+
+    @Override
+    public void setWeightScaleDevice() {
+        wsdm.setCurrentWeightDevice(this);
+    }
+
+    @Override
+    public void setMacAddress(String mac) {
+        macAddress = mac;
+    }
 
     @Override
     public double getScaleWeight() {
@@ -225,8 +244,13 @@ public class StarScaleS8200 extends WSDeviceDriver implements EMSDeviceManagerWe
     }
 
     @Override
-    public void setWeightScaleDevice() {
-        wsdm.setCurrentWeightDevice(this);
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
 }

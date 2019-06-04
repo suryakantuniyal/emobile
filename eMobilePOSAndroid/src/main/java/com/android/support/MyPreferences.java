@@ -189,6 +189,9 @@ public class MyPreferences {
     private final String rsa_pub_key = "rsa_pub_key";
     private final String aes_key = "aes_key";
     private final String aes_iv = "aes_iv";
+    //Weight Scales
+    private final String selected_BT_weight = "BT_weight";
+
     public Context context;
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
@@ -229,6 +232,13 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public void setSelectedBTweight(int index){
+        prefEditor.putInt(selected_BT_weight,index);
+        prefEditor.commit();
+    }
+    public int getSelectedBTweight(){
+        return (prefs.getInt(selected_BT_weight, -1));
+    }
     public String getAccountLogoPath() {
         return (prefs.getString("logo_path", ""));
     }

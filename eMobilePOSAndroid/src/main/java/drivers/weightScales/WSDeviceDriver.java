@@ -6,15 +6,26 @@ public class WSDeviceDriver {
 
     private double weightResult;
     private String weightUnit = "";
+    private String mac,Name = "";
     private boolean conn;
     WSDeviceManager wsdm;
 
-    public void setDevice(){}
+    public void setDevice() {
+    }
     public void connect() {
     }
-    public boolean isConnected() {return conn;}
+    public boolean isConnected() {
+        return conn;
+    }
     public void disconnect() {
     }
+    public String getDeviceMacAddress() {
+        return mac;
+    }
+    public String getDeviceName() {
+        return Name;
+    }
+
 
     public double getWeightFromScale() {
         if (wsdm == null) {
@@ -34,7 +45,9 @@ public class WSDeviceDriver {
         return weightUnit;
     }
 
-    public void setConnectionStatus(boolean connectionStatus){
+    public void setConnectionDetails(boolean connectionStatus,String name,String mMac) {
         conn = connectionStatus;
+        Name = name;
+        mac = mMac;
     }
 }

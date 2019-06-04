@@ -247,6 +247,7 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
     public static Set<Device> printerDevices = new HashSet();
+    public static Set<Device> weightDevices = new HashSet();
     public static EMSDeviceManager embededMSR;
     public static WSDeviceManager mainWeightScaleManager;
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
