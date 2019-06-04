@@ -1877,12 +1877,19 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPreExecute() {
-//            showProgressDialog(activity);
+
         }
 
         @Override
         protected Void doInBackground(Object... strings) {
             activity = (Activity) strings[0];
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showProgressDialog(activity);
+                }
+            });
+
             String weightTypeIndex = (String) strings[1];
             mPref = (MyPreferences)strings[2];
 
@@ -1933,7 +1940,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private void showProgressDialog(Activity activity) {
             if (loadingScaleDriverdLog == null) {
                 loadingScaleDriverdLog = new ProgressDialog(activity);
-                loadingScaleDriverdLog.setMessage(String.valueOf(R.string.connecting_devices));
+                loadingScaleDriverdLog.setMessage(activity.getString(R.string.config_weight_scale_settings_loading_driver_dialog));
                 loadingScaleDriverdLog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 loadingScaleDriverdLog.setCancelable(true);
             }

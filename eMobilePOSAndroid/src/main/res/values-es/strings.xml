@@ -871,6 +871,7 @@
     <string name="config_printing_settings">"Configuración de impresora"</string>
     <string name="config_weight_scale_settings">Configuración de Pesas</string>
     <string name="config_weight_scale_settings_scale_selection">Seleccionar Pesa</string>
+    <string name="config_weight_scale_settings_loading_driver_dialog">Conectando a Pesa…</string>
     <string name="config_other_settings">"Otros ajustes"</string>
     <string name="config_shifts">"Turnos"</string>
     <string name="config_cash_drawer">"Cajón de dinero"</string>
