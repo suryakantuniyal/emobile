@@ -732,7 +732,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void startWeightScale(int orderProductIndexPos, String basePrice) {
         double w = Global.mainWeightScaleManager.getWeightFromScale();
         if (w < 0) {
-            Log.e("WEIGHT_SCALE", "***PLEASE TARE SCALE***");
+            Toast.makeText(getActivity(), R.string.product_receipt_options_weight, Toast.LENGTH_SHORT).show();
         } else {
             getOrderingMainFa().global.order.getOrderProducts().get(orderProductIndexPos).setOrdprod_qty(String.valueOf(w));
             receiptListView.invalidateViews();

@@ -1418,4 +1418,5 @@
     <string name="config_default_customer_display_name">Nombre de cliente a mostrar </string>
     <string name="config_customer_settings">Configuracion del Cliente</string>
     <string name="picked_dlog_weight">Pesar</string>
+    <string name="product_receipt_options_weight">***CALIBRE LA PESA***</string>
 </resources>
