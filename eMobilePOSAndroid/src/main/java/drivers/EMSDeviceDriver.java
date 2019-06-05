@@ -278,7 +278,7 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
-        if (myPref.getPreferences(MyPreferences.pref_print_taxes_brake_down)) {
+        if (myPref.getPreferences(MyPreferences.pref_print_taxes_breakdown)) {
             if (myPref.isRetailTaxes()) {
                 HashMap<String, String[]> prodTaxes = new HashMap<>();
                 for (OrderProduct product : order.getOrderProducts()) {
@@ -1226,7 +1226,7 @@ public class EMSDeviceDriver {
             print(getOrderTypeDetails(fromOnHold, anOrder, lineWidth, type));
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(anOrder.ord_timecreated, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(anOrder.ord_timeStarted, 3), lineWidth, 0));
 
             if (ShiftDAO.isShiftOpen() && myPref.isUseClerks()) {
                 String clerk_id = anOrder.clerk_id;
@@ -2639,7 +2639,7 @@ public class EMSDeviceDriver {
                     sb.append(anOrder.cust_name).append("\n");
                 sb.append(getString(R.string.order)).append(": ").append(ordID).append("\n");
                 sb.append(getString(R.string.receipt_started)).append(" ")
-                        .append(Global.formatToDisplayDate(anOrder.ord_timecreated, -1)).append("\n");
+                        .append(Global.formatToDisplayDate(anOrder.ord_timeStarted, -1)).append("\n");
 
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
                 sdf1.setTimeZone(Calendar.getInstance().getTimeZone());
@@ -3404,11 +3404,15 @@ public class EMSDeviceDriver {
                 activity.getString(R.string.eod_report_sales_by_clerk), lineWidth));
 
         for (OrderProduct product : listDeptSalesByClerk) {
-            Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(product.getCat_id())); // clerk id
             String clerkName = "";
-            if (reportClerk != null) {
-                clerkName = String.format(
-                        "%s (%s)", reportClerk.getEmpName(), reportClerk.getEmpId());
+            if (!product.getCat_id().isEmpty()) {
+                Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(product.getCat_id())); // clerk id
+                if (reportClerk != null) {
+                    clerkName = String.format(
+                            "%s (%s)", reportClerk.getEmpName(), reportClerk.getEmpId());
+                }
+            } else {
+                clerkName = employee.getEmpName();
             }
             sb.append(
                     textHandler.threeColumnLineItem(clerkName, // clerk name

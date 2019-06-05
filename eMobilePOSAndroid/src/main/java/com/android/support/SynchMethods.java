@@ -309,42 +309,44 @@ public class SynchMethods {
 
 
     public static synchronized void synchOrdersOnHoldList(Context context) throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
-        MyPreferences preferences = new MyPreferences(context);
-        Gson gson = JsonUtils.getInstance();
-        GenerateXML xml = new GenerateXML(context);
-        String json;
-        if (preferences.isUse_syncplus_services()) {
-            String url = SyncConfigServerService.getUrl(context.getString(R.string.sync_enablermobile_local_holds), context);
-            json = oauthclient.HttpClient.getString(url, null, true);
-        } else {
-            json = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("GetOrdersOnHoldList"), null, true);
-        }
-        Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
-        }.getType();
-        List<Order> orders = gson.fromJson(json, listType);
-        OrdersHandler ordersHandler = new OrdersHandler(context);
-        List<Order> ordersToDelete = ordersHandler.getOrdersOnHold();
-        int i = 0;
-        if (orders != null) {
-            for (Order order : orders) {
-                order.ord_issync = "1";
-                order.isOnHold = "1";
-                Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
-                if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
-                    ordersToDelete.remove(order);
-                    i++;
-                }
-                if (i == 1000) {
-                    ordersHandler.insert(orders);
-                    orders.clear();
-                    i = 0;
-                }
-                synchOrdersOnHoldDetails(context, order.ord_id);
+        if (!Global.isCheckoutInProgress) {
+            MyPreferences preferences = new MyPreferences(context);
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(context);
+            String json;
+            if (preferences.isUse_syncplus_services()) {
+                String url = SyncConfigServerService.getUrl(context.getString(R.string.sync_enablermobile_local_holds), context);
+                json = oauthclient.HttpClient.getString(url, null, true);
+            } else {
+                json = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                        xml.downloadAll("GetOrdersOnHoldList"), null, true);
             }
-            ordersHandler.insert(orders);
+            Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
+            }.getType();
+            List<Order> orders = gson.fromJson(json, listType);
+            OrdersHandler ordersHandler = new OrdersHandler(context);
+            List<Order> ordersToDelete = ordersHandler.getOrdersOnHold();
+            int i = 0;
+            if (orders != null) {
+                for (Order order : orders) {
+                    order.ord_issync = "1";
+                    order.isOnHold = "1";
+                    Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
+                    if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
+                        ordersToDelete.remove(order);
+                        i++;
+                    }
+                    if (i == 1000) {
+                        ordersHandler.insert(orders);
+                        orders.clear();
+                        i = 0;
+                    }
+                    synchOrdersOnHoldDetails(context, order.ord_id);
+                }
+                ordersHandler.insert(orders);
+            }
+            ordersHandler.deleteOnHoldsOrders(ordersToDelete);
         }
-        ordersHandler.deleteOnHoldsOrders(ordersToDelete);
     }
 
     public static void synchOrdersOnHoldDetails(Context context, String ordID) throws SAXException, IOException, NoSuchAlgorithmException, KeyManagementException {

@@ -355,6 +355,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
 
         if (splitedOrder.getOrderProducts().size() > 0) {
+            if (splitedOrder.ord_id != null) {
+                ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
+            }
             if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 1) {
                 splitedOrder.processed = "10";
                 splitedOrder.isOnHold = "0";
@@ -377,14 +380,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 }
                 global.encodedImage = "";
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                if (splitedOrder.getListOrderTaxes() != null && splitedOrder.getListOrderTaxes().size() > 0) {
-                    if (splitedOrder.ord_id != null) {
-                        ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
-                    }
-                }
-//                DBManager dbManager = new DBManager(getActivity());
-//                SynchMethods sm = new SynchMethods(dbManager);
-//                sm.synchSendOnHold(false, true, getActivity());
             } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                 splitedOrder.processed = "10";
                 splitedOrder.isOnHold = "0";
@@ -397,9 +392,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.syncOrderProductIds();
                 ordersHandler.insert(splitedOrder);
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                if (splitedOrder.ord_id != null) {
-                    ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
-                }
             }
             Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
             if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) != -1) {

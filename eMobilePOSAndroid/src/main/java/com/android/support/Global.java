@@ -301,6 +301,7 @@ public class Global extends MultiDexApplication {
     public static Map<String, String> paymentIconsMap = paymentIconMap();
     public static boolean loggedIn = false;
     public static boolean isPaymentInProgress = false;
+    public static boolean isCheckoutInProgress = false;
     public static Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {

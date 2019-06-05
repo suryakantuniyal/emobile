@@ -88,6 +88,7 @@ public class SplittedOrder extends Order implements Cloneable, Comparable<Splitt
         cust_name = order.cust_name;
         sync_id = order.sync_id;
         customer = order.customer;
+        setListOrderTaxes(order.getListOrderTaxesCopy());
     }
 
     public List<OrderProduct> getOrderProducts() {

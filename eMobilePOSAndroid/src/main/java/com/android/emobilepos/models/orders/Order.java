@@ -126,6 +126,19 @@ public class Order implements Cloneable, Serializable {
         return listOrderTaxes;
     }
 
+    public List<DataTaxes> getListOrderTaxesCopy() {
+        List<DataTaxes> dataTaxesCopy = new ArrayList<>();
+        for (DataTaxes dataTax : listOrderTaxes) {
+            DataTaxes tax = new DataTaxes();
+            tax.setOrd_id(dataTax.getOrd_id());
+            tax.setTax_name(dataTax.getTax_name());
+            tax.setTax_amount(dataTax.getTax_amount());
+            tax.setTax_rate(dataTax.getTax_rate());
+            dataTaxesCopy.add(tax);
+        }
+        return dataTaxesCopy;
+    }
+
     public void setListOrderTaxes(List<DataTaxes> listOrderTaxes) {
         this.listOrderTaxes = listOrderTaxes;
     }

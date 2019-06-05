@@ -3,6 +3,7 @@ package com.android.database;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.DataTaxes;
+import com.crashlytics.android.Crashlytics;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -51,31 +52,31 @@ public class OrderTaxes_DB {
     }
 
     public void insert(List<DataTaxes> dataTaxes, String _ord_id) {
-        DBManager.getDatabase().beginTransaction();
-        SQLiteStatement insert = null;
-        try {
-            delete(_ord_id);
-            insert = DBManager.getDatabase().compileStatement("INSERT OR REPLACE INTO " + TABLE_NAME + " (" + mainSB1.toString() + ") " + "VALUES (" + mainSB2.toString() + ")");
-            int size = dataTaxes.size();
-            for (int j = 0; j < size; j++) {
-                insert.bindString(index(ord_tax_id), dataTaxes.get(j).getOrd_tax_id());
-                insert.bindString(index(ord_id), _ord_id);
-                insert.bindString(index(tax_name), dataTaxes.get(j).getTax_name());
-                insert.bindString(index(tax_amount), dataTaxes.get(j).getTax_amount());
-                insert.bindString(index(tax_rate), dataTaxes.get(j).getTax_rate());
-                insert.execute();
-                insert.clearBindings();
-            }
-            insert.close();
-            DBManager.getDatabase().setTransactionSuccessful();
-        } catch (Exception e) {
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
-        } finally {
-            if (insert != null) {
+        if (dataTaxes != null && dataTaxes.size() > 0) {
+            DBManager.getDatabase().beginTransaction();
+            SQLiteStatement insert = null;
+            try {
+                delete(_ord_id);
+                insert = DBManager.getDatabase().compileStatement("INSERT OR REPLACE INTO " + TABLE_NAME + " (" + mainSB1.toString() + ") " + "VALUES (" + mainSB2.toString() + ")");
+                for (DataTaxes dataTax : dataTaxes) {
+                    insert.bindString(index(ord_tax_id), dataTax.getOrd_tax_id());
+                    insert.bindString(index(ord_id), _ord_id);
+                    insert.bindString(index(tax_name), dataTax.getTax_name());
+                    insert.bindString(index(tax_amount), dataTax.getTax_amount());
+                    insert.bindString(index(tax_rate), dataTax.getTax_rate());
+                    insert.execute();
+                    insert.clearBindings();
+                }
                 insert.close();
+                DBManager.getDatabase().setTransactionSuccessful();
+            } catch (Exception e) {
+                Crashlytics.logException(e);
+            } finally {
+                if (insert != null) {
+                    insert.close();
+                }
+                DBManager.getDatabase().endTransaction();
             }
-            DBManager.getDatabase().endTransaction();
         }
     }
 

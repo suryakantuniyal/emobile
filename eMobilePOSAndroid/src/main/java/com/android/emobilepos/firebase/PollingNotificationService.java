@@ -66,7 +66,7 @@ public class PollingNotificationService extends Service {
     MyPreferences preferences;
     private Timer timer;
     private Date lastPolled;
-    private String accountNumber;
+    private String accountNumber, empId;
 
     public static boolean isServiceRunning(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -104,6 +104,7 @@ public class PollingNotificationService extends Service {
         super.onCreate();
         preferences = new MyPreferences(this);
         accountNumber = preferences.getAcctNumber();
+        empId = preferences.getEmpIdFromPreferences();
         lastPolled = new Date(0);
     }
 
@@ -219,12 +220,13 @@ public class PollingNotificationService extends Service {
                     pattern = "%spollnotification?RegID=%s&fromdate=%s";
                 } else {
                     baseUrl = context.getString(R.string.sync_enablermobile_deviceasxmltrans);
-                    pattern = "%spollnotification.ashx?RegID=%s&fromdate=%s";
+                    pattern = "%spollnotification.ashx?RegID=%s&fromdate=%s&MSemployeeID=%s";
                 }
                 String sb = String.format(pattern,
                         baseUrl,
                         URLEncoder.encode(accountNumber, "utf-8"),
-                        URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"));
+                        URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"),
+                        URLEncoder.encode(empId, "utf-8"));
 
                 InputStream inputStream = oauthclient.HttpClient.get(sb, null, true);
                 JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));

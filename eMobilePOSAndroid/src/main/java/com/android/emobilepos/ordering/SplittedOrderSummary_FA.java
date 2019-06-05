@@ -39,6 +39,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.TaxesCalculator;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 
@@ -142,6 +143,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Global.isCheckoutInProgress = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splitted_order_summary);
         Bundle extras = this.getIntent().getExtras();
@@ -459,6 +461,12 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     }
 
     @Override
+    protected void onDestroy() {
+        Global.isCheckoutInProgress = false;
+        super.onDestroy();
+    }
+
+    @Override
     public void onResume() {
 
         if (global.isApplicationSentToBackground())
@@ -589,9 +597,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         global.encodedImage = "";
         orderProductsHandler.insert(orderProducts);
         productsAttrDb.insert(global.ordProdAttr);
-        if (order.getListOrderTaxes() != null && order.getListOrderTaxes().size() > 0) {
-            ordTaxesDB.insert(order.getListOrderTaxes(), order.ord_id);
-        }
+        ordTaxesDB.insert(order.getListOrderTaxes(), order.ord_id);
         new VoidTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, order.ord_id);
     }
 
@@ -689,11 +695,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         .multiply(getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
                 itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
                 if (getTax() != null) {
-//                    TaxesCalculator taxesCalculator = new TaxesCalculator(this, product, splitedOrder.tax_id,
-//                            getTax(), getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
-//                            Global.getBigDecimalNum(splitedOrder.ord_discount), transType);
                     orderTaxes = orderTaxes.add(product.getProd_taxValue());
-                    splitedOrder.setListOrderTaxes(splitedOrder.getListOrderTaxes());
                 }
             }
             orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
@@ -705,6 +707,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             splitedOrder.ord_taxamount = orderTaxes.toString();
             splitedOrder.ord_discount = globalDiscountTotal.toString();
             splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
+            TaxesCalculator.calculateOrderTaxesAmount(splitedOrder);
         }
     }
 }

@@ -798,12 +798,27 @@ public class OrdersHandler {
         try {
             Order anOrder = new Order(activity);
             OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
-            String sb = ("SELECT o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name," +
-                    "c.AccountNumnber,o.cust_id, o.orderAttributes,"
-                    + "o.ord_total AS 'gran_total', tipAmount, ord_signature,o.ord_HoldName,o.clerk_id,o.ord_comment,o.isVoid " +
-                    "FROM Orders o LEFT OUTER JOIN Customers c ON "
-                    + "o.cust_id = c.cust_id WHERE o.ord_id = '") +
-                    ordID + "'";
+            String sb = ("SELECT " +
+                    "o.ord_id, " +
+                    "o.ord_timecreated, " +
+                    "o.ord_total, " +
+                    "o.ord_subtotal, " +
+                    "o.ord_discount, " +
+                    "o.ord_taxamount, " +
+                    "c.cust_name, " +
+                    "c.AccountNumnber, " +
+                    "o.cust_id, " +
+                    "o.orderAttributes, " +
+                    "o.ord_total AS 'gran_total', " +
+                    "tipAmount, " +
+                    "ord_signature, " +
+                    "o.ord_HoldName, " +
+                    "o.clerk_id, " +
+                    "o.ord_comment, " +
+                    "o.isVoid, " +
+                    "o.ord_timeStarted " +
+                    "FROM Orders o LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id " +
+                    "WHERE o.ord_id = '") + ordID + "'";
 
             cursor = DBManager.getDatabase().rawQuery(sb, null);
             if (cursor.moveToFirst()) {
@@ -823,6 +838,7 @@ public class OrdersHandler {
                     anOrder.ord_comment = getValue(cursor.getString(cursor.getColumnIndex(ord_comment)));
                     anOrder.cust_id = getValue(cursor.getString(cursor.getColumnIndex(cust_id)));
                     anOrder.isVoid = getValue(cursor.getString(cursor.getColumnIndex(isVoid)));
+                    anOrder.ord_timeStarted = getValue(cursor.getString(cursor.getColumnIndex(ord_timeStarted)));
                     List<OrderProduct> orderProducts = productsHandler.getOrderProducts(ordID);
                     anOrder.setOrderProducts(orderProducts);
                     String json = getValue(cursor.getString(cursor.getColumnIndex(orderAttributes)));
