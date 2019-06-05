@@ -734,14 +734,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (w < 0) {
             Log.e("WEIGHT_SCALE", "***PLEASE TARE SCALE***");
         } else {
-            double newPrice = Double.parseDouble(basePrice) * w;
-            String newWeightedPrice = String.valueOf(newPrice);
-            String value = NumberUtils.cleanCurrencyFormatedNumber(newWeightedPrice);
-            if (!value.isEmpty()) {
-                getOrderingMainFa().global.order.getOrderProducts().get(orderProductIndexPos).setOverwritePrice(Global.getBigDecimalNum(value), getActivity());
-                receiptListView.invalidateViews();
-                reCalculate();
-            }
+            getOrderingMainFa().global.order.getOrderProducts().get(orderProductIndexPos).setOrdprod_qty(String.valueOf(w));
+            receiptListView.invalidateViews();
+            reCalculate();
         }
 
     }
