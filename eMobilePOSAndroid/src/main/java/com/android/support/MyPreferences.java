@@ -214,7 +214,8 @@ public class MyPreferences {
     public static boolean isTeamSable() {
         return Build.MODEL.toUpperCase().startsWith("SABRESD") ||
                 Build.MODEL.toUpperCase().equalsIgnoreCase("TR") ||
-                Build.MODEL.toUpperCase().equalsIgnoreCase("15N-A-RM");
+                Build.MODEL.toUpperCase().equalsIgnoreCase("15N-A-RM") ||
+                Build.MODEL.toUpperCase().equalsIgnoreCase("15N-RM");
     }
 
     public static boolean isPaxA920() {
