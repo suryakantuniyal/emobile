@@ -647,7 +647,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 break;
                             case R.id.weightProduct:
                                 Product mproduct = prodHandler.getProductDetails(orderSeatProduct.orderProduct.getProd_id());
-                                startWeightScale(orderProductIdx, mproduct.getFinalPrice());
+                                startWeightScale(orderProductIdx);
                                 break;
                             case R.id.removeProduct:
                                 if (hasRemoveItemPermission) {
@@ -729,7 +729,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         return false;
     }
 
-    private void startWeightScale(int orderProductIndexPos, String basePrice) {
+    private void startWeightScale(int orderProductIndexPos) {
         double w = Global.mainWeightScaleManager.getWeightFromScale();
         if (w < 0) {
             Toast.makeText(getActivity(), R.string.product_receipt_options_weight, Toast.LENGTH_SHORT).show();
