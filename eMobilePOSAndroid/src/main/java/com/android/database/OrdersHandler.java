@@ -803,6 +803,7 @@ public class OrdersHandler {
                     "o.ord_timecreated, " +
                     "o.ord_total, " +
                     "o.ord_subtotal, " +
+                    "o.ord_discount_id, " +
                     "o.ord_discount, " +
                     "o.ord_taxamount, " +
                     "c.cust_name, " +
@@ -827,6 +828,7 @@ public class OrdersHandler {
                     anOrder.ord_timecreated = cursor.getString(cursor.getColumnIndex(ord_timecreated));
                     anOrder.ord_total = getValue(cursor.getString(cursor.getColumnIndex(ord_total)));
                     anOrder.ord_subtotal = getValue(cursor.getString(cursor.getColumnIndex(ord_subtotal)));
+                    anOrder.ord_discount_id = getValue(cursor.getString(cursor.getColumnIndex(ord_discount_id)));
                     anOrder.ord_discount = getValue(cursor.getString(cursor.getColumnIndex(ord_discount)));
                     anOrder.ord_taxamount = getValue(cursor.getString(cursor.getColumnIndex(ord_taxamount)));
                     anOrder.cust_name = getValue(cursor.getString(cursor.getColumnIndex("cust_name")));
