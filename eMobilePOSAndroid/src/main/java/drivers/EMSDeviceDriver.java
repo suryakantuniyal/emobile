@@ -270,7 +270,14 @@ public class EMSDeviceDriver {
                 Global.getCurrencyFormat(Global.getBigDecimalNum(anOrder.ord_subtotal).add(itemDiscTotal).toString()), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_discount_line_item),
                 Global.getCurrencyFormat(String.valueOf(itemDiscTotal)), lineWidth, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_global_discount),
+
+        String discountName = "";
+        if (anOrder.ord_discount_id != null && !anOrder.ord_discount_id.isEmpty()) {
+            ProductsHandler productDBHandler = new ProductsHandler(activity);
+            discountName = productDBHandler.getDiscountName(anOrder.ord_discount_id);
+        }
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                context.getString(R.string.receipt_global_discount) + " " + discountName,
                 Global.getCurrencyFormat(anOrder.ord_discount), lineWidth, 0));
 
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_tax),
@@ -1294,7 +1301,9 @@ public class EMSDeviceDriver {
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
                                     Global.getCurrencyFormat(String.valueOf(orderProducts.get(i).getItemTotalCalculated())), lineWidth, 3));
                             if (orderProducts.get(i).getDiscount_id() != null && !TextUtils.isEmpty(orderProducts.get(i).getDiscount_id())) {
-                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
+                                ProductsHandler productDBHandler = new ProductsHandler(activity);
+                                String discountName = productDBHandler.getDiscountName(orderProducts.get(i).getDiscount_id());
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount) + " " + discountName,
                                         Global.getCurrencyFormat(orderProducts.get(i).getDiscount_value()), lineWidth, 3));
                             }
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
@@ -1316,7 +1325,9 @@ public class EMSDeviceDriver {
                                 Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()), lineWidth, 3));
 
                         if (orderProducts.get(i).getDiscount_id() != null && !TextUtils.isEmpty(orderProducts.get(i).getDiscount_id())) {
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
+                            ProductsHandler productDBHandler = new ProductsHandler(activity);
+                            String discountName = productDBHandler.getDiscountName(orderProducts.get(i).getDiscount_id());
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount) + " " + discountName,
                                     Global.getCurrencyFormat(orderProducts.get(i).getDiscount_value()), lineWidth, 3));
                         }
 

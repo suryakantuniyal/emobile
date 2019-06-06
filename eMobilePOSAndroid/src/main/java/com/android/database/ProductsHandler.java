@@ -896,6 +896,25 @@ public class ProductsHandler {
         }
     }
 
+    public String getDiscountName(String discountId) {
+        String discountName = "";
+        Cursor c = null;
+        try {
+            if (discountId != null && !discountId.isEmpty()) {
+                c = DBManager.getDatabase().rawQuery("SELECT prod_name FROM Products WHERE prod_id = ?", new String[]{discountId});
+                if (c.moveToFirst()) {
+                    discountName = c.getString(c.getColumnIndex(prod_name));
+                }
+                c.close();
+            }
+            return discountName;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+    }
+
     public Cursor searchProducts(String search, String type) // Transactions
     // Receipts
     // first
