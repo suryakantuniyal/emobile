@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,7 +26,6 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout.LayoutParams;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -66,6 +64,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import drivers.weightScales.weight.utils.weightScaleHelper;
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
@@ -1243,7 +1242,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                         holder.add = convertView.findViewById(R.id.addItemQty);
                         holder.delete = convertView.findViewById(R.id.deleteItemQty);
 
-                        if(checkWeightAvailability()){
+                        if(weightScaleHelper.checkWeightAvailability(myPref)){
                             holder.weight.setVisibility(View.VISIBLE);
                             holder.weight.setEnabled(true);
                         }else{holder.weight.setVisibility(View.GONE);}
@@ -1437,18 +1436,5 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             Button delete;
             Button weight;
         }
-    }
-    private boolean checkWeightAvailability() {
-        if (myPref.getSelectedBTweight() > -1) {
-            try {
-                if (Global.mainWeightScaleManager.isWeightScaleConnected()) {
-                    return true;
-                }else{return false;}
-            }catch(Exception e){
-                Log.e("Receipt_FR","Weight Scale Availability Error::"+e.toString());
-                return false;
-            }
-        }
-        return false;
     }
 }

@@ -59,7 +59,6 @@ import com.android.database.TransferLocations_DB;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.OrderDetailsActivity;
 import com.android.emobilepos.R;
-import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
@@ -105,9 +104,7 @@ import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
 import drivers.star.utils.PrinterFunctions;
-import drivers.weightScales.StarScaleS8200;
-import drivers.weightScales.WSDeviceDriver;
-import drivers.weightScales.WSDeviceManager;
+import drivers.weightScales.weight.utils.weightScaleHelper;
 import interfaces.PayWithLoyalty;
 import main.EMSDeviceManager;
 import util.StringUtil;
@@ -708,25 +705,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 popup.getMenu().findItem(R.id.overridePrice).setEnabled(hasOverwritePermission);
                 popup.getMenu().findItem(R.id.removeProduct).setEnabled(hasRemoveItemPermission);
                 popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Double.parseDouble(orderSeatProduct.orderProduct.getProd_price_points()) > 0);
-                popup.getMenu().findItem(R.id.weightProduct).setEnabled(checkWeightAvailability());
+                popup.getMenu().findItem(R.id.weightProduct).setEnabled(weightScaleHelper.checkWeightAvailability(myPref));
                 popup.show();
             }
         }
         receiptListView.smoothScrollToPosition(position);
-    }
-
-    private boolean checkWeightAvailability() {
-        if (myPref.getSelectedBTweight() > -1) {
-            try {
-                if (Global.mainWeightScaleManager.isWeightScaleConnected()) {
-                    return true;
-                }else{return false;}
-            }catch(Exception e){
-                Log.e("Receipt_FR","Weight Scale Availability Error::"+e.toString());
-                return false;
-            }
-        }
-        return false;
     }
 
     private void startWeightScale(int orderProductIndexPos) {
