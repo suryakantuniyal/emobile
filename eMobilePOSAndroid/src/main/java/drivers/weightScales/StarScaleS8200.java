@@ -3,6 +3,7 @@ package drivers.weightScales;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.starmicronics.starmgsio.ConnectionInfo;
@@ -92,31 +93,37 @@ public class StarScaleS8200 extends WSDeviceDriver implements EMSDeviceManagerWe
                 case Scale.CONNECT_SUCCESS:
                     connection = true;
                     Toast.makeText(context, "Connect success.", Toast.LENGTH_SHORT).show();
+                    Log.e("StarScale-DRIVER","Connect Success");
                     break;
 
                 case Scale.CONNECT_NOT_AVAILABLE:
                     connection = false;
-                    Toast.makeText(context, "Failed to connect. (Not available)", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, "Failed to connect. (Not available)", Toast.LENGTH_SHORT).show();
+                    Log.e("StarScale-DRIVER","Failed to connect. (Not available)");
                     break;
 
                 case Scale.CONNECT_ALREADY_CONNECTED:
                     connection = true;
-                    Toast.makeText(context, "Failed to connect. (Already connected)", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, "Failed to connect. (Already connected)", Toast.LENGTH_SHORT).show();
+                    Log.e("StarScale-DRIVER","Failed to connect. (Already connected)");
                     break;
 
                 case Scale.CONNECT_TIMEOUT:
                     connection = false;
                     Toast.makeText(context, "Failed to connect. (Timeout)", Toast.LENGTH_SHORT).show();
+                    Log.e("StarScale-DRIVER","Failed to connect. (Timeout)");
                     break;
 
                 case Scale.CONNECT_NOT_SUPPORTED:
                     connection = false;
-                    Toast.makeText(context, "Failed to connect. (Not supported device)", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, "Failed to connect. (Not supported device)", Toast.LENGTH_SHORT).show();
+                    Log.e("StarScale-DRIVER","Failed to connect. (Not supported device)");
                     break;
 
                 case Scale.CONNECT_UNEXPECTED_ERROR:
                     connection = false;
-                    Toast.makeText(context, "Failed to connect. (Unexpected error)", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, "Failed to connect. (Unexpected error)", Toast.LENGTH_SHORT).show();
+                    Log.e("StarScale-DRIVER","Failed to connect. (Unexpected error)");
                     break;
             }
 
