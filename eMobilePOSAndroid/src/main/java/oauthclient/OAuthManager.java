@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.annotations.RealmModule;
 
 /**
  * Created by guarionex on 8/10/16.
@@ -25,9 +23,8 @@ public class OAuthManager {
     private OAuthManager(Context context, String clientId, String clientSecret) {
         byte[] key = new byte[64];
         new SecureRandom().nextBytes(key);
-        requestTokenUrl = context.getString(R.string.oauth_token_url);//"https://emslogin.enablermobile.com/oauth/token";
-//        Realm.init(context);
-        Realm realm = Realm.getInstance(getRealmConfiguration());
+        requestTokenUrl = context.getString(R.string.oauth_token_url);
+        Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
             OAuthClient authClient = realm.createObject(OAuthClient.class);
@@ -48,16 +45,6 @@ public class OAuthManager {
         }
     }
 
-    private static RealmConfiguration getRealmConfiguration() {
-        RealmConfiguration realmConfig = new RealmConfiguration.Builder()
-                .name("oauthclient")
-                .deleteRealmIfMigrationNeeded()
-                .modules(Realm.getDefaultModule(), new OAuthRealmModule())
-//                .encryptionKey(key)
-                .build();
-        return realmConfig;
-    }
-
     public static boolean isExpired(Context context) {
         OAuthClient authClient = getOAuthClient(context);
         if (authClient == null || authClient.getExpirationDate() == null) {
@@ -76,14 +63,7 @@ public class OAuthManager {
     }
 
     public static OAuthClient getOAuthClient(Context context) {
-        Realm.init(context);
-//        RealmConfiguration realmConfig = new RealmConfiguration.Builder()
-//                .name("oauthclient")
-//                .deleteRealmIfMigrationNeeded()
-//                .modules(Realm.getDefaultModule(), new OAuthRealmModule())
-////                .encryptionKey(key)
-//                .build();
-        Realm realm = Realm.getInstance(getRealmConfiguration());
+        Realm realm = Realm.getDefaultInstance();
         OAuthClient authClient = realm.where(OAuthClient.class).findFirst();
         if (authClient != null)
             authClient = realm.copyFromRealm(authClient);
@@ -94,7 +74,7 @@ public class OAuthManager {
 
     public String requestToken() throws Exception {
         final String[] requestToken = new String[1];
-        Realm realm = Realm.getInstance(getRealmConfiguration());
+        Realm realm = Realm.getDefaultInstance();
         OAuthClient authClient = realm.where(OAuthClient.class).findFirst();
         String urlOAuthParams = "grant_type=client_credentials&client_id=%s&client_secret=%s";
         final String oauthUrl = String.format(urlOAuthParams, authClient.getClient_id(), authClient.getClient_secret());
@@ -128,11 +108,5 @@ public class OAuthManager {
         realm.close();
         return requestToken[0];
     }
-
-}
-
-
-@RealmModule(classes = OAuthClient.class)
-class OAuthRealmModule {
 
 }
