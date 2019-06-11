@@ -110,6 +110,10 @@ public class Order implements Cloneable, Serializable {
         custidkey = myPref.getCustIDKey();
     }
 
+    public void resetTimeCreated() {
+        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();

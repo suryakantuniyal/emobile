@@ -942,7 +942,7 @@ public class OrdersHandler {
             query.append("sum(ord_total) as 'ord_total', ");
             query.append("datetime(ord_timecreated) AS 'date' ");
             query.append("FROM Orders ");
-            query.append("WHERE isVoid = '0' ");
+            query.append("WHERE isVoid = '0' AND processed != '10' ");
 
             ArrayList<String> where_values = new ArrayList<>();
             if (clerk_id != null && !clerk_id.isEmpty()) {
@@ -961,7 +961,7 @@ public class OrdersHandler {
             }
             if (endDate != null && !endDate.isEmpty()) {
                 query.append(" AND date <= datetime(?, 'utc') ");
-                where_values.add(endDate);
+                where_values.add(endDate + ":59");
             }
 
             query.append(" GROUP BY ord_type");
@@ -1030,7 +1030,7 @@ public class OrdersHandler {
             }
             if (endDate != null && !endDate.isEmpty()) {
                 query.append(" AND date <= datetime(?, 'utc') ");
-                where_values.add(endDate);
+                where_values.add(endDate + ":59");
             }
 
             query.append(
