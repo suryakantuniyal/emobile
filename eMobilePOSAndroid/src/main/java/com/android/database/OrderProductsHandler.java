@@ -673,7 +673,7 @@ public class OrderProductsHandler {
             query.append(
                     "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
                             "LEFT JOIN Orders o ON op.ord_id = o.ord_id " +
-                            "WHERE o.isVoid = '0' AND o.ord_type IN ");
+                            "WHERE o.isVoid = '0' AND processed != '10' AND o.ord_type IN ");
 
             if (isSales)
                 query.append("('2','5') ");
@@ -696,7 +696,7 @@ public class OrderProductsHandler {
             }
             if (endDate != null && !endDate.isEmpty()) {
                 query.append(" AND date <= datetime(?, 'utc') ");
-                where_values.add(endDate);
+                where_values.add(endDate + ":59");
             }
 
             query.append(" GROUP BY op.cat_id ORDER BY op.cat_name");
@@ -752,7 +752,7 @@ public class OrderProductsHandler {
             query.append(
                     "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
                             "LEFT JOIN Orders o ON op.ord_id = o.ord_id " +
-                            "WHERE o.isVoid = '0' AND o.ord_type IN ");
+                            "WHERE o.isVoid = '0' AND processed != '10' AND o.ord_type IN ");
 
             if (isSales)
                 query.append("('2','5') ");
@@ -775,7 +775,7 @@ public class OrderProductsHandler {
             }
             if (endDate != null && !endDate.isEmpty()) {
                 query.append(" AND date <= datetime(?, 'utc') ");
-                where_values.add(endDate);
+                where_values.add(endDate + ":59");
             }
 
             query.append(" GROUP BY o.clerk_id");

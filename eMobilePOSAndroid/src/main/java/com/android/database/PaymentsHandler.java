@@ -1285,7 +1285,7 @@ public class PaymentsHandler {
             }
             if (endDate != null && !endDate.isEmpty()) {
                 query.append(" AND date <= datetime(?, 'utc') ");
-                where_values.add(endDate);
+                where_values.add(endDate + ":59");
             }
 
             query.append(" GROUP BY p.paymethod_id");
