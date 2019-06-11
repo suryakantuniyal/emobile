@@ -355,6 +355,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
 
         if (splitedOrder.getOrderProducts().size() > 0) {
+            splitedOrder.resetTimeCreated(); // reset time created for an accurate Z-Report (Shifts)
             if (splitedOrder.ord_id != null) {
                 ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
             }
