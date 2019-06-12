@@ -54,6 +54,7 @@
     <dimen name="catalog_image_size">130dp</dimen>
     <dimen name="catalog_listview_img_size">90dp</dimen>
 
+    <dimen name="header_bar_height">42dp</dimen>
     <dimen name="header_bar_button_height">35sp</dimen>
     <dimen name="add_orders_button_height">30dp</dimen>
     <dimen name="add_orders_field_text_size">20sp</dimen>
@@ -71,6 +72,9 @@
     <dimen name="add_orders_loyalty_field_txt_size">18sp</dimen>
     <dimen name="add_orders_slider_semiclosed_size">35dp</dimen>
     <dimen name="add_orders_slider_offset_size">160dp</dimen>
+
+    <dimen name="add_orders_catalog_land_search_bar">50dp</dimen>
+    <dimen name="add_orders_set_customer_layout_height">40dp</dimen>
 
     <dimen name="catalog_portrait_image_size">90dp</dimen>
     <dimen name="report_main_listview_txt_size">14dp</dimen>
