@@ -51,6 +51,12 @@
         android:singleLine="true" >
     </com.android.support.MyEditText>
 
+    <ProgressBar
+        android:id="@+id/dataProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <ListView
         android:id="@+id/customerSelectionLV"
         android:layout_width="fill_parent"
