@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -117,6 +118,13 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         if (extras.containsKey("isReopen")) {
             finish();
         }
+
+        isRefund = extras.getBoolean("salesrefund", false);
+
+        if (isRefund) {
+            CheckBox refundCheckBox = findViewById(R.id.refundCheckBox);
+            refundCheckBox.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -130,10 +138,6 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
     private void processPayment() {
         String paymethod_id = extras.getString("paymethod_id");
-
-        if (extras.getBoolean("salesrefund"))
-            isRefund = true;
-
         payment = new Payment(this);
 
         if (Global.isIvuLoto) {
@@ -195,7 +199,13 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         } else {
             payrequest.TenderType = 2; // debit
         }
-        payrequest.TransType = 2;
+
+        if (!isRefund) {
+            payrequest.TransType = 2; // sale
+        } else {
+            payrequest.TransType = 3; // return
+        }
+
         payrequest.Amount = String.valueOf(
                 MoneyUtils.convertDollarsToCents(
                         NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));

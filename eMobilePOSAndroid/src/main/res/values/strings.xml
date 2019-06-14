@@ -1407,6 +1407,7 @@
     <string name="sp_tender_type">Tender Type:</string>
     <string name="sp_tender_credit">Credit</string>
     <string name="sp_tender_debit">Debit</string>
+    <string name="sp_tender_refund">Refund</string>
     <string name="fingerprint_enrollment">Place any finger to start enrollment.</string>
     <string name="fingerprint_enrollment_title">Fingerprint Enrollment</string>
     <string name="rescan_fingerprint">Remove the finger place the same finger on the reader</string>
