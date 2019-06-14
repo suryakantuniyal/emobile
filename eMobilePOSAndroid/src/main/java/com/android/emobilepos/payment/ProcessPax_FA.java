@@ -239,7 +239,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payment.setPay_amount(Global.amountPaid);
             payment.setTipAmount("0.00");
             payment.setPay_tip("0.00");
-            payment.setPay_transid("");
+            payment.setPay_transid(response.RefNum);
             payment.setAuthcode(response.AuthCode);
             payment.setCcnum_last4(response.BogusAccountNum);
             payment.setPay_resultcode(response.ResultCode);
