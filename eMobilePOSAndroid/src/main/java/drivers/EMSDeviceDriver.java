@@ -2496,6 +2496,7 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
                             "*" + payArray.getCcnum_last4(), lineWidth, 0));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0)).append("\n");
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Auth Code:", payArray.getAuthcode(), lineWidth, 0)).append("\n");
                 } else if (isCheckPayment) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
                             payArray.getPay_check(), lineWidth, 0));
