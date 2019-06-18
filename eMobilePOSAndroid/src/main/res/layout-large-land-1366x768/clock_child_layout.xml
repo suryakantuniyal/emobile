@@ -19,10 +19,11 @@
             android:layout_height="match_parent"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:tint="@color/common_google_signin_btn_text_dark"
-            android:src="@drawable/ic_arrow_back_black_48dp"
             android:scaleX=".7"
-            android:scaleY=".7"/>
+            android:scaleY=".7"
+            android:src="@drawable/ic_arrow_back_black_48dp"
+            android:tint="@color/common_google_signin_btn_text_dark"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/HeaderTitle"

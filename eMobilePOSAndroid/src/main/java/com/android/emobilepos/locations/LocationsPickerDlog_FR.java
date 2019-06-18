@@ -122,7 +122,7 @@ public class LocationsPickerDlog_FR extends DialogFragment implements Comparator
 
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getDialog().getWindow().setBackgroundDrawableResource(R.drawable.bg_dlog);
-        getDialog().setCanceledOnTouchOutside(false);
+        getDialog().setCanceledOnTouchOutside(true);
         // Set dialog title if show as dialog
         Bundle args = getArguments();
         if (args != null) {

@@ -1122,6 +1122,9 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         } else if (model.toUpperCase().contains("PAYPOINT") || model.toUpperCase().contains("ELO")) {
             myPref.setIsESY13P1(true);
             return true;
+        }else if (model.toUpperCase().contains("WPOS-TAB")) {
+            myPref.setIsAPT120(true);
+            return true;
         } else {
             return (getActivity().getResources().getConfiguration().screenLayout
                     & Configuration.SCREENLAYOUT_SIZE_MASK)

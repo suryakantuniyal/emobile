@@ -83,7 +83,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         global = (Global) getApplication();
 
         //If POS device is a TeamSable APT-150, Display back button.
-        if(Build.MODEL.contains("WPOS-TAB") && myPref.getPreferences(MyPreferences.pref_use_navigationbar)){
+        if(myPref.isAPT120() && myPref.getPreferences(MyPreferences.pref_use_navigationbar)){
             ImageView goBackButton = findViewById(R.id.backbtn);
             goBackButton.setVisibility(View.VISIBLE);
             goBackButton.setOnClickListener(this);
