@@ -52,10 +52,14 @@ import util.MoneyUtils;
 import util.XmlUtils;
 
 import static drivers.pax.utils.Constant.CARD_EXPIRED;
+import static drivers.pax.utils.Constant.REQUEST_TENDER_TYPE_CREDIT;
+import static drivers.pax.utils.Constant.REQUEST_TENDER_TYPE_DEBIT;
 import static drivers.pax.utils.Constant.TRANSACTION_CANCELED;
 import static drivers.pax.utils.Constant.TRANSACTION_DECLINED;
 import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
 import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
+import static drivers.pax.utils.Constant.TRANSACTION_TYPE_RETURN;
+import static drivers.pax.utils.Constant.TRANSACTION_TYPE_SALE;
 
 /**
  * Created by Luis Camayd on 10/11/2018.
@@ -195,15 +199,15 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         poslink = POSLinkCreator.createPoslink(getApplicationContext());
         PaymentRequest payrequest = new PaymentRequest();
         if (creditRadioButton.isChecked()) {
-            payrequest.TenderType = 1; // credit
+            payrequest.TenderType = REQUEST_TENDER_TYPE_CREDIT;
         } else {
-            payrequest.TenderType = 2; // debit
+            payrequest.TenderType = REQUEST_TENDER_TYPE_DEBIT;
         }
 
         if (!isRefund) {
-            payrequest.TransType = 2; // sale
+            payrequest.TransType = TRANSACTION_TYPE_SALE;
         } else {
-            payrequest.TransType = 3; // return
+            payrequest.TransType = TRANSACTION_TYPE_RETURN;
         }
 
         payrequest.Amount = String.valueOf(
@@ -212,6 +216,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         payrequest.ECRRefNum = DateUtils.getEpochTime();
         poslink.PaymentRequest = payrequest;
         poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+        payment.setPay_stamp(String.valueOf(payrequest.TenderType));
 
         // as processTrans is blocked, we must run it in an async task
         new Thread(new Runnable() {
@@ -324,7 +329,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
                     showErrorDlog("Transaction Canceled!");
                     break;
                 case CARD_EXPIRED:
-                    showErrorDlog("Card is expired!");
+                    showErrorDlog("Card is invalid or expired!");
                     break;
             }
         } else if (ptr.Code == ProcessTransResultCode.TimeOut) {

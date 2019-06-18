@@ -594,7 +594,7 @@ public class PaymentsHandler {
             if (isDeclined)
                 tableName = table_name_declined;
             String sql = "SELECT pay_date,pay_comment, amount_tender, job_id, inv_id,group_pay_id,pay_signature,ccnum_last4," +
-                    " amount_tender, pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id FROM " + tableName +
+                    " amount_tender, pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id,pay_stamp FROM " + tableName +
                     " WHERE pay_id = ?";
 
             PaymentDetails paymentDetails = new PaymentDetails();
@@ -619,6 +619,7 @@ public class PaymentsHandler {
                     paymentDetails.setAmountTender(cursor.getDouble(cursor.getColumnIndex(amount_tender)));
                     paymentDetails.setPay_transid(cursor.getString(cursor.getColumnIndex(pay_transid)));
                     paymentDetails.setClerk_id(cursor.getString(cursor.getColumnIndex(clerk_id)));
+                    paymentDetails.setPay_stamp(cursor.getString(cursor.getColumnIndex(pay_stamp)));
                 } while (cursor.moveToNext());
             }
             cursor.close();
