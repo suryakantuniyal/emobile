@@ -52,7 +52,6 @@ import com.android.support.CreditCardInfo;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -68,7 +67,6 @@ import org.xml.sax.XMLReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -155,9 +153,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         order_id = extras.getString("ord_id");
         order = ordersHandler.getOrder(order_id);
-//        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        orderedProd = order.getOrderProducts();//orderProductsHandler.getOrderProducts(order_id);
-//        CustomersHandler customersHandler = new CustomersHandler(activity);
+        orderedProd = order.getOrderProducts();
         PaymentsHandler paymentHandler = new PaymentsHandler(activity);
         paymentMapList = paymentHandler.getPaymentDetailsForTransactions(order_id);
         String encodedImg = order.ord_signature;
@@ -171,7 +167,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
             layered.setLayerInset(1, 100, 30, 50, 60);
             receipt.setImageDrawable(layered);
         }
-        custNameView.setText(order.customer.getCust_name());//(customersHandler.getSpecificValue("cust_name", order.cust_id));
+        custNameView.setText(order.customer.getCust_name());
         date.setText(getCaseData(CASE_TOTAL, 0) + " on " + order.ord_timecreated);
         myListView.addHeaderView(headerView);
         View footerView = getLayoutInflater().inflate(R.layout.orddetails_lvfooter_adapter, (ViewGroup) findViewById(R.id.order_footer_root));
@@ -186,15 +182,14 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                     mapImg.setImageResource(R.drawable.map_no_image);
                 else
                     mapImg.setImageDrawable(mapDrawable);
-                //call setText here
             }
         };
         new Thread(new Runnable() {
             public void run() {
                 Message msg = new Message();
                 StringBuilder sb = new StringBuilder();
-                String latitude = order.ord_latitude;//orderHashMap.get("ord_latitude");
-                String longitude = order.ord_longitude;//orderHashMap.get("ord_longitude");
+                String latitude = order.ord_latitude;
+                String longitude = order.ord_longitude;
                 if (!latitude.isEmpty() && !longitude.isEmpty()) {
                     sb.append("https://maps.googleapis.com/maps/api/staticmap?center=");
                     sb.append(latitude).append(",").append(longitude);
@@ -245,18 +240,12 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
         }
-//        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn = powerManager.isScreenOn();
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
-//        DeviceUtils.unregisterFingerPrintReader(this);
         global.startActivityTransitionTimer();
     }
 
@@ -299,8 +288,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
         if (read) {
             if (paymentsToVoid.size() > 0) {
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
-                BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
                 Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid(), cardManager);
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
@@ -587,7 +574,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
     }
 
     private void voidTransaction() {
-        double amountToBeSubstracted;
         OrdersHandler handler = new OrdersHandler(activity);
         handler.updateIsVoid(order_id);
         handler.updateIsProcessed(order_id, "9");
@@ -598,11 +584,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         ord.ord_id = order_id;
         ord.ord_type = order.ord_type;
         voidHandler.insert(ord);
-        //Section to update the local ShiftPeriods database to reflect the VOID
-//        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
-//        amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
-        //update ShiftPeriods (isReturn set to true)
-//        ShiftDAO.updateShiftAmounts(amountToBeSubstracted, true);
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
@@ -615,7 +596,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
             if (myPref.getSwiperType() == Global.HANDPOINT) {
                 paymentsToVoid = new ArrayList<>();
                 paymentsToVoid.addAll(listVoidPayments);
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid(), null);
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
@@ -867,7 +847,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                                 voidDrawable = context.getResources().getDrawable(R.drawable.void_payment);
                             }
                             if (iconName == null)
-                                iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
+                                iconId = R.drawable.debitcard;
                             else
                                 iconId = context.getResources().getIdentifier(iconName, "drawable", context.getPackageName());
 
