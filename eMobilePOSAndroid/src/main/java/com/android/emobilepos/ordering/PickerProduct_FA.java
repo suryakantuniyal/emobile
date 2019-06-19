@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -40,6 +42,7 @@ import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
+import com.android.emobilepos.adapters.InventoryLocationsListAdapter;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.orders.OrderProduct;
@@ -64,6 +67,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import util.InventoryItem;
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
@@ -108,11 +112,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private String[] attributesKey;
     private LinkedHashMap<String, String> attributesSelected;
     private TextView headerProductID, headerOnHand;
+    private Button inventoryLocations;
     private ImageView headerImage;
     private String ordProdAttr = "";
     private boolean isFromAddon = false;
     private boolean isToGo;
     private Global.TransactionType mTransType;
+    private List<InventoryItem> inventoryList;
+    private RecyclerView.Adapter adapter;
 
 
     @Override
@@ -147,6 +154,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         lView = findViewById(R.id.pickerLV);
         headerProductID = header.findViewById(R.id.pickerHeaderID);
         headerOnHand = header.findViewById(R.id.pickerHeaderQty);
+        inventoryLocations = header.findViewById(R.id.viewOtherLocationsButton);
+        inventoryLocations.setOnClickListener(this);
         headerImage = header.findViewById(R.id.itemHeaderImg);
         headerImage.setOnClickListener(this);
 
@@ -235,6 +244,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             case R.id.pickerHeaderButton: //Add product
                 addProductToOrder();
                 break;
+            case R.id.viewOtherLocationsButton:
+                showInventoryLocationsDlog(v);
         }
     }
 
@@ -269,6 +280,35 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 break;
 
         }
+    }
+
+    private void showInventoryLocationsDlog(View view){
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(true);
+        dlog.setCanceledOnTouchOutside(true);
+        dlog.setContentView(R.layout.multi_inventory_locations);
+
+        RecyclerView recyclerView = dlog.findViewById(R.id.inventoryRecycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        inventoryList = new ArrayList<>();
+
+        for(int i =0; i <10;i++){
+            InventoryItem item = new InventoryItem(
+                    "24 Market Place",
+                    "Lorem Ipsum random text address",
+                    "3");
+            inventoryList.add(item);
+        }
+
+        adapter = new InventoryLocationsListAdapter(inventoryList,this);
+        recyclerView.setAdapter(adapter);
+
+        int width = (int)(getResources().getDisplayMetrics().widthPixels*0.60);
+        int height = (int)(getResources().getDisplayMetrics().heightPixels*0.80);
+        dlog.getWindow().setLayout(width,height);
+        dlog.show();
     }
 
     private void setOrderProductValues() {
