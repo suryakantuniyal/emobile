@@ -397,10 +397,10 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar
     }
 
     private void processVoid() {
-        if (!myPref.getPreferences(MyPreferences.pref_use_pax)) {
-            voidTransaction();
-        } else {
+        if (myPref.getPreferences(MyPreferences.pref_use_pax) && paymethod_name.equals("Card")) {
             startPaxVoid();
+        } else {
+            voidTransaction();
         }
     }
 
@@ -519,6 +519,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar
         } else if (paymethod_name.equals("Card")) {
             if (myPref.getPreferences(MyPreferences.pref_use_pax)) {
                 payHandler.createVoidPayment(paymentToBeRefunded, false, null);
+                Global.showPrompt(activity, R.string.payment_void_title, getString(R.string.payment_void_completed));
             } else if (!paymentToBeRefunded.getPay_stamp().equals(MOBY8500)) {
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
                 new processCardVoidAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payGate.paymentWithAction(EAction.VoidCreditCardAction, false, paymentToBeRefunded.getCard_type(), null));
