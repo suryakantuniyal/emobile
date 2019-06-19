@@ -594,7 +594,7 @@ public class PaymentsHandler {
             if (isDeclined)
                 tableName = table_name_declined;
             String sql = "SELECT pay_date,pay_comment, amount_tender, job_id, inv_id,group_pay_id,pay_signature,ccnum_last4," +
-                    " amount_tender, pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id FROM " + tableName +
+                    " amount_tender, pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id,pay_stamp FROM " + tableName +
                     " WHERE pay_id = ?";
 
             PaymentDetails paymentDetails = new PaymentDetails();
@@ -619,6 +619,7 @@ public class PaymentsHandler {
                     paymentDetails.setAmountTender(cursor.getDouble(cursor.getColumnIndex(amount_tender)));
                     paymentDetails.setPay_transid(cursor.getString(cursor.getColumnIndex(pay_transid)));
                     paymentDetails.setClerk_id(cursor.getString(cursor.getColumnIndex(clerk_id)));
+                    paymentDetails.setPay_stamp(cursor.getString(cursor.getColumnIndex(pay_stamp)));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -995,7 +996,7 @@ public class PaymentsHandler {
                             "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                     "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id', o.ord_total as ord_total,p.pay_amount as pay_amount," +
                                     "p.pay_dueamount as pay_dueamount, amount_tender,"
-                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
+                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                     "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
                                     + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON "
@@ -1005,7 +1006,7 @@ public class PaymentsHandler {
                                     "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                     "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id', o.ord_total as ord_total,p.pay_amount as pay_amount," +
                                     "p.pay_dueamount as pay_dueamount, amount_tender,"
-                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
+                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                     "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
                                     + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON "
@@ -1022,7 +1023,7 @@ public class PaymentsHandler {
                             "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                     "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id',p.pay_amount AS 'ord_total',p.pay_amount as pay_amount," +
                                     "p.pay_dueamount as pay_dueamount,amount_tender,"
-                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
+                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                     "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
                                     + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
@@ -1033,7 +1034,7 @@ public class PaymentsHandler {
                                     "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                     "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id',p.pay_amount AS 'ord_total',p.pay_amount as pay_amount," +
                                     "p.pay_dueamount as pay_dueamount, amount_tender,"
-                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
+                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                     "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
                                     + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
@@ -1050,7 +1051,7 @@ public class PaymentsHandler {
                             "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                     "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id',p.pay_amount AS 'ord_total'," +
                                     "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount,amount_tender,"
-                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
+                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
                                     "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
                                     + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
@@ -1061,7 +1062,7 @@ public class PaymentsHandler {
                                     "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                     "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id',p.pay_amount AS 'ord_total'," +
                                     "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount, amount_tender,"
-                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
+                                    + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
                                     "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
                                     + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
@@ -1093,6 +1094,7 @@ public class PaymentsHandler {
                     payDetail.setChange(cursor.getString(cursor.getColumnIndex("change")));
                     payDetail.setPay_signature(cursor.getString(cursor.getColumnIndex(pay_signature)));
                     payDetail.setPay_transid(cursor.getString(cursor.getColumnIndex(pay_transid)));
+                    payDetail.setAuthcode(cursor.getString(cursor.getColumnIndex(authcode)));
                     payDetail.setCcnum_last4(cursor.getString(cursor.getColumnIndex(ccnum_last4)));
                     payDetail.setPay_check(cursor.getString(cursor.getColumnIndex(pay_check)));
                     payDetail.setIs_refund(cursor.getString(cursor.getColumnIndex(is_refund)));

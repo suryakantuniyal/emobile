@@ -35,6 +35,7 @@ public class PaymentDetails {
     private String isVoid;
     private String authcode;
     private String clerk_id;
+    private String pay_stamp;
 
     private EMVContainer emvContainer;
     private String payType;
@@ -287,6 +288,14 @@ public class PaymentDetails {
 
     public void setClerk_id(String clerk_id) {
         this.clerk_id = clerk_id;
+    }
+
+    public String getPay_stamp() {
+        return pay_stamp;
+    }
+
+    public void setPay_stamp(String pay_stamp) {
+        this.pay_stamp = pay_stamp;
     }
 
     public double getAmountTender() {

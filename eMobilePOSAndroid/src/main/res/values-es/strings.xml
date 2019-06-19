@@ -625,6 +625,7 @@
     <string name="card_trans_id">"TransID"</string>
     <string name="error_wrong_amount">"El monto a pagar debe ser mayor que 0"</string>
     <string name="account_information">"Información de la cuenta"</string>
+    <string name="card_swipe">"SWIPE"</string>
     <string name="general_information">"Información general"</string>
     <string name="card_information">"Información de Tarjeta"</string>
     <string name="paymethod_due_amount_label">"Monto a Pagar"</string>
@@ -1365,6 +1366,10 @@
     <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
+    <string name="sp_tender_type">"Tipo:"</string>
+    <string name="sp_tender_credit">"Crédito"</string>
+    <string name="sp_tender_debit">"Débito"</string>
+    <string name="sp_tender_refund">"Reembolso"</string>
     <string name="fingerprints">Huellas dactilares</string>
     <string name="information_saved">Informacion grabada.</string>
     <string name="customerBiometrics">Biometría del cliente</string>

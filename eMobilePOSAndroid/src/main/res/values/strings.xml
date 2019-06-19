@@ -633,6 +633,7 @@
     <string name="card_trans_id">TransID</string>
     <string name="error_wrong_amount">Amount to be paid must be greater than 0\u002E\u002E\u002E</string>
     <string name="account_information">Account Information</string>
+    <string name="card_swipe">"SWIPE"</string>
     <string name="general_information">General Information</string>
     <string name="card_information">Card Information</string>
     <string name="paymethod_due_amount_label">Amount Due</string>
@@ -1406,6 +1407,10 @@
     <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
+    <string name="sp_tender_type">Tender Type:</string>
+    <string name="sp_tender_credit">Credit</string>
+    <string name="sp_tender_debit">Debit</string>
+    <string name="sp_tender_refund">Refund</string>
     <string name="fingerprint_enrollment">Place any finger to start enrollment.</string>
     <string name="fingerprint_enrollment_title">Fingerprint Enrollment</string>
     <string name="rescan_fingerprint">Remove the finger place the same finger on the reader</string>
