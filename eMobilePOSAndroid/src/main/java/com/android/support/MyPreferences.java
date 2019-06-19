@@ -1073,6 +1073,17 @@ public class MyPreferences {
         prefEditor.commit();
         return false;
     }
+    public boolean isAPT120() {
+        String device_APT120 = "device_APT120";
+        return prefs.getBoolean(device_APT120, false);
+    }
+
+    public boolean setIsAPT120(boolean value) {
+        String device_APT120 = "device_APT120";
+        prefEditor.putBoolean(device_APT120, value);
+        prefEditor.commit();
+        return false;
+    }
 
     public boolean isDolphin(boolean isGet, boolean value) {
         String device_dolphin = "device_dolphin";

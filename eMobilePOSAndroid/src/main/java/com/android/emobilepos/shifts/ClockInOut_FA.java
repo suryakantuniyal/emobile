@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
@@ -15,6 +16,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -79,6 +81,14 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         activity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
+
+        //If POS device is a TeamSable APT-150, Display back button.
+        if(myPref.isAPT120() && myPref.getPreferences(MyPreferences.pref_use_navigationbar)){
+            ImageView goBackButton = findViewById(R.id.backbtn);
+            goBackButton.setVisibility(View.VISIBLE);
+            goBackButton.setOnClickListener(this);
+        }
+
         Bundle extras = getIntent().getExtras();
         String mClerkName = extras.getString("clerk_name");
         mClerkID = String.valueOf(extras.getInt("clerk_id"));
@@ -132,6 +142,9 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     listTimeClock.clear();
                     new SendUnsyncTimeClock().execute(false);
                 }
+                break;
+            case R.id.backbtn:
+                onBackPressed();
                 break;
             case R.id.clockOut:
                 if (clockOutOn && hourDifference <= 12) {

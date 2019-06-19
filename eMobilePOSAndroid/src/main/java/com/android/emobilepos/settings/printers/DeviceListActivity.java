@@ -3,11 +3,14 @@ package com.android.emobilepos.settings.printers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -48,6 +51,38 @@ public class DeviceListActivity extends Activity {
         View recyclerView = findViewById(R.id.device_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (Build.MODEL.contains("WPOS-TAB")) {
+            getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+
+            MenuItem back, hold, logout, elo;
+            invalidateOptionsMenu();
+            back = menu.findItem(R.id.menu_back);
+            logout = menu.findItem(R.id.logoutMenuItem);
+            hold = menu.findItem(R.id.refreshHolds);
+            elo = menu.findItem(R.id.toggleEloBCR);
+
+            back.setVisible(true);
+            hold.setVisible(false);
+            logout.setVisible(false);
+            elo.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.menu_back: {
+                onBackPressed();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {

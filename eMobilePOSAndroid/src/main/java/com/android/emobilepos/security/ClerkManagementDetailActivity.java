@@ -2,7 +2,10 @@ package com.android.emobilepos.security;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,6 +46,37 @@ public class ClerkManagementDetailActivity extends Activity implements Biometric
         digitalPersona = new DigitalPersona(this, this, EmobileBiometric.UserType.CLERK);
         biometric = EmobileBiometricDAO.getBiometrics(String.valueOf(clerkId), EmobileBiometric.UserType.CLERK);
         setUI();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (preferences.isAPT120() && preferences.getPreferences(MyPreferences.pref_use_navigationbar)) {
+            getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+
+            MenuItem back, hold, logout, elo;
+            invalidateOptionsMenu();
+            back = menu.findItem(R.id.menu_back);
+            logout = menu.findItem(R.id.logoutMenuItem);
+            hold = menu.findItem(R.id.refreshHolds);
+            elo = menu.findItem(R.id.toggleEloBCR);
+
+            back.setVisible(true);
+            hold.setVisible(false);
+            logout.setVisible(false);
+            elo.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.menu_back: {
+                onBackPressed();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setUI() {
