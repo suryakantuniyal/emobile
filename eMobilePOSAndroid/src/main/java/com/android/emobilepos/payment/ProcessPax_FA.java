@@ -58,8 +58,8 @@ import static drivers.pax.utils.Constant.TRANSACTION_CANCELED;
 import static drivers.pax.utils.Constant.TRANSACTION_DECLINED;
 import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
 import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
-import static drivers.pax.utils.Constant.TRANSACTION_TYPE_RETURN;
-import static drivers.pax.utils.Constant.TRANSACTION_TYPE_SALE;
+import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_RETURN;
+import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_SALE;
 
 /**
  * Created by Luis Camayd on 10/11/2018.
@@ -205,9 +205,9 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         }
 
         if (!isRefund) {
-            payrequest.TransType = TRANSACTION_TYPE_SALE;
+            payrequest.TransType = REQUEST_TRANSACTION_TYPE_SALE;
         } else {
-            payrequest.TransType = TRANSACTION_TYPE_RETURN;
+            payrequest.TransType = REQUEST_TRANSACTION_TYPE_RETURN;
         }
 
         payrequest.Amount = String.valueOf(

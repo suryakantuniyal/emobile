@@ -86,6 +86,7 @@ import static drivers.pax.utils.Constant.CARD_EXPIRED;
 import static drivers.pax.utils.Constant.HAS_VOIDED;
 import static drivers.pax.utils.Constant.REQUEST_TENDER_TYPE_CREDIT;
 import static drivers.pax.utils.Constant.REQUEST_TENDER_TYPE_DEBIT;
+import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_VOID;
 import static drivers.pax.utils.Constant.TRANSACTION_CANCELED;
 import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
 import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
@@ -417,7 +418,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar
         payrequest.ECRRefNum = "1";
         payrequest.TenderType = paxTenderType;
         payrequest.OrigRefNum = paxOrigRefNum;
-        payrequest.TransType = 4; // void
+        payrequest.TransType = REQUEST_TRANSACTION_TYPE_VOID;
 
         poslink.PaymentRequest = payrequest;
         poslink.SetCommSetting(PosLinkHelper.getCommSetting());
