@@ -2142,7 +2142,7 @@ public class SynchMethods {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            progressDialog.setMessage("Checking inventory in other locations...");
+            progressDialog.setMessage(context.getString(R.string.dlog_sales_item_check_inventory));
             progressDialog.setCanceledOnTouchOutside(true);
             progressDialog.setCancelable(true);
             progressDialog.show();

@@ -18,7 +18,7 @@
             android:background="@drawable/blue_gradient_header_horizontal"
             android:gravity="center"
             android:padding="10dp"
-            android:text="On Hold"
+            android:text="@string/sales_product_details_Invetory_locations_dlog_header_text"
             android:textAppearance="@style/white_text_appearance"
             android:textSize="@dimen/header_bar_text_size" />
 
@@ -35,7 +35,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Location"
+                android:text="@string/dlog_sales_item_check_inventory_location_text"
                 android:textAppearance="@style/blue_text_appearance"
                 android:textSize="@dimen/field_label_text_size" />
 
@@ -46,7 +46,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Quantity"
+                android:text="@string/dlog_sales_item_check_inventory_quantity_text"
                 android:textAppearance="@style/blue_text_appearance"
                 android:textSize="@dimen/field_label_text_size" />
 

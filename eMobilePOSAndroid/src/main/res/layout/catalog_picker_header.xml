@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3"
                 android:background="@drawable/blue_gradient_header_horizontal"
-                android:text="View Other Locations"
+                android:text="@string/sales_product_details_inventory_locations"
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
 
