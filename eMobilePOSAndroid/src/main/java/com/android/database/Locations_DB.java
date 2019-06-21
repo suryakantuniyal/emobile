@@ -154,4 +154,27 @@ public class Locations_DB {
             }
         }
     }
+
+    public Locations_Holder getLocationInfoUsingID(String _loc_id) {
+        Cursor c = null;
+        try {
+            c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE loc_id = ?", new String[]{_loc_id});
+            Locations_Holder location = new Locations_Holder();
+            if (c.moveToFirst()) {
+                int i_loc_key = c.getColumnIndex(loc_key);
+                int i_loc_id = c.getColumnIndex(loc_id);
+                int i_loc_name = c.getColumnIndex(loc_name);
+
+                location.setLoc_id(c.getString(i_loc_id));
+                location.setLoc_key(c.getString(i_loc_key));
+                location.setLoc_name(c.getString(i_loc_name));
+            }
+            c.close();
+            return location;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+    }
 }

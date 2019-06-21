@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -31,6 +32,7 @@ import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
+import com.android.database.Locations_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
@@ -48,6 +50,7 @@ import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.PriceLevel;
@@ -124,6 +127,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import interfaces.InventoryLocationSyncCallback;
 import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
@@ -206,6 +210,18 @@ public class SynchMethods {
         } catch (KeyManagementException e) {
 
         }
+    }
+
+    public static void syncMultiInventoryLocations(Context context,InventoryLocationSyncCallback listener,String prodID,String employeeID,String regID){
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        String requestString = context.getString(R.string.sync_enablermobile_multi_inventory_locations);
+        StringBuilder url = new StringBuilder(String.format(requestString,employeeID,regID,prodID));
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+
+        new AsyncRequestInventoryLocations(context,authClient,listener).execute(url);
+
     }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
@@ -2104,4 +2120,67 @@ public class SynchMethods {
 
     }
 
-}
+    public static class AsyncRequestInventoryLocations extends AsyncTask<Object, Void, Void> {
+
+        private InventoryLocationSyncCallback listener;
+        private Context context;
+        private String url;
+        private OAuthClient oauth;
+        private ProgressDialog progressDialog;
+        private Locations_DB dbLocations = new Locations_DB();
+        private Locations_Holder locationInfoValues;
+        private ArrayList<String> locationIDlist = new ArrayList<>();
+
+        public  AsyncRequestInventoryLocations(Context context,OAuthClient oAuthClient, InventoryLocationSyncCallback listener) {
+            this.oauth = oAuthClient;
+            this.listener = listener;
+            this.context = context;
+            progressDialog = new ProgressDialog(context);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog.setMessage("Checking inventory in other locations...");
+            progressDialog.setCanceledOnTouchOutside(true);
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+            Global.multiInventoryProgressDlog = progressDialog;
+        }
+
+        @Override
+        protected Void doInBackground(Object... objects) {
+            url = String.valueOf(objects[0]);
+            try {
+                String response = oauthclient.HttpClient.getString(url, oauth, false);
+
+                Global.multiInventoryLocationNames.clear();
+                locationIDlist = XmlUtils.getInventoryLocationIDs(response);
+                for (String locID: locationIDlist ) {
+                    locationInfoValues = dbLocations.getLocationInfoUsingID(locID);
+                    Global.multiInventoryLocationNames.add(locationInfoValues.getLoc_name());
+                }
+                listener.inventoryLocationsSynched(true);
+            } catch (IOException e) {
+                listener.inventoryLocationsSynched(false);
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (NoSuchAlgorithmException e) {
+                listener.inventoryLocationsSynched(false);
+                e.printStackTrace();
+            } catch (KeyManagementException e) {
+                listener.inventoryLocationsSynched(false);
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    }

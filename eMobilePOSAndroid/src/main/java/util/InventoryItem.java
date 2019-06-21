@@ -3,14 +3,10 @@ package util;
 public class InventoryItem {
 
     private String name;
+    private Double qty;
 
-    private String address;
-
-    private String qty;
-
-    public InventoryItem(String name, String address, String qty) {
+    public InventoryItem(String name, Double qty) {
         this.name = name;
-        this.address = address;
         this.qty = qty;
     }
 
@@ -22,19 +18,11 @@ public class InventoryItem {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(String qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 

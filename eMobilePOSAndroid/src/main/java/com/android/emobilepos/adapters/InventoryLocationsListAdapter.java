@@ -39,8 +39,7 @@ public class InventoryLocationsListAdapter extends RecyclerView.Adapter<Inventor
         InventoryItem item = list.get(position);
 
         holder.name.setText(item.getName());
-        holder.address.setText(item.getAddress());
-        holder.qty.setText(item.getQty());
+        holder.qty.setText(String.valueOf(item.getQty()));
     }
 
     @Override
@@ -63,14 +62,12 @@ public class InventoryLocationsListAdapter extends RecyclerView.Adapter<Inventor
 
         LinearLayout rv;
         TextView name;
-        TextView address;
         TextView qty;
 
         View_Holder(View itemView) {
             super(itemView);
             rv = itemView.findViewById(R.id.LinearLayoutRecyclerItem);
             name = itemView.findViewById(R.id.inventoryLocationName);
-            address = itemView.findViewById(R.id.inventoryLocationAddress);
             qty = itemView.findViewById(R.id.inventoryQtyinLocation);
         }
     }

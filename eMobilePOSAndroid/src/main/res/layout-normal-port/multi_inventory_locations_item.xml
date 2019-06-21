@@ -21,15 +21,15 @@
             android:gravity="left|center_vertical"
             android:padding="10dp"
             android:text="Location Name"
-            android:textSize="20dp" />
+            android:textSize="12dp" />
 
         <TextView
             android:id="@+id/inventoryQtyinLocation"
-            android:layout_width="120dp"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal|center"
             android:text="Qty"
-            android:textSize="18sp" />
+            android:textSize="10dp" />
 
     </LinearLayout>
 

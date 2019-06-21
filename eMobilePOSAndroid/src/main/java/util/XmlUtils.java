@@ -3,6 +3,7 @@ package util;
 import com.android.emobilepos.models.ingenico.CredentialsResponse;
 import com.android.emobilepos.models.pax.SoundPaymentsResponse;
 import com.android.emobilepos.models.xml.EMSPayment;
+import com.android.support.Global;
 import com.crashlytics.android.Crashlytics;
 
 import org.w3c.dom.Document;
@@ -17,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -66,6 +68,50 @@ public class XmlUtils {
         }
 
         return emsPayment;
+    }
+
+    public static ArrayList<String> getInventoryLocationIDs(String xml) {
+        Global.multiInventoryLocationQty.clear();
+        ArrayList<String> locationIDList = new ArrayList<>();
+        try {
+            XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = xmlFactoryObject.newPullParser();
+            parser.setInput(new StringReader(xml));
+            int event = parser.getEventType();
+            String tag = "";
+            boolean found = false;
+            while (event != XmlPullParser.END_DOCUMENT && !found) {
+                switch (event) {
+                    case XmlPullParser.START_TAG:
+                        tag = parser.getName();
+                        break;
+                    case XmlPullParser.END_TAG:
+                        break;
+                    case XmlPullParser.TEXT:
+                        if (tag != null) {
+                            if (tag.equalsIgnoreCase("loc_id")) {
+                                if(!parser.getText().contains("\n")) {
+                                    locationIDList.add(parser.getText());
+                                }
+                            } else if (tag.equalsIgnoreCase("prod_onhand")) {
+                                if(!parser.getText().contains("\n")){
+                                    Global.multiInventoryLocationQty.add(parser.getText());
+                                }
+                            }
+                        }
+                        break;
+                }
+                event = parser.next();
+            }
+        } catch (XmlPullParserException e) {
+            Crashlytics.logException(e);
+        } catch (UnsupportedEncodingException e) {
+            Crashlytics.logException(e);
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+        }
+
+        return locationIDList;
     }
 
     public static SoundPaymentsResponse getSoundPaymentsResponse(String xml) {
