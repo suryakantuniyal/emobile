@@ -28,6 +28,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public List<OrderProduct> addonsProducts = new ArrayList<OrderProduct>();
     public String addon_section_name = "";
     public String addon_position = "";
+    private String giftcardName;
+    private String giftcardNumber;
     private boolean addon;
     private boolean isAdded;
     private boolean isPrinted;
@@ -315,6 +317,22 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public void setProd_upc(String prod_upc) {
         this.prod_upc = prod_upc;
+    }
+
+    public String getGiftcardName() {
+        return giftcardName;
+    }
+
+    public void setGiftcardName(String giftcardName) {
+        this.giftcardName = giftcardName;
+    }
+
+    public String getGiftcardNumber() {
+        return giftcardNumber;
+    }
+
+    public void setGiftcardNumber(String giftcardNumber) {
+        this.giftcardNumber = giftcardNumber;
     }
 
     public String getOrdprod_qty() {

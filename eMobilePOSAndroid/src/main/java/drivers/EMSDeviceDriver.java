@@ -1309,6 +1309,11 @@ public class EMSDeviceDriver {
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                     Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3));
 
+                            List<OrderProduct> giftcardvalues = orderProductsHandler.getOrdProdGiftCardNumber(orderProducts.get(i).getOrdprod_id());
+                            for(OrderProduct giftCard : giftcardvalues){
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(giftCard.getGiftcardName() + ":",giftCard.getGiftcardNumber() , lineWidth, 3));
+                            }
+
                             if (printPref.contains(MyPreferences.print_descriptions)) {
                                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                         getString(R.string.receipt_description), "", lineWidth, 3));
@@ -1333,6 +1338,13 @@ public class EMSDeviceDriver {
 
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                 Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3));
+
+
+                        List<OrderProduct> giftcardvalues = orderProductsHandler.getOrdProdGiftCardNumber(orderProducts.get(i).getOrdprod_id());
+                        for(OrderProduct giftCard : giftcardvalues){
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(giftCard.getGiftcardName() + ":",giftCard.getGiftcardNumber() , lineWidth, 3));
+                        }
+
 
                         if (printPref.contains(MyPreferences.print_descriptions)) {
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
