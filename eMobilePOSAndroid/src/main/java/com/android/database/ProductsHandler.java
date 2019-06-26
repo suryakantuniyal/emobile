@@ -982,7 +982,7 @@ public class ProductsHandler {
             sb.append(
                     "FROM Products p " +
                             "LEFT JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
-                            "LEFT JOIN Categories c ON c.cat_id = xr.cat_id " +
+                            "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                             "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                             "BETWEEN vp.minQty AND vp.maxQty  AND ");
