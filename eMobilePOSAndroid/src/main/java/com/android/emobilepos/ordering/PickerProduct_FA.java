@@ -74,6 +74,7 @@ import java.util.UUID;
 import interfaces.InventoryLocationSyncCallback;
 
 import com.android.emobilepos.models.InventoryItem;
+
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener, InventoryLocationSyncCallback {
