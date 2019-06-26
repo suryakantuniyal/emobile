@@ -1,4 +1,4 @@
-package util;
+package com.android.emobilepos.models;
 
 public class InventoryItem {
 
@@ -25,8 +25,4 @@ public class InventoryItem {
     public void setQty(Double qty) {
         this.qty = qty;
     }
-
-
-
-
 }

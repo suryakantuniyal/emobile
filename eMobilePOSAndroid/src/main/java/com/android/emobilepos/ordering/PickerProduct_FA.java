@@ -9,14 +9,12 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -72,14 +70,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import interfaces.InventoryLocationSyncCallback;
-import oauthclient.OAuthClient;
-import oauthclient.OAuthManager;
-import util.InventoryItem;
+
+import com.android.emobilepos.models.InventoryItem;
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener, InventoryLocationSyncCallback {
@@ -1487,7 +1481,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                                       for (int i = 0; i < Global.multiInventoryLocationNames.size(); i++) {
 
-                                          if(!Global.multiInventoryLocationNames.get(i).isEmpty()) {
+                                          if (!Global.multiInventoryLocationNames.get(i).isEmpty()) {
                                               InventoryItem item = new InventoryItem(
                                                       Global.multiInventoryLocationNames.get(i),
                                                       Double.valueOf(Global.multiInventoryLocationQty.get(i)));
@@ -1513,7 +1507,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Global.dismissDialog(PickerProduct_FA.this,Global.multiInventoryProgressDlog);
+            Global.dismissDialog(PickerProduct_FA.this, Global.multiInventoryProgressDlog);
         }
     }
 

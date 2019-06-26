@@ -14,7 +14,7 @@ import com.android.emobilepos.R;
 import java.util.Collections;
 import java.util.List;
 
-import util.InventoryItem;
+import com.android.emobilepos.models.InventoryItem;
 
 public class InventoryLocationsListAdapter extends RecyclerView.Adapter<InventoryLocationsListAdapter.View_Holder> {
 
