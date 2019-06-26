@@ -79,8 +79,7 @@ public class XmlUtils {
             parser.setInput(new StringReader(xml));
             int event = parser.getEventType();
             String tag = "";
-            boolean found = false;
-            while (event != XmlPullParser.END_DOCUMENT && !found) {
+            while (event != XmlPullParser.END_DOCUMENT) {
                 switch (event) {
                     case XmlPullParser.START_TAG:
                         tag = parser.getName();
