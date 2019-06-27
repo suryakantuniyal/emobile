@@ -3,6 +3,7 @@ package com.android.support;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -247,6 +248,7 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager embededMSR;
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
+    public static ProgressDialog multiInventoryProgressDlog;
     public static OrderType consignmentType = OrderType.ORDER;
     public static OrderType ord_type = OrderType.ORDER;
     public static String amountPaid = "";

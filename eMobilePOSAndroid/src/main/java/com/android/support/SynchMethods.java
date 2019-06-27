@@ -31,6 +31,7 @@ import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
+import com.android.database.Locations_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
@@ -49,6 +50,7 @@ import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.InventoryItem;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
@@ -124,6 +126,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import interfaces.InventoryLocationSyncCallback;
 import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
@@ -141,7 +144,6 @@ public class SynchMethods {
     private List<String[]> data;
     private String tempFilePath;
     private boolean checkoutOnHold = false, downloadHoldList = false;
-    //    private ProgressDialog myProgressDialog;
     private int type;
     private boolean didSendData = true;
     private boolean isFromMainMenu = false;
@@ -206,6 +208,17 @@ public class SynchMethods {
         } catch (KeyManagementException e) {
 
         }
+    }
+
+    public static void syncMultiInventoryLocations(Context context, InventoryLocationSyncCallback listener, String prodID, String employeeID, String regID) {
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        String requestString = context.getString(R.string.sync_enablermobile_multi_inventory_locations);
+        StringBuilder url = new StringBuilder(String.format(requestString, employeeID, regID, prodID));
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+
+        new AsyncRequestInventoryLocations(context, authClient, listener, url.toString()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
@@ -2104,4 +2117,73 @@ public class SynchMethods {
 
     }
 
+    public static class AsyncRequestInventoryLocations extends AsyncTask<Void, Void, Void> {
+
+        private Locations_DB dbLocations = new Locations_DB();
+        private InventoryLocationSyncCallback listener;
+        private Context context;
+        private String url;
+        private OAuthClient oauth;
+        private ProgressDialog progressDialog;
+        private List<InventoryItem> mList = new ArrayList<>();
+
+        public  AsyncRequestInventoryLocations(Context context,OAuthClient oAuthClient, InventoryLocationSyncCallback listener, String url) {
+            this.oauth = oAuthClient;
+            this.listener = listener;
+            this.context = context;
+            this.url = url;
+            progressDialog = new ProgressDialog(context);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage(context.getString(R.string.dlog_sales_item_check_inventory));
+            progressDialog.setCanceledOnTouchOutside(true);
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+            Global.multiInventoryProgressDlog = progressDialog;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            String locationName;
+            try {
+                //Get Inventory Locations for selected product
+                String response = oauthclient.HttpClient.getString(url, oauth, false);
+
+                //Parse response XML for locationID's and store in a list.
+                List<InventoryItem> inventoryItems = XmlUtils.getInventoryLocationIDs(response);
+
+                //Get the name of each Location using its ID and add it to the list
+                for (InventoryItem inventoryItem : inventoryItems) {
+                    locationName = dbLocations.getLocationNameUsingID(inventoryItem.getId());
+                    if (!locationName.isEmpty()) {
+                        inventoryItem.setName(locationName);
+                        mList.add(inventoryItem);
+                    }
+                }
+
+            } catch (IOException e) {
+                listener.inventoryLocationsSynched(null);
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (NoSuchAlgorithmException e) {
+                listener.inventoryLocationsSynched(null);
+                e.printStackTrace();
+            } catch (KeyManagementException e) {
+                listener.inventoryLocationsSynched(null);
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            //Return this Inventory Locations List...
+            listener.inventoryLocationsSynched(mList);
+        }
+    }
 }

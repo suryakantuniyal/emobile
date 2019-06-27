@@ -1422,4 +1422,9 @@
     <string name="seconds">Segundos</string>
     <string name="config_default_customer_display_name">Nombre de cliente a mostrar </string>
     <string name="config_customer_settings">Configuracion del Cliente</string>
+    <string name="dlog_sales_item_check_inventory">Verificando en otras localizaciones…</string>
+    <string name="sales_product_details_inventory_locations">Otras Localizaciones</string>
+    <string name="sales_product_details_Invetory_locations_dlog_header_text">En Almacén</string>
+    <string name="dlog_sales_item_check_inventory_location_text">Localización</string>
+    <string name="dlog_sales_item_check_inventory_quantity_text">Cantidad</string>
 </resources>

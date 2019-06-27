@@ -1462,5 +1462,10 @@
     <string name="seconds">Seconds</string>
     <string name="config_customer_settings">Customer Settings</string>
     <string name="config_default_customer_display_name">Select Customer Name</string>
+    <string name="dlog_sales_item_check_inventory">Checking inventory in other locations...</string>
+    <string name="sales_product_details_inventory_locations">View Other Locations</string>
+    <string name="sales_product_details_Invetory_locations_dlog_header_text">On Hand</string>
+    <string name="dlog_sales_item_check_inventory_location_text">Location</string>
+    <string name="dlog_sales_item_check_inventory_quantity_text">Quantity</string>
 
 </resources>

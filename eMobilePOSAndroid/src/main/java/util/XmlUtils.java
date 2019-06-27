@@ -1,5 +1,6 @@
 package util;
 
+import com.android.emobilepos.models.InventoryItem;
 import com.android.emobilepos.models.ingenico.CredentialsResponse;
 import com.android.emobilepos.models.pax.SoundPaymentsResponse;
 import com.android.emobilepos.models.xml.EMSPayment;
@@ -17,6 +18,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -66,6 +69,59 @@ public class XmlUtils {
         }
 
         return emsPayment;
+    }
+
+    public static List<InventoryItem> getInventoryLocationIDs(String xml) {
+        List<InventoryItem> locationList = new ArrayList<>();
+        List<InventoryItem> idList = new ArrayList<>();
+        List<InventoryItem> qtyList = new ArrayList<>();
+        InventoryItem item;
+        try {
+            XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = xmlFactoryObject.newPullParser();
+            parser.setInput(new StringReader(xml));
+            int event = parser.getEventType();
+            String tag = "";
+            while (event != XmlPullParser.END_DOCUMENT) {
+                switch (event) {
+                    case XmlPullParser.START_TAG:
+                        tag = parser.getName();
+                        break;
+                    case XmlPullParser.END_TAG:
+                        break;
+                    case XmlPullParser.TEXT:
+                        if (tag != null) {
+                            if (tag.equalsIgnoreCase("loc_id")) {
+                                if(!parser.getText().contains("\n")) {
+                                    item = new InventoryItem();
+                                    item.setId(parser.getText());
+                                    idList.add(item);
+                                }
+                            } else if (tag.equalsIgnoreCase("prod_onhand")) {
+                                if(!parser.getText().contains("\n")){
+                                    item = new InventoryItem();
+                                    item.setQty(Double.valueOf(parser.getText()));
+                                    qtyList.add(item);
+                                }
+                            }
+                        }
+                        break;
+                }
+                event = parser.next();
+            }
+            for(int i=1;i <= idList.size();i++){
+                locationList = idList;
+                locationList.get(i-1).setQty(qtyList.get(i-1).getQty());
+            }
+        } catch (XmlPullParserException e) {
+            Crashlytics.logException(e);
+        } catch (UnsupportedEncodingException e) {
+            Crashlytics.logException(e);
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+        }
+
+        return locationList;
     }
 
     public static SoundPaymentsResponse getSoundPaymentsResponse(String xml) {
