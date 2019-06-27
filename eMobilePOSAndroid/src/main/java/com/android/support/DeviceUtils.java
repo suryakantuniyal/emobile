@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import drivers.EMSAPT50;
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSHPEngageOnePrimePrinter;
@@ -464,26 +464,27 @@ public class DeviceUtils {
             ArrayList<PortInfo> mPortList = StarIOPort.searchPrinter("USB:", context);
             MyPreferences preferences = new MyPreferences(context);
             if (!mPortList.isEmpty()) {
+                String portName = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? "USB:" : mPortList.get(0).getPortName();
                 preferences.setPrinterType(Global.STAR);
-                preferences.setPrinterName(mPortList.get(0).getPortName());
-                preferences.setPrinterMACAddress(mPortList.get(0).getPortName());
+                preferences.setPrinterName(portName);
+                preferences.setPrinterMACAddress(portName);
                 preferences.posPrinter(false, true);
                 preferences.printerAreaSize(false, 48);
                 EMSBluetoothStarPrinter aDevice = new EMSBluetoothStarPrinter();
                 Global.mainPrinterManager = edm.getManager();
                 aDevice.autoConnect((Activity) context, edm, 48, true, preferences.getPrinterMACAddress(), "");
                 List<Device> devices = new ArrayList<>();
-                Device device = DeviceTableDAO.getByName(mPortList.get(0).getPortName());
+                Device device = DeviceTableDAO.getByName(portName);
                 if (device == null) {
                     device = new Device();
                 }
                 device.setTextAreaSize(48);
                 device.setEmsDeviceManager(Global.mainPrinterManager);
-                device.setId(mPortList.get(0).getPortName());
-                device.setName(mPortList.get(0).getPortName());
+                device.setId(portName);
+                device.setName(portName);
                 device.setType(String.valueOf(Global.STAR));
                 device.setRemoteDevice(false);
-                device.setMacAddress(mPortList.get(0).getPortName());
+                device.setMacAddress(portName);
                 devices.add(device);
                 DeviceTableDAO.insert(devices);
                 Global.printerDevices.add(device);
