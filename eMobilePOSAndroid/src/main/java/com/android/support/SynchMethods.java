@@ -210,16 +210,15 @@ public class SynchMethods {
         }
     }
 
-    public static void syncMultiInventoryLocations(Context context,InventoryLocationSyncCallback listener,String prodID,String employeeID,String regID){
+    public static void syncMultiInventoryLocations(Context context, InventoryLocationSyncCallback listener, String prodID, String employeeID, String regID) {
         if (OAuthManager.isExpired(context)) {
             getOAuthManager(context);
         }
         String requestString = context.getString(R.string.sync_enablermobile_multi_inventory_locations);
-        StringBuilder url = new StringBuilder(String.format(requestString,employeeID,regID,prodID));
+        StringBuilder url = new StringBuilder(String.format(requestString, employeeID, regID, prodID));
         OAuthClient authClient = OAuthManager.getOAuthClient(context);
 
-        new AsyncRequestInventoryLocations(context,authClient,listener).execute(url);
-
+        new AsyncRequestInventoryLocations(context, authClient, listener, url.toString()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
@@ -2118,7 +2117,7 @@ public class SynchMethods {
 
     }
 
-    public static class AsyncRequestInventoryLocations extends AsyncTask<Object, Void, Void> {
+    public static class AsyncRequestInventoryLocations extends AsyncTask<Void, Void, Void> {
 
         private Locations_DB dbLocations = new Locations_DB();
         private InventoryLocationSyncCallback listener;
@@ -2128,10 +2127,11 @@ public class SynchMethods {
         private ProgressDialog progressDialog;
         private List<InventoryItem> mList = new ArrayList<>();
 
-        public  AsyncRequestInventoryLocations(Context context,OAuthClient oAuthClient, InventoryLocationSyncCallback listener) {
+        public  AsyncRequestInventoryLocations(Context context,OAuthClient oAuthClient, InventoryLocationSyncCallback listener, String url) {
             this.oauth = oAuthClient;
             this.listener = listener;
             this.context = context;
+            this.url = url;
             progressDialog = new ProgressDialog(context);
         }
 
@@ -2146,33 +2146,24 @@ public class SynchMethods {
         }
 
         @Override
-        protected Void doInBackground(Object... objects) {
+        protected Void doInBackground(Void... params) {
             String locationName;
-            url = String.valueOf(objects[0]);
             try {
                 //Get Inventory Locations for selected product
                 String response = oauthclient.HttpClient.getString(url, oauth, false);
 
                 //Parse response XML for locationID's and store in a list.
-                mList = XmlUtils.getInventoryLocationIDs(response);
+                List<InventoryItem> inventoryItems = XmlUtils.getInventoryLocationIDs(response);
 
                 //Get the name of each Location using its ID and add it to the list
-                for (int i=1; i<=mList.size();i++) {
-                    locationName = dbLocations.getLocationNameUsingID(mList.get(i-1).getId());
-                    if(locationName != null){
-                        mList.get(i-1).setName(locationName);
-                    }else{
-                        mList.clear();
-                        InventoryItem item = new InventoryItem();
-                        item.setName("~~~");
-                        item.setQty(-1.0);
-                        mList.add(item);
-                        break;
+                for (InventoryItem inventoryItem : inventoryItems) {
+                    locationName = dbLocations.getLocationNameUsingID(inventoryItem.getId());
+                    if (!locationName.isEmpty()) {
+                        inventoryItem.setName(locationName);
+                        mList.add(inventoryItem);
                     }
                 }
 
-                //Return this Inventory Locations List...
-                listener.inventoryLocationsSynched(mList);
             } catch (IOException e) {
                 listener.inventoryLocationsSynched(null);
                 e.printStackTrace();
@@ -2191,7 +2182,8 @@ public class SynchMethods {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            //Return this Inventory Locations List...
+            listener.inventoryLocationsSynched(mList);
         }
     }
-
-    }
+}

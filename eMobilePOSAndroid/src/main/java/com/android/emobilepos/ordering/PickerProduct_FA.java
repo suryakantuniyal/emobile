@@ -45,6 +45,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
 import com.android.emobilepos.adapters.InventoryLocationsListAdapter;
 import com.android.emobilepos.models.Discount;
+import com.android.emobilepos.models.InventoryItem;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -71,9 +72,6 @@ import java.util.List;
 import java.util.UUID;
 
 import interfaces.InventoryLocationSyncCallback;
-
-import com.android.emobilepos.models.InventoryItem;
-
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener, InventoryLocationSyncCallback {
@@ -131,28 +129,24 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     @Override
     public void inventoryLocationsSynched(List<InventoryItem> onHandItems) {
-        createInventory(onHandItems);
-    }
-
-    private void createInventory(List<InventoryItem> onHandItems) {
         if (onHandItems != null) {
-            final Dialog dlog = new Dialog(PickerProduct_FA.this, R.style.Theme_TransparentTest);
+            final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
             dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dlog.setCancelable(true);
             dlog.setCanceledOnTouchOutside(true);
             dlog.setContentView(R.layout.multi_inventory_locations);
 
             RecyclerView recyclerView = dlog.findViewById(R.id.inventoryRecycler);
-            recyclerView.setLayoutManager(new LinearLayoutManager(PickerProduct_FA.this));
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            adapter = new InventoryLocationsListAdapter(onHandItems, PickerProduct_FA.this);
+            adapter = new InventoryLocationsListAdapter(onHandItems, this);
             recyclerView.setAdapter(adapter);
 
             int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.65);
             int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.8);
             dlog.getWindow().setLayout(width, height);
             dlog.show();
-            Global.dismissDialog(PickerProduct_FA.this, Global.multiInventoryProgressDlog);
+            Global.dismissDialog(this, Global.multiInventoryProgressDlog);
         }
     }
 

@@ -1,9 +1,9 @@
 package com.android.database;
 
 import android.database.Cursor;
-import android.util.Log;
 
 import com.android.emobilepos.holders.Locations_Holder;
+import com.crashlytics.android.Crashlytics;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -154,18 +154,17 @@ public class Locations_DB {
     }
 
     public String getLocationNameUsingID(String _loc_id) {
-        String locName = null;
+        String locName = "";
         Cursor c = null;
         try {
             c = DBManager.getDatabase().rawQuery("SELECT loc_name FROM " + TABLE_NAME + " WHERE loc_id = ?", new String[]{_loc_id});
-            int i_loc_name = c.getColumnIndex(loc_name);
-            locName = c.getString(i_loc_name);
+            if (c.moveToFirst()) {
+                locName = c.getString(c.getColumnIndex(loc_name));
+            }
             c.close();
-
-        } catch(Exception e ){
-            Log.e("Locations_DB",e.toString());
-        }
-        finally {
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+        } finally {
             if (c != null && !c.isClosed()) {
                 c.close();
             }
