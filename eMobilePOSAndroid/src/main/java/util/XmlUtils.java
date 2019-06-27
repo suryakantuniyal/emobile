@@ -1,9 +1,9 @@
 package util;
 
+import com.android.emobilepos.models.InventoryItem;
 import com.android.emobilepos.models.ingenico.CredentialsResponse;
 import com.android.emobilepos.models.pax.SoundPaymentsResponse;
 import com.android.emobilepos.models.xml.EMSPayment;
-import com.android.support.Global;
 import com.crashlytics.android.Crashlytics;
 
 import org.w3c.dom.Document;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -70,9 +71,11 @@ public class XmlUtils {
         return emsPayment;
     }
 
-    public static ArrayList<String> getInventoryLocationIDs(String xml) {
-        Global.multiInventoryLocationQty.clear();
-        ArrayList<String> locationIDList = new ArrayList<>();
+    public static List<InventoryItem> getInventoryLocationIDs(String xml) {
+        List<InventoryItem> locationList = new ArrayList<>();
+        List<InventoryItem> idList = new ArrayList<>();
+        List<InventoryItem> qtyList = new ArrayList<>();
+        InventoryItem item;
         try {
             XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
             XmlPullParser parser = xmlFactoryObject.newPullParser();
@@ -90,17 +93,25 @@ public class XmlUtils {
                         if (tag != null) {
                             if (tag.equalsIgnoreCase("loc_id")) {
                                 if(!parser.getText().contains("\n")) {
-                                    locationIDList.add(parser.getText());
+                                    item = new InventoryItem();
+                                    item.setId(parser.getText());
+                                    idList.add(item);
                                 }
                             } else if (tag.equalsIgnoreCase("prod_onhand")) {
                                 if(!parser.getText().contains("\n")){
-                                    Global.multiInventoryLocationQty.add(parser.getText());
+                                    item = new InventoryItem();
+                                    item.setQty(Double.valueOf(parser.getText()));
+                                    qtyList.add(item);
                                 }
                             }
                         }
                         break;
                 }
                 event = parser.next();
+            }
+            for(int i=1;i <= idList.size();i++){
+                locationList = idList;
+                locationList.get(i-1).setQty(qtyList.get(i-1).getQty());
             }
         } catch (XmlPullParserException e) {
             Crashlytics.logException(e);
@@ -110,7 +121,7 @@ public class XmlUtils {
             Crashlytics.logException(e);
         }
 
-        return locationIDList;
+        return locationList;
     }
 
     public static SoundPaymentsResponse getSoundPaymentsResponse(String xml) {

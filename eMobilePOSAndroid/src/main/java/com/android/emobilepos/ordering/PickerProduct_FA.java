@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -131,10 +130,31 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
     @Override
-    public void inventoryLocationsSynched(boolean didSynchingFinish) {
-        new createInventory(didSynchingFinish).execute();
+    public void inventoryLocationsSynched(List<InventoryItem> onHandItems) {
+        createInventory(onHandItems);
     }
 
+    private void createInventory(List<InventoryItem> onHandItems) {
+        if (onHandItems != null) {
+            final Dialog dlog = new Dialog(PickerProduct_FA.this, R.style.Theme_TransparentTest);
+            dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dlog.setCancelable(true);
+            dlog.setCanceledOnTouchOutside(true);
+            dlog.setContentView(R.layout.multi_inventory_locations);
+
+            RecyclerView recyclerView = dlog.findViewById(R.id.inventoryRecycler);
+            recyclerView.setLayoutManager(new LinearLayoutManager(PickerProduct_FA.this));
+
+            adapter = new InventoryLocationsListAdapter(onHandItems, PickerProduct_FA.this);
+            recyclerView.setAdapter(adapter);
+
+            int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.65);
+            int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.8);
+            dlog.getWindow().setLayout(width, height);
+            dlog.show();
+            Global.dismissDialog(PickerProduct_FA.this, Global.multiInventoryProgressDlog);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -1452,63 +1472,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             TextView rightText;
             Button add;
             Button delete;
-        }
-    }
-
-    public class createInventory extends AsyncTask<Void, Void, Void> {
-
-        private boolean didFinish = false;
-
-        public createInventory(Boolean didSynchingFinish) {
-            didFinish = didSynchingFinish;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            if (didFinish) {
-                runOnUiThread(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      final Dialog dlog = new Dialog(PickerProduct_FA.this, R.style.Theme_TransparentTest);
-                                      dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                      dlog.setCancelable(true);
-                                      dlog.setCanceledOnTouchOutside(true);
-                                      dlog.setContentView(R.layout.multi_inventory_locations);
-
-                                      RecyclerView recyclerView = dlog.findViewById(R.id.inventoryRecycler);
-                                      recyclerView.setLayoutManager(new LinearLayoutManager(PickerProduct_FA.this));
-
-                                      inventoryList = new ArrayList<>();
-
-                                      for (int i = 0; i < Global.multiInventoryLocationNames.size(); i++) {
-
-                                          if (!Global.multiInventoryLocationNames.get(i).isEmpty()) {
-                                              InventoryItem item = new InventoryItem(
-                                                      Global.multiInventoryLocationNames.get(i),
-                                                      Double.valueOf(Global.multiInventoryLocationQty.get(i)));
-                                              inventoryList.add(item);
-                                          }
-                                      }
-
-                                      adapter = new InventoryLocationsListAdapter(inventoryList, PickerProduct_FA.this);
-                                      recyclerView.setAdapter(adapter);
-
-                                      int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.65);
-                                      int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.8);
-                                      dlog.getWindow().setLayout(width, height);
-                                      dlog.show();
-                                  }
-                              }
-                );
-
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Global.dismissDialog(PickerProduct_FA.this, Global.multiInventoryProgressDlog);
         }
     }
 

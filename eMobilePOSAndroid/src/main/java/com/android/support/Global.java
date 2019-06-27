@@ -248,8 +248,6 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager embededMSR;
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
-    public static List<String> multiInventoryLocationNames = new ArrayList<>();
-    public static List<String> multiInventoryLocationQty = new ArrayList<>();
     public static ProgressDialog multiInventoryProgressDlog;
     public static OrderType consignmentType = OrderType.ORDER;
     public static OrderType ord_type = OrderType.ORDER;

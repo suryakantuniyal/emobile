@@ -1,5 +1,9 @@
 package interfaces;
 
+import com.android.emobilepos.models.InventoryItem;
+
+import java.util.List;
+
 public interface InventoryLocationSyncCallback {
-    void inventoryLocationsSynched(boolean didSynchingFinish);
+    void inventoryLocationsSynched(List<InventoryItem> onHandItems);
 }

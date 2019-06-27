@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import com.android.emobilepos.holders.Locations_Holder;
 
@@ -65,7 +66,7 @@ public class Locations_DB {
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
         DBManager.getDatabase().beginTransaction();
-        SQLiteStatement insert=null;
+        SQLiteStatement insert = null;
         try {
             prodData = data;
             dictionaryListMap = dictionary;
@@ -87,8 +88,7 @@ public class Locations_DB {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(insert!=null)
-            {
+            if (insert != null) {
                 insert.close();
             }
             DBManager.getDatabase().endTransaction();
@@ -101,10 +101,10 @@ public class Locations_DB {
     }
 
     public List<Locations_Holder> getLocationsList() {
-        Cursor c=null;
+        Cursor c = null;
         try {
             List<Locations_Holder> list = new ArrayList<>();
-             c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY loc_name ASC", null);
+            c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY loc_name ASC", null);
             if (c.moveToFirst()) {
                 int i_loc_key = c.getColumnIndex(loc_key);
                 int i_loc_id = c.getColumnIndex(loc_id);
@@ -122,10 +122,8 @@ public class Locations_DB {
             }
             c.close();
             return list;
-        }
-        finally {
-            if(c!=null && !c.isClosed())
-            {
+        } finally {
+            if (c != null && !c.isClosed()) {
                 c.close();
             }
         }
@@ -155,26 +153,23 @@ public class Locations_DB {
         }
     }
 
-    public Locations_Holder getLocationInfoUsingID(String _loc_id) {
+    public String getLocationNameUsingID(String _loc_id) {
+        String locName = null;
         Cursor c = null;
         try {
-            c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE loc_id = ?", new String[]{_loc_id});
-            Locations_Holder location = new Locations_Holder();
-            if (c.moveToFirst()) {
-                int i_loc_key = c.getColumnIndex(loc_key);
-                int i_loc_id = c.getColumnIndex(loc_id);
-                int i_loc_name = c.getColumnIndex(loc_name);
-
-                location.setLoc_id(c.getString(i_loc_id));
-                location.setLoc_key(c.getString(i_loc_key));
-                location.setLoc_name(c.getString(i_loc_name));
-            }
+            c = DBManager.getDatabase().rawQuery("SELECT loc_name FROM " + TABLE_NAME + " WHERE loc_id = ?", new String[]{_loc_id});
+            int i_loc_name = c.getColumnIndex(loc_name);
+            locName = c.getString(i_loc_name);
             c.close();
-            return location;
-        } finally {
+
+        } catch(Exception e ){
+            Log.e("Locations_DB",e.toString());
+        }
+        finally {
             if (c != null && !c.isClosed()) {
                 c.close();
             }
         }
+        return locName;
     }
 }

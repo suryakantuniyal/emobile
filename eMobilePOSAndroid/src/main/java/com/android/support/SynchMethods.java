@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -50,8 +49,8 @@ import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
-import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.InventoryItem;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
@@ -145,7 +144,6 @@ public class SynchMethods {
     private List<String[]> data;
     private String tempFilePath;
     private boolean checkoutOnHold = false, downloadHoldList = false;
-    //    private ProgressDialog myProgressDialog;
     private int type;
     private boolean didSendData = true;
     private boolean isFromMainMenu = false;
@@ -2122,14 +2120,13 @@ public class SynchMethods {
 
     public static class AsyncRequestInventoryLocations extends AsyncTask<Object, Void, Void> {
 
+        private Locations_DB dbLocations = new Locations_DB();
         private InventoryLocationSyncCallback listener;
         private Context context;
         private String url;
         private OAuthClient oauth;
         private ProgressDialog progressDialog;
-        private Locations_DB dbLocations = new Locations_DB();
-        private Locations_Holder locationInfoValues;
-        private ArrayList<String> locationIDlist = new ArrayList<>();
+        private List<InventoryItem> mList = new ArrayList<>();
 
         public  AsyncRequestInventoryLocations(Context context,OAuthClient oAuthClient, InventoryLocationSyncCallback listener) {
             this.oauth = oAuthClient;
@@ -2141,7 +2138,6 @@ public class SynchMethods {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
             progressDialog.setMessage(context.getString(R.string.dlog_sales_item_check_inventory));
             progressDialog.setCanceledOnTouchOutside(true);
             progressDialog.setCancelable(true);
@@ -2151,26 +2147,41 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Object... objects) {
+            String locationName;
             url = String.valueOf(objects[0]);
             try {
+                //Get Inventory Locations for selected product
                 String response = oauthclient.HttpClient.getString(url, oauth, false);
 
-                Global.multiInventoryLocationNames.clear();
-                locationIDlist = XmlUtils.getInventoryLocationIDs(response);
-                for (String locID: locationIDlist ) {
-                    locationInfoValues = dbLocations.getLocationInfoUsingID(locID);
-                    Global.multiInventoryLocationNames.add(locationInfoValues.getLoc_name());
+                //Parse response XML for locationID's and store in a list.
+                mList = XmlUtils.getInventoryLocationIDs(response);
+
+                //Get the name of each Location using its ID and add it to the list
+                for (int i=1; i<=mList.size();i++) {
+                    locationName = dbLocations.getLocationNameUsingID(mList.get(i-1).getId());
+                    if(locationName != null){
+                        mList.get(i-1).setName(locationName);
+                    }else{
+                        mList.clear();
+                        InventoryItem item = new InventoryItem();
+                        item.setName("~~~");
+                        item.setQty(-1.0);
+                        mList.add(item);
+                        break;
+                    }
                 }
-                listener.inventoryLocationsSynched(true);
+
+                //Return this Inventory Locations List...
+                listener.inventoryLocationsSynched(mList);
             } catch (IOException e) {
-                listener.inventoryLocationsSynched(false);
+                listener.inventoryLocationsSynched(null);
                 e.printStackTrace();
                 Crashlytics.logException(e);
             } catch (NoSuchAlgorithmException e) {
-                listener.inventoryLocationsSynched(false);
+                listener.inventoryLocationsSynched(null);
                 e.printStackTrace();
             } catch (KeyManagementException e) {
-                listener.inventoryLocationsSynched(false);
+                listener.inventoryLocationsSynched(null);
                 e.printStackTrace();
             }
 
