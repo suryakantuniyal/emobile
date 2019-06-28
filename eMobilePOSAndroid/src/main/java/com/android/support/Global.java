@@ -3,6 +3,7 @@ package com.android.support;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -139,6 +140,9 @@ public class Global extends MultiDexApplication {
     public static final int MAGTEK_EMBEDDED = 25;
     public static final int INGENICOMOBY85 = 26;
     public static final int PAX_A920 = 27;
+    public static final int HP_EONEPRIME = 28;
+
+    public static final int APT_50 = 29;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -244,6 +248,7 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager embededMSR;
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
+    public static ProgressDialog multiInventoryProgressDlog;
     public static OrderType consignmentType = OrderType.ORDER;
     public static OrderType ord_type = OrderType.ORDER;
     public static String amountPaid = "";
@@ -298,6 +303,7 @@ public class Global extends MultiDexApplication {
     public static Map<String, String> paymentIconsMap = paymentIconMap();
     public static boolean loggedIn = false;
     public static boolean isPaymentInProgress = false;
+    public static boolean isCheckoutInProgress = false;
     public static Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -372,6 +378,9 @@ public class Global extends MultiDexApplication {
         switch (type) {
             case STAR:
                 _name = "Star Micronics";
+                break;
+            case HP_EONEPRIME:
+                _name = "HPEngageOnePrimePrinter";
                 break;
             case MAGTEK:
                 _name = "MAGTEK";

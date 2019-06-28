@@ -98,6 +98,15 @@
                 app:layout_constraintLeft_toRightOf="@+id/pettyCashLbltextView27"
                 tools:ignore="HardcodedText" />
 
+            <Button
+                android:id="@+id/openDrawerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:text="@string/config_open_cash_drawer"
+                app:layout_constraintBottom_toTopOf="@+id/closeAmountLynearLayout"
+                app:layout_constraintTop_toBottomOf="@+id/textView24"
+                tools:layout_editor_absoluteX="405dp" />
+
             <LinearLayout
                 android:id="@+id/currencieslinearLayout4"
                 android:layout_width="0dp"

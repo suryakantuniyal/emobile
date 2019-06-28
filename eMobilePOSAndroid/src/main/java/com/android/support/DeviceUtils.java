@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ import java.util.Set;
 
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
+import drivers.EMSHPEngageOnePrimePrinter;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
 import drivers.EMSsnbc;
@@ -196,7 +198,9 @@ public class DeviceUtils {
                     }
                 }
             }
-        } else if (MyPreferences.isPaxA920()) {
+        } else if(MyPreferences.isAPT50()){
+            connectApt50(activity);
+        }else if (MyPreferences.isPaxA920()) {
             if (Global.mainPrinterManager == null || forceReload) {
                 edm = new EMSDeviceManager();
                 Global.mainPrinterManager = edm.getManager();
@@ -270,6 +274,8 @@ public class DeviceUtils {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
                 }
             }
+        }else if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
+            connectHPEngageOnePrimePrinter(activity,usbDevice);
         }
         ArrayList<Device> connected = new ArrayList(Global.printerDevices);
 
@@ -313,6 +319,9 @@ public class DeviceUtils {
             Log.d("USB product ID:", String.valueOf(device.getProductId()));
             int productId = device.getProductId();
             switch (productId) {
+                case 3690:
+                    preferences.setHPEOnePrime(true);
+                    return new EMSHPEngageOnePrimePrinter();
                 case 22321:
                 case 21541:
                     Log.d("USB POWA detected:", "true");
@@ -360,12 +369,20 @@ public class DeviceUtils {
                     context.registerReceiver(fingerPrintbroadcastReceiver, filter);
                     manager.requestPermission(usbDevice, mPermissionIntent);
                     connected = true;
-                    if (activity != null && activity instanceof Activity &&
-                            ((preferences.getPrinterType() == Global.STAR &&
-                                    preferences.getPrinterName().toUpperCase().startsWith("USB")) ||
-                                    (preferences.isSNBC())
+                    if (activity != null &&
+                            activity instanceof Activity &&
+                            ((preferences.getPrinterType() == Global.STAR && preferences.getPrinterName().toUpperCase().startsWith("USB")) ||
+                                    (preferences.isSNBC()) || (preferences.isHPEOnePrime())
                             )) {
-                        if (preferences.isSNBC()) {
+
+                        if(preferences.isHPEOnePrime()){
+                            EMSDeviceDriver usbDeviceDriver = getUSBDeviceDriver((Activity) activity);
+                            if(usbDeviceDriver != null){
+                                connectHPEngageOnePrimePrinter(activity,usbDeviceDriver);
+                            }
+                        }
+
+                        else if (preferences.isSNBC()) {
 //                            DeviceUtils.connectStarTS650BT(activity);
                             EMSDeviceDriver usbDeviceDriver = getUSBDeviceDriver((Activity) activity);
                             if (usbDeviceDriver != null) {
@@ -396,6 +413,46 @@ public class DeviceUtils {
         context.getApplicationContext().registerReceiver(fingerPrintbroadcastReceiver, intentFilter);
     }
 
+    public static void connectApt50(Activity activity){
+            EMSDeviceManager edm = new EMSDeviceManager();
+            Global.mainPrinterManager = edm.getManager();
+
+            String aptPrinter = "APT50 Printer";
+            if (Global.mainPrinterManager.loadMultiDriver(activity, Global.APT_50,
+                    32, true, "", "")) {
+                Log.e("APT50","Connection Successfull");
+                Device device = DeviceTableDAO.getByName(aptPrinter);
+                List<Device> devices = new ArrayList<>();
+                boolean deviceIsNew = false;
+                if (device == null) {
+                    device = new Device();
+                    deviceIsNew = true;
+                }
+                device.setId(aptPrinter);
+                device.setName(aptPrinter);
+                device.setPOS(true);
+                device.setType(String.valueOf(Global.APT_50));
+                device.setRemoteDevice(false);
+                device.setEmsDeviceManager(Global.mainPrinterManager);
+                device.setTextAreaSize(32);
+                devices.add(device);
+                DeviceTableDAO.insert(devices);
+                Global.printerDevices.add(device);
+                if (deviceIsNew) {
+                    RealmList<RealmString> values = new RealmList<>();
+                    values.add(Device.Printables.PAYMENT_RECEIPT.getRealmString());
+                    values.add(Device.Printables.PAYMENT_RECEIPT_REPRINT.getRealmString());
+                    values.add(Device.Printables.TRANSACTION_RECEIPT.getRealmString());
+                    values.add(Device.Printables.TRANSACTION_RECEIPT_REPRINT.getRealmString());
+                    values.add(Device.Printables.REPORTS.getRealmString());
+                    DeviceTableDAO.remove(values);
+                    device.setSelectedPritables(values);
+                    DeviceTableDAO.upsert(device);
+                }
+            } else {
+                Log.e("APT50","Failed to connect....");
+            }
+    }
 
     public static void connectStarTS650BT(Context context) {
         try {
@@ -407,26 +464,27 @@ public class DeviceUtils {
             ArrayList<PortInfo> mPortList = StarIOPort.searchPrinter("USB:", context);
             MyPreferences preferences = new MyPreferences(context);
             if (!mPortList.isEmpty()) {
+                String portName = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? "USB:" : mPortList.get(0).getPortName();
                 preferences.setPrinterType(Global.STAR);
-                preferences.setPrinterName(mPortList.get(0).getPortName());
-                preferences.setPrinterMACAddress(mPortList.get(0).getPortName());
+                preferences.setPrinterName(portName);
+                preferences.setPrinterMACAddress(portName);
                 preferences.posPrinter(false, true);
                 preferences.printerAreaSize(false, 48);
                 EMSBluetoothStarPrinter aDevice = new EMSBluetoothStarPrinter();
                 Global.mainPrinterManager = edm.getManager();
                 aDevice.autoConnect((Activity) context, edm, 48, true, preferences.getPrinterMACAddress(), "");
                 List<Device> devices = new ArrayList<>();
-                Device device = DeviceTableDAO.getByName(mPortList.get(0).getPortName());
+                Device device = DeviceTableDAO.getByName(portName);
                 if (device == null) {
                     device = new Device();
                 }
                 device.setTextAreaSize(48);
                 device.setEmsDeviceManager(Global.mainPrinterManager);
-                device.setId(mPortList.get(0).getPortName());
-                device.setName(mPortList.get(0).getPortName());
+                device.setId(portName);
+                device.setName(portName);
                 device.setType(String.valueOf(Global.STAR));
                 device.setRemoteDevice(false);
-                device.setMacAddress(mPortList.get(0).getPortName());
+                device.setMacAddress(portName);
                 devices.add(device);
                 DeviceTableDAO.insert(devices);
                 Global.printerDevices.add(device);
@@ -470,6 +528,39 @@ public class DeviceUtils {
                 device.setName("SNBC");
                 device.setId("SNBC");
                 device.setType(String.valueOf(Global.SNBC));
+                device.setRemoteDevice(false);
+                devices.add(device);
+                DeviceTableDAO.insert(devices);
+                Global.printerDevices.add(device);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void connectHPEngageOnePrimePrinter(Context context, EMSDeviceDriver usbDevice) {
+        try {
+//            autoConnect((Activity) context, true);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                EMSHPEngageOnePrimePrinter hp1Printer = (EMSHPEngageOnePrimePrinter) usbDevice;
+//                hp1Printer.initializePrinter();
+            } else {
+                MyPreferences preferences = new MyPreferences(context);
+                preferences.setPrinterType(Global.HP_EONEPRIME);
+                preferences.posPrinter(false, true);
+                preferences.printerAreaSize(false, 58);
+                EMSDeviceManager edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(context, Global.HP_EONEPRIME, EMSDeviceManager.PrinterInterfase.USB);
+                List<Device> devices = new ArrayList<>();
+                Device device = DeviceTableDAO.getByName("HP Engage One Prime Printer");
+                if (device == null) {
+                    device = new Device();
+                }
+                device.setTextAreaSize(58);
+                device.setName("HP Engage One Prime Printer");
+                device.setId("HP_E1PP");
+                device.setType(String.valueOf(Global.HP_EONEPRIME));
                 device.setRemoteDevice(false);
                 devices.add(device);
                 DeviceTableDAO.insert(devices);

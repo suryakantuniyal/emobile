@@ -83,6 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/row3"
             android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingBottom="15dp">
 
@@ -107,6 +108,16 @@
                 android:text="TextView"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/listview_text_size" />
+
+            <Button
+                android:id="@+id/viewOtherLocationsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".3"
+                android:background="@drawable/blue_gradient_header_horizontal"
+                android:text="@string/sales_product_details_inventory_locations"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
 
 
         </LinearLayout>

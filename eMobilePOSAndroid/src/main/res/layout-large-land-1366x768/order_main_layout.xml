@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/headerTitleContainer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header_bar_height"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="@dimen/header_txt_padding"
+            android:text="@string/sales_receipt_title"
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_bar_text_size" />
+
+        <Button
+            android:id="@+id/btnScan"
+            style="@style/action_button_text_appearance"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/action_button_selector"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="@string/button_scan"
+            android:textSize="@dimen/large_button_text_size"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnCheckOut"
+            style="@style/action_button_text_appearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/action_button_selector"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp"
+            android:text="@string/button_checkout"
+            android:textSize="@dimen/large_button_text_size" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/invisibleSearchMain"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"></EditText>
+
+    <LinearLayout
+        android:id="@+id/order_parent_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/order_receipt_frag_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="@integer/weight_split_view"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/order_catalog_frag_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="6.5"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="vertical"-->
+    <!--android:padding="0dp">-->
+    <!--&lt;!&ndash; NOTE No need to develop a system service for keyboard, there is a standard View for that (well, not completely standard, its in a funny package 'android.inputmethodservice'. &ndash;&gt;-->
+    <!--&lt;!&ndash; NOTE The graphical layout does not know the package ('java.lang.NoClassDefFoundError: Could not initialize class android.inputmethodservice.KeyboardView') so the keyboard is not shown. &ndash;&gt;-->
+    <!--<com.android.support.MyKeyboardView-->
+    <!--android:id="@+id/keyboardview"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:focusable="true"-->
+    <!--android:focusableInTouchMode="true"-->
+    <!--android:visibility="gone"-->
+    <!--android:background="#333333"/>-->
+
+    <!--</LinearLayout>-->
+
+</LinearLayout>

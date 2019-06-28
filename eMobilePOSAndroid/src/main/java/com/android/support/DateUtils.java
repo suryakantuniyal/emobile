@@ -120,4 +120,8 @@ public class DateUtils {
     public static String getEpochTime() {
         return String.valueOf(System.currentTimeMillis());
     }
+
+    public static String getEpochTime(Date date) {
+        return String.valueOf(date.getTime());
+    }
 }

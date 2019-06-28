@@ -97,7 +97,7 @@ public class MyPreferences {
     public static final String pref_handwritten_signature = "pref_handwritten_signature";
     public static final String pref_prompt_customer_copy = "pref_prompt_customer_copy";
     public static final String pref_print_receipt_transaction_payment = "pref_print_receipt_transaction_payment";
-    public static final String pref_print_taxes_brake_down = "pref_print_taxes_brake_down";
+    public static final String pref_print_taxes_breakdown = "pref_print_taxes_breakdown";
     public static final String pref_allow_decimal_quantities = "pref_allow_decimal_quantities";
     public static final String pref_group_receipt_by_sku = "pref_group_receipt_by_sku";
     public static final String pref_require_password_to_remove_void = "pref_require_password_to_remove_void";
@@ -139,6 +139,7 @@ public class MyPreferences {
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     private static final String pref_retail_taxes = "pref_retail_taxes";
     private static final String pref_use_clerks = "pref_use_clerks";
+    private static final String pref_use_clerks_autologout = "pref_use_clerks_autologout";
     private static final String pref_use_syncplus_services = "pref_use_syncplus_services";
     private static final String pref_syncplus_mode = "pref_syncplus_mode";
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
@@ -213,7 +214,8 @@ public class MyPreferences {
     public static boolean isTeamSable() {
         return Build.MODEL.toUpperCase().startsWith("SABRESD") ||
                 Build.MODEL.toUpperCase().equalsIgnoreCase("TR") ||
-                Build.MODEL.toUpperCase().equalsIgnoreCase("15N-A-RM");
+                Build.MODEL.toUpperCase().equalsIgnoreCase("15N-A-RM") ||
+                Build.MODEL.toUpperCase().equalsIgnoreCase("15N-RM");
     }
 
     public static boolean isPaxA920() {
@@ -876,6 +878,7 @@ public class MyPreferences {
         setIsICMPEVO(false);
         setIsKDC425(false);
         setIsOT310(false);
+        setHPEOnePrime(false);
 
         setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
@@ -985,6 +988,10 @@ public class MyPreferences {
         return false;
     }
 
+    public static boolean isAPT50(){
+        return Build.MODEL.toUpperCase().contains("WPOS");
+    }
+
     public boolean isOT310() {
         String device_ot310 = "device_ot310";
         return prefs.getBoolean(device_ot310, false);
@@ -1008,7 +1015,17 @@ public class MyPreferences {
         prefEditor.commit();
         return false;
     }
+    public boolean isHPEOnePrime() {
+        String device_hp = "device_HP_EOnePrime";
+        return prefs.getBoolean(device_hp, false);
+    }
 
+    public boolean setHPEOnePrime(boolean value) {
+        String device_hp = "device_HP_EOnePrime";
+        prefEditor.putBoolean(device_hp, value);
+        prefEditor.commit();
+        return false;
+    }
 
     public boolean isBixolonRD() {
         String device_bixolon = "device_bixolon_rd";
@@ -1053,6 +1070,17 @@ public class MyPreferences {
     public boolean setIsESY13P1(boolean value) {
         String device_ESY13P1 = "device_ESY13P1";
         prefEditor.putBoolean(device_ESY13P1, value);
+        prefEditor.commit();
+        return false;
+    }
+    public boolean isAPT120() {
+        String device_APT120 = "device_APT120";
+        return prefs.getBoolean(device_APT120, false);
+    }
+
+    public boolean setIsAPT120(boolean value) {
+        String device_APT120 = "device_APT120";
+        prefEditor.putBoolean(device_APT120, value);
         prefEditor.commit();
         return false;
     }
@@ -1257,6 +1285,10 @@ public class MyPreferences {
 
     public boolean isUseClerks() {
         return getPreferences(MyPreferences.pref_use_clerks);
+    }
+
+    public boolean isUseClerksAutoLogout() {
+        return getPreferences(MyPreferences.pref_use_clerks_autologout);
     }
 
     public String getGeniusIP() {

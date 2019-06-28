@@ -41,6 +41,7 @@ import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.cardmanager.CardManager_FA;
+import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.orders.Order;
@@ -123,6 +124,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private int totalPayCount = 0;
     private String order_email = "";
     private String order_phone = "";
+    private int splitPaymentsCount = 1;
     private Global.OrderType orderType;
     private boolean skipLogin;
     private Dialog dlog;
@@ -261,6 +263,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         }
         orderType = (Global.OrderType) extras.get("ord_type");
+        splitPaymentsCount = extras.getInt("splitPaymentsCount", 1);
         paymentHandlerDB = new PaymentsHandler(this);
         GenerateNewID generator = new GenerateNewID(this);
         pay_id = generator.getNextID(IdType.PAYMENT_ID);
@@ -595,6 +598,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))) {
                     finish();
+                    if (splitPaymentsCount == 1) {
+                        SalesTab_FR.checkAutoLogout(SelectPayMethod_FA.this);
+                    }
                 }
             }
         });
@@ -782,6 +788,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 } else if (overAllRemainingBalance <= 0) {
                     boolean addBalance = openGiftCardAddBalance();
                     finish();
+                    if (splitPaymentsCount == 1) {
+                        SalesTab_FR.checkAutoLogout(this);
+                    }
                     if (!addBalance) {
                         resetCustomer();
                     }
@@ -792,6 +801,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 resetCustomer();
             }
             finish();
+            SalesTab_FR.checkAutoLogout(this);
         }
         handler.removeCallbacks(runnable);
     }
@@ -1058,7 +1068,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     myPref.getPreferences(MyPreferences.pref_use_sound_payments)) {
                 List<PaymentMethod> itemsToDelete = new ArrayList<>();
                 for (PaymentMethod method : payTypeList) {
-                    if (!method.getPaymethod_name().equalsIgnoreCase("Cash")) {
+                    if (!method.getPaymentmethod_type().equalsIgnoreCase("Cash") &&
+                            !method.getPaymentmethod_type().equalsIgnoreCase("GiftCard") &&
+                            !method.getPaymentmethod_type().equalsIgnoreCase("Loyalty") &&
+                            !method.getPaymentmethod_type().equalsIgnoreCase("Reward")) {
                         itemsToDelete.add(method);
                     }
                 }
@@ -1280,6 +1293,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         showPrintDlg(true, false, null);
                     } else {
                         finish();
+                        if (splitPaymentsCount == 1) {
+                            SalesTab_FR.checkAutoLogout(SelectPayMethod_FA.this);
+                        }
                     }
                 } else {
                     showPrintDlg(wasReprint, false, null);

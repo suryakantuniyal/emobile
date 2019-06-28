@@ -52,7 +52,6 @@ import com.android.support.CreditCardInfo;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -61,6 +60,12 @@ import com.ingenico.mpos.sdk.response.TransactionResponse;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.pax.poslink.POSLinkAndroid;
+import com.pax.poslink.PaymentRequest;
+import com.pax.poslink.PaymentResponse;
+import com.pax.poslink.PosLink;
+import com.pax.poslink.ProcessTransResult;
+import com.pax.poslink.poslink.POSLinkCreator;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -68,7 +73,6 @@ import org.xml.sax.XMLReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -84,10 +88,19 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import drivers.ingenico.utils.MobilePosSdkHelper;
+import drivers.pax.utils.PosLinkHelper;
 import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
 
 import static drivers.ingenico.utils.MobilePosSdkHelper.MOBY8500;
+import static drivers.pax.utils.Constant.CARD_EXPIRED;
+import static drivers.pax.utils.Constant.HAS_VOIDED;
+import static drivers.pax.utils.Constant.REQUEST_TENDER_TYPE_CREDIT;
+import static drivers.pax.utils.Constant.REQUEST_TENDER_TYPE_DEBIT;
+import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_VOID;
+import static drivers.pax.utils.Constant.TRANSACTION_CANCELED;
+import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
+import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
 
 public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         implements EMSCallBack, OnClickListener, OnItemClickListener,
@@ -126,6 +139,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
     private List<Payment> paymentsToVoid;
     private List<Payment> listVoidPayments;
     private PaymentsHandler payHandler;
+    private PosLink poslink;
+    private static ProcessTransResult ptr;
+    private String paxOrigRefNum = "";
+    private int paxTenderType;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -155,9 +172,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         order_id = extras.getString("ord_id");
         order = ordersHandler.getOrder(order_id);
-//        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        orderedProd = order.getOrderProducts();//orderProductsHandler.getOrderProducts(order_id);
-//        CustomersHandler customersHandler = new CustomersHandler(activity);
+        orderedProd = order.getOrderProducts();
         PaymentsHandler paymentHandler = new PaymentsHandler(activity);
         paymentMapList = paymentHandler.getPaymentDetailsForTransactions(order_id);
         String encodedImg = order.ord_signature;
@@ -171,7 +186,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
             layered.setLayerInset(1, 100, 30, 50, 60);
             receipt.setImageDrawable(layered);
         }
-        custNameView.setText(order.customer.getCust_name());//(customersHandler.getSpecificValue("cust_name", order.cust_id));
+        custNameView.setText(order.customer.getCust_name());
         date.setText(getCaseData(CASE_TOTAL, 0) + " on " + order.ord_timecreated);
         myListView.addHeaderView(headerView);
         View footerView = getLayoutInflater().inflate(R.layout.orddetails_lvfooter_adapter, (ViewGroup) findViewById(R.id.order_footer_root));
@@ -186,15 +201,14 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                     mapImg.setImageResource(R.drawable.map_no_image);
                 else
                     mapImg.setImageDrawable(mapDrawable);
-                //call setText here
             }
         };
         new Thread(new Runnable() {
             public void run() {
                 Message msg = new Message();
                 StringBuilder sb = new StringBuilder();
-                String latitude = order.ord_latitude;//orderHashMap.get("ord_latitude");
-                String longitude = order.ord_longitude;//orderHashMap.get("ord_longitude");
+                String latitude = order.ord_latitude;
+                String longitude = order.ord_longitude;
                 if (!latitude.isEmpty() && !longitude.isEmpty()) {
                     sb.append("https://maps.googleapis.com/maps/api/staticmap?center=");
                     sb.append(latitude).append(",").append(longitude);
@@ -245,18 +259,12 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
         }
-//        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn = powerManager.isScreenOn();
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
-//        DeviceUtils.unregisterFingerPrintReader(this);
         global.startActivityTransitionTimer();
     }
 
@@ -299,8 +307,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
         if (read) {
             if (paymentsToVoid.size() > 0) {
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
-                BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
                 Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid(), cardManager);
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
@@ -586,8 +592,112 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         }
     }
 
+    private void startPaxVoids() {
+        myProgressDialog = new ProgressDialog(activity);
+        myProgressDialog.setMessage(getString(R.string.voiding_payments));
+        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myProgressDialog.setCancelable(false);
+        myProgressDialog.show();
+
+        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
+        poslink = POSLinkCreator.createPoslink(getApplicationContext());
+
+        // as processTrans is blocked, we must run it in an async task
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                PaymentRequest payrequest;
+                for (Payment payment : listVoidPayments) {
+                    if (!payment.getCard_type().equalsIgnoreCase("Cash") &&
+                            !payment.getCard_type().equalsIgnoreCase("GiftCard") &&
+                            !payment.getCard_type().equalsIgnoreCase("Loyalty") &&
+                            !payment.getCard_type().equalsIgnoreCase("Reward")) {
+                        payrequest = new PaymentRequest();
+                        payrequest.ECRRefNum = "1";
+                        payrequest.TenderType = payment.getPay_stamp().equals("1") ?
+                                REQUEST_TENDER_TYPE_CREDIT : REQUEST_TENDER_TYPE_DEBIT;
+                        payrequest.OrigRefNum = payment.getPay_transid();
+                        payrequest.TransType = REQUEST_TRANSACTION_TYPE_VOID;
+
+                        poslink.PaymentRequest = payrequest;
+                        poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+
+                        try {
+                            Thread.sleep(500);
+                            // ProcessTrans is Blocking call, will return when the transaction is complete.
+                            ptr = poslink.ProcessTrans();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processResponse();
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void processResponse() {
+        Global.dismissDialog(this, myProgressDialog);
+        btnVoid.setEnabled(true);
+
+        if (ptr.Code == ProcessTransResult.ProcessTransResultCode.OK) {
+            PaymentResponse response = poslink.PaymentResponse;
+            switch (response.ResultCode) {
+                case TRANSACTION_SUCCESS:
+                    new voidPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    btnVoid.setEnabled(false);
+                    Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
+                    break;
+                case HAS_VOIDED:
+                    showErrorDlog("Transaction already voided!");
+                    new voidPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    btnVoid.setEnabled(false);
+                    break;
+                case TRANSACTION_TIMEOUT:
+                    showErrorDlog("Transaction TimeOut!");
+                    break;
+                case TRANSACTION_CANCELED:
+                    showErrorDlog("Transaction Canceled!");
+                    break;
+                case CARD_EXPIRED:
+                    showErrorDlog("Card is invalid or expired!");
+                    break;
+            }
+        } else if (ptr.Code == ProcessTransResult.ProcessTransResultCode.TimeOut) {
+            showErrorDlog("Transaction TimeOut!\n" + ptr.Msg);
+        } else {
+            showErrorDlog("Transaction Error!\n" + ptr.Msg);
+        }
+    }
+
+    private void showErrorDlog(String msg) {
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_single_layout);
+
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_error);
+        viewMsg.setText(msg);
+
+        Button btnOk = dlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
+    }
+
     private void voidTransaction() {
-        double amountToBeSubstracted;
         OrdersHandler handler = new OrdersHandler(activity);
         handler.updateIsVoid(order_id);
         handler.updateIsProcessed(order_id, "9");
@@ -598,11 +708,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         ord.ord_id = order_id;
         ord.ord_type = order.ord_type;
         voidHandler.insert(ord);
-        //Section to update the local ShiftPeriods database to reflect the VOID
-//        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
-//        amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
-        //update ShiftPeriods (isReturn set to true)
-//        ShiftDAO.updateShiftAmounts(amountToBeSubstracted, true);
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
@@ -610,12 +715,17 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         }
         payHandler = new PaymentsHandler(activity);
         listVoidPayments = payHandler.getOrderPayments(order_id);
+
+        if (myPref.getPreferences(MyPreferences.pref_use_pax)) {
+            startPaxVoids();
+            return;
+        }
+
         int size = listVoidPayments.size();
         if (size > 0) {
             if (myPref.getSwiperType() == Global.HANDPOINT) {
                 paymentsToVoid = new ArrayList<>();
                 paymentsToVoid.addAll(listVoidPayments);
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid(), null);
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
@@ -715,7 +825,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                     } else if (paymentType.equals("CASH")) {
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
-                        if (!listVoidPayments.get(i).getPay_stamp().equals(MOBY8500)) {
+                        if (myPref.getPreferences(MyPreferences.pref_use_pax)) {
+                            payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
+                        } else if (!listVoidPayments.get(i).getPay_stamp().equals(MOBY8500)) {
                             payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
                             xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                             inSource = new InputSource(new StringReader(xml));
@@ -867,7 +979,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                                 voidDrawable = context.getResources().getDrawable(R.drawable.void_payment);
                             }
                             if (iconName == null)
-                                iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
+                                iconId = R.drawable.debitcard;
                             else
                                 iconId = context.getResources().getIdentifier(iconName, "drawable", context.getPackageName());
 

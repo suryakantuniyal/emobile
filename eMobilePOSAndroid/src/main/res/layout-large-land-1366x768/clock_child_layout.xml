@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/blue_gradient_header_horizontal">
+
+
+        <ImageView
+            android:id="@+id/backbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:scaleX=".7"
+            android:scaleY=".7"
+            android:src="@drawable/ic_arrow_back_black_48dp"
+            android:tint="@color/common_google_signin_btn_text_dark"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/HeaderTitle"
+            style="@style/text_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal|center"
+            android:padding="10dp"
+            android:text="@string/clock_title"
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_bar_text_size"
+            tools:layout_editor_absoluteY="639dp" />
+
+    </TableRow>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:id="@+id/topDate"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="100dp"
+                android:text=""
+                android:textAppearance="@style/black_text_appearance"
+                android:textSize="@dimen/clock_large_text_size" />
+
+            <DigitalClock
+                android:id="@+id/topClock"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/topDate"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:textAppearance="@style/black_text_appearance"
+                android:textSize="@dimen/clock_large_text_size" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout1"
+                android:layout_width="@dimen/clock_width"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/topClock"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="27dp"
+                android:background="@drawable/sync_tab_grey_holder"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    style="@style/text_shadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/clock_last_status"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textSize="@dimen/clock_small_text_size" />
+
+                <TextView
+                    android:id="@+id/clockClerkNameID"
+                    style="@style/text_shadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/clock_medium_text_size" />
+
+                <TextView
+                    android:id="@+id/clockType"
+                    style="@style/text_shadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textSize="@dimen/clock_medium_text_size" />
+
+                <TextView
+                    android:id="@+id/clockDateTime"
+                    style="@style/text_shadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textSize="@dimen/clock_medium_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linearLayout1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="33dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/clockIn"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/action_button_selector"
+                    android:padding="20dp"
+                    android:text="@string/clock_clock_in"
+                    android:textSize="@dimen/sync_button_text_size" />
+
+                <Button
+                    android:id="@+id/clockOut"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/action_button_selector"
+                    android:padding="20dp"
+                    android:text="@string/clock_clock_out"
+                    android:textSize="@dimen/sync_button_text_size" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

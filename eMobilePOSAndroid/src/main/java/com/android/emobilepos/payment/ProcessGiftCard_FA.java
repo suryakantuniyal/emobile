@@ -52,6 +52,13 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.bbpos.bbdevice.BBDeviceController;
 import com.crashlytics.android.Crashlytics;
+import com.pax.poslink.ManageRequest;
+import com.pax.poslink.ManageResponse;
+import com.pax.poslink.POSLinkAndroid;
+import com.pax.poslink.PosLink;
+import com.pax.poslink.ProcessTransResult;
+import com.pax.poslink.ProcessTransResult.ProcessTransResultCode;
+import com.pax.poslink.poslink.POSLinkCreator;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -79,6 +86,7 @@ import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSNomad;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import drivers.pax.utils.PosLinkHelper;
 import interfaces.EMSCallBack;
 import util.json.UIUtils;
 
@@ -109,7 +117,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private EMSIDTechUSB _msrUsbSams;
     private GiftCardTextWatcher msrTextWatcher;
     private AssignEmployee assignEmployee;
-
+    private PosLink poslink;
+    private static ProcessTransResult ptr;
     private BBDeviceController bbDeviceController;
     private BBPosShelpaDeviceDriver listener;
     private boolean bcrScanning;
@@ -207,14 +216,14 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         bbDeviceController = BBDeviceController.getInstance(
                 getApplicationContext(), listener);
         bbDeviceController.startBarcodeReader();
-//        Toast.makeText(ProcessGiftCard_FA.this, "startBarcodeReader", Toast.LENGTH_LONG).show();
 
+        Button paxSwipe = findViewById(R.id.paxSwipe);
+        if (MyPreferences.isPaxA920()) {
+            paxSwipe.setOnClickListener(this);
+        } else {
+            paxSwipe.setVisibility(View.GONE);
+        }
     }
-
-//    @Override
-//    public void onDataScanned(String data) {
-//        fieldCardNum.setText(data);
-//    }
 
     @Override
     public void onResume() {
@@ -234,10 +243,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onPause() {
         super.onPause();
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn = powerManager.isScreenOn();
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -262,12 +267,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         super.onDestroy();
 
         bbDeviceController.stopBarcodeReader();
-//        Toast.makeText(ProcessGiftCard_FA.this, "stopBarcodeReader", Toast.LENGTH_LONG).show();
-
         bbDeviceController.releaseBBDeviceController();
         bbDeviceController = null;
         listener = null;
-//        Toast.makeText(ProcessGiftCard_FA.this, "releaseBBDeviceController", Toast.LENGTH_LONG).show();
     }
 
     private TextWatcher getTextWatcher(final EditText editText) {
@@ -756,6 +758,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     public void onClick(View v) {
         if (UIUtils.singleOnClick(v)) {
             switch (v.getId()) {
+                case R.id.paxSwipe:
+                    processPaxSwipe();
+                    break;
                 case R.id.exactAmountBut:
                     fieldAmountTendered.setText(fieldAmountDue.getText().toString());
                     break;
@@ -768,6 +773,68 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     }
                     break;
             }
+        }
+    }
+
+    private void processPaxSwipe() {
+        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
+        poslink = POSLinkCreator.createPoslink(getApplicationContext());
+        ManageRequest manageRequest = new ManageRequest();
+        manageRequest.EDCType = 6;
+        manageRequest.Trans = 11;
+        manageRequest.TransType = 24;
+        manageRequest.Amount = "100";
+        manageRequest.MagneticSwipeEntryFlag = "1";
+        manageRequest.ManualEntryFlag = "1";
+        manageRequest.ContactlessEntryFlag = "1";
+        manageRequest.ContactEMVEntryFlag = "1";
+        manageRequest.FallbackSwipeEntryFlag = "1";
+        manageRequest.ExpiryDatePrompt = "1";
+        manageRequest.CVVPrompt = "1";
+        manageRequest.ZipCodePrompt = "1";
+        manageRequest.EncryptionFlag = "";
+        manageRequest.KeySlot = "";
+        manageRequest.PaddingChar = "";
+        manageRequest.TrackDataSentinel = "1";
+        manageRequest.MINAccountLength = "";
+        manageRequest.MAXAccountLength = "";
+        manageRequest.EmvKernelConfigurationSelection = "";
+        manageRequest.TransactionDate = "";
+        manageRequest.TransactionTime = "";
+        manageRequest.CurrencyCode = "0840";
+        manageRequest.CurrencyExponent = "";
+        manageRequest.MerchantCategoryCode = "";
+        manageRequest.TagList = "";
+        manageRequest.TimeOut = "300";
+        poslink.ManageRequest = manageRequest;
+        poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+
+        // as processTrans is blocked, we must run it in an async task
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                    // ProcessTrans is Blocking call, will return when the transaction is complete.
+                    ptr = poslink.ProcessTrans();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processResponse();
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void processResponse() {
+        if (ptr.Code == ProcessTransResultCode.OK) {
+            ManageResponse response = poslink.ManageResponse;
+            Global.isEncryptSwipe = false;
+            fieldHidden.setText(response.Track2Data);
         }
     }
 

@@ -64,6 +64,7 @@ import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
+import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -953,7 +954,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                               boolean isFromOnHold, boolean voidOnHold) {
         TaxesCalculator.calculateOrderTaxesAmount(order);
         OrdersHandler ordersHandler = new OrdersHandler(getActivity());
-        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
+        if (typeOfProcedure != Global.TransactionType.REFUND) {
+            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
+            ordTaxesDB.insert(order.getListOrderTaxes(), order.ord_id);
+        }
         getOrderingMainFa().global.order = order;
         order_email = emailHolder;
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(getActivity());
@@ -1001,11 +1005,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
 
-                    if (getOrderingMainFa().global.order.getListOrderTaxes() != null
-                            && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
-                            && typeOfProcedure != Global.TransactionType.REFUND)
-                        ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
-                                getOrderingMainFa().global.order.ord_id);
                     if (myPref.isRestaurantMode())
                         new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
@@ -1017,12 +1016,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     getOrderingMainFa().global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
-
-                    if (getOrderingMainFa().global.order.getListOrderTaxes() != null
-                            && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
-                            && typeOfProcedure != Global.TransactionType.REFUND)
-                        ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
-                                getOrderingMainFa().global.order.ord_id);
                     new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
                 }
             } else {
@@ -1043,12 +1036,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             orderProductsHandler.insert(getOrderingMainFa().global.order.getOrderProducts());
                         }
                         productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
-                        if (getOrderingMainFa().global.order.getListOrderTaxes() != null
-                                && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
-                                && typeOfProcedure != Global.TransactionType.REFUND) {
-                            ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
-                                    getOrderingMainFa().global.order.ord_id);
-                        }
                     }
                 }
                 if (myPref.isRestaurantMode())
@@ -2242,6 +2229,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         }
                     }
                 }
+                // mark all as printed (todo: improve this loop)
+                for (OrderProduct op : getOrderingMainFa().global.order.getOrderProducts()) {
+                    op.setPrinted(true);
+                }
             }
             return null;
         }
@@ -2301,6 +2292,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     showSplitedOrderPreview();
                 } else if (getOrderingMainFa().orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT) {
                     getActivity().finish();
+                    SalesTab_FR.checkAutoLogout(getActivity());
                 }
             }
         }

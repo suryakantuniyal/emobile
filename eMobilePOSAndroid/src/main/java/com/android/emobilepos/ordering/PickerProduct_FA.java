@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -32,6 +34,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.UomDAO;
 import com.android.database.PriceLevelHandler;
@@ -40,9 +43,12 @@ import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
+import com.android.emobilepos.adapters.InventoryLocationsListAdapter;
 import com.android.emobilepos.models.Discount;
+import com.android.emobilepos.models.InventoryItem;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.models.realms.UOM;
 import com.android.support.GenerateNewID;
@@ -50,6 +56,7 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
+import com.android.support.SynchMethods;
 import com.android.support.TerminalDisplay;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -64,9 +71,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import interfaces.InventoryLocationSyncCallback;
 import util.json.JsonUtils;
 
-public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
+public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener, InventoryLocationSyncCallback {
 
     private final int SEC_QTY = 3, SEC_CMT = 5, SEC_UOM = 4, SEC_PRICE_LEV = 6, SEC_DISCOUNT = 7, SEC_OTHER_TYPES = 9, SEC_ADDITIONAL_INFO = 10;
     private final int INDEX_UOM = 0, INDEX_CMT = 1, INDEX_PRICE_LEVEL = 2, INDEX_DISCOUNT = 3, OFFSET = 4, MAIN_OFFSET = 3;
@@ -89,7 +97,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private String taxAmount = defVal, disAmount = defVal, disTotal = defaultVal, discount_id;
     private String uomName = "", uomID = "";
     private boolean isFixed = true;
-    private String prodID;
+    private String prodID, employeeID, regID;
     private boolean isModify;
     private int modifyOrderPosition = 0;
     private String imgURL;
@@ -114,6 +122,33 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private boolean isToGo;
     private Global.TransactionType mTransType;
 
+    private Button inventoryLocations;
+    private List<InventoryItem> inventoryList;
+    private RecyclerView.Adapter adapter;
+
+
+    @Override
+    public void inventoryLocationsSynched(List<InventoryItem> onHandItems) {
+        if (onHandItems != null) {
+            final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+            dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dlog.setCancelable(true);
+            dlog.setCanceledOnTouchOutside(true);
+            dlog.setContentView(R.layout.multi_inventory_locations);
+
+            RecyclerView recyclerView = dlog.findViewById(R.id.inventoryRecycler);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            adapter = new InventoryLocationsListAdapter(onHandItems, this);
+            recyclerView.setAdapter(adapter);
+
+            int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.65);
+            int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.8);
+            dlog.getWindow().setLayout(width, height);
+            dlog.show();
+            Global.dismissDialog(this, Global.multiInventoryProgressDlog);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -147,6 +182,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         lView = findViewById(R.id.pickerLV);
         headerProductID = header.findViewById(R.id.pickerHeaderID);
         headerOnHand = header.findViewById(R.id.pickerHeaderQty);
+        inventoryLocations = header.findViewById(R.id.viewOtherLocationsButton);
+        inventoryLocations.setOnClickListener(this);
         headerImage = header.findViewById(R.id.itemHeaderImg);
         headerImage.setOnClickListener(this);
 
@@ -235,6 +272,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             case R.id.pickerHeaderButton: //Add product
                 addProductToOrder();
                 break;
+            case R.id.viewOtherLocationsButton:
+                showInventoryLocationsDlog();
         }
     }
 
@@ -269,6 +308,19 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 break;
 
         }
+    }
+
+    private void showInventoryLocationsDlog() {
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        regID = myPref.getAcctNumber();
+
+        if (assignEmployee != null) {
+            employeeID = String.valueOf(assignEmployee.getEmpId());
+        } else {
+            employeeID = "unknown";
+        }
+
+        SynchMethods.syncMultiInventoryLocations(this, PickerProduct_FA.this, prodID, employeeID, regID);
     }
 
     private void setOrderProductValues() {
@@ -1416,6 +1468,5 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             Button delete;
         }
     }
-
 
 }

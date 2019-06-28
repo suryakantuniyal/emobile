@@ -16,8 +16,7 @@
         android:gravity="center"
         android:textAppearance="@style/white_text_appearance"
         android:textSize="@dimen/header_bar_text_size"
-        tools:text="Per-Shift" />
-
+        tools:text="@string/report_per_shift" />
 
     <LinearLayout
         android:id="@+id/tabMenuContainer"
@@ -52,9 +51,7 @@
             android:text="@string/button_print"
             android:textStyle="bold" />
 
-
     </LinearLayout>
-
 
     <TableRow
         android:id="@+id/reportLV"
@@ -68,7 +65,7 @@
             android:layout_height="wrap_content"
             android:divider="@color/listview_divider"
             android:dividerHeight="0.1dp"
-            android:padding="10dp"></ListView>
+            android:padding="10dp"/>
     </TableRow>
 
 </RelativeLayout>

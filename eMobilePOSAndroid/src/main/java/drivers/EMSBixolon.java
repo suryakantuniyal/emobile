@@ -103,7 +103,7 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             e.printStackTrace();
             bxlConfigLoader.newFile();
         }
-        bixolonPrinter = new POSPrinter(activity);
+        bixolonPrinter = new POSPrinter();
         bixolonPrinter.addErrorListener(this);
         bixolonPrinter.addOutputCompleteListener(this);
         bixolonPrinter.addStatusUpdateListener(this);

@@ -625,6 +625,7 @@
     <string name="card_trans_id">"TransID"</string>
     <string name="error_wrong_amount">"El monto a pagar debe ser mayor que 0"</string>
     <string name="account_information">"Información de la cuenta"</string>
+    <string name="card_swipe">"SWIPE"</string>
     <string name="general_information">"Información general"</string>
     <string name="card_information">"Información de Tarjeta"</string>
     <string name="paymethod_due_amount_label">"Monto a Pagar"</string>
@@ -784,6 +785,7 @@
     <string name="receipt_thankyou">"Gracias"</string>
     <string name="receipt_started">"Empezado:"</string>
     <string name="receipt_sent_by">"Enviado por:"</string>
+    <string name="receipt_terminal">"Dispositivo:"</string>
     <string name="receipt_name">"Nombre:"</string>
     <string name="receipt_cons_trans_id">"ID de consignación"</string>
     <string name="receipt_consignment_pickup">"Recogida de consignación"</string>
@@ -830,11 +832,12 @@
     <string name="shift_add_expense">"Añadir No-Venta"</string>
     <string name="shift_title">"Turno"</string>
 
-    <string name="report_per_shift">"Por turno"</string>
-    <string name="shift_details">"Detalles del turno"</string>
+    <string name="report_per_shift">"Por turno (Reporte Z)"</string>
+    <string name="shift_details">"Detalles del turno (Reporte Z)"</string>
+    <string name="shift_id">"Turno #:"</string>
     <string name="sales_clerk">"Empleado de ventas"</string>
     <string name="begging_petty_cash">"Efectivo inicial en caja"</string>
-    <string name="total_expenses">"Gastos totales"</string>
+    <string name="total_expenses">"Total transacciones sin venta"</string>
     <string name="ending_petty_cash">"Efectivo final en caja"</string>
     <string name="total_transactions_cash">"Total de transacciones en efectivo"</string>
     <string name="total_ending_cash">"Total efectivo final"</string>
@@ -879,6 +882,7 @@
     <string name="config_gift_card_settings">"Configuración de la tarjeta de regalo"</string>
     <string name="config_open_cash_drawer">"Abrir cajón de efectivo"</string>
     <string name="config_use_clerks">"Uso de Empleados de servicio"</string>
+    <string name="config_use_clerks_autologout">"Cierre automático de sesión después de cada transacción"</string>
 
     <string name="config_change_password">"Cambiar la contraseña"</string>
     <string name="config_configure_cash_drawer">"Configurar cajón de efectivo"</string>
@@ -952,7 +956,7 @@
     <string name="config_wholesale_printout">"Impresión al por mayor"</string>
     <string name="config_prompt_customer_copy">"Solicitar copia de recibo de impresión para los pagos de CC"</string>
     <string name="config_print_receipt_transaction_payments">"Imprimir recibo de pagos de transacciones"</string>
-    <string name="config_print_taxes_brake_down">"Imprimir desglose de impuestos"</string>
+    <string name="config_print_taxes_breakdown">"Imprimir desglose de impuestos"</string>
     <string name="config_handwritten_signature">"Firma manuscrita"</string>
 
     <string name="config_allow_decimal_quantities">"Permitir cantidades decimales"</string>
@@ -1214,6 +1218,7 @@
     <string name="eod_report_shifts">"Turnos"</string>
     <string name="eod_report_itemsold">"Artículos vendidos"</string>
     <string name="eod_report_itemsreturned">"Artículos devueltos"</string>
+    <string name="eod_report_sales_by_clerk">"Ventas por empleados"</string>
     <string name="eod_report_dept_sales">"Ventas de departamento"</string>
     <string name="eod_report_dept_returns">"Devoluciones de Departamento"</string>
     <string name="eod_report_payment">"Pagos"</string>
@@ -1361,6 +1366,10 @@
     <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
+    <string name="sp_tender_type">"Tipo:"</string>
+    <string name="sp_tender_credit">"Crédito"</string>
+    <string name="sp_tender_debit">"Débito"</string>
+    <string name="sp_tender_refund">"Reembolso"</string>
     <string name="fingerprints">Huellas dactilares</string>
     <string name="information_saved">Informacion grabada.</string>
     <string name="customerBiometrics">Biometría del cliente</string>
@@ -1413,4 +1422,9 @@
     <string name="seconds">Segundos</string>
     <string name="config_default_customer_display_name">Nombre de cliente a mostrar </string>
     <string name="config_customer_settings">Configuracion del Cliente</string>
+    <string name="dlog_sales_item_check_inventory">Verificando en otras localizaciones…</string>
+    <string name="sales_product_details_inventory_locations">Otras Localizaciones</string>
+    <string name="sales_product_details_Invetory_locations_dlog_header_text">En Almacén</string>
+    <string name="dlog_sales_item_check_inventory_location_text">Localización</string>
+    <string name="dlog_sales_item_check_inventory_quantity_text">Cantidad</string>
 </resources>

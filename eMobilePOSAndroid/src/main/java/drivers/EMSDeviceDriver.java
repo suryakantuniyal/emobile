@@ -12,6 +12,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Environment;
 import android.os.RemoteException;
 import android.text.Html;
 import android.text.Spanned;
@@ -87,7 +88,10 @@ import com.uniquesecure.meposconnect.MePOSReceiptImageLine;
 import com.uniquesecure.meposconnect.MePOSReceiptLine;
 import com.uniquesecure.meposconnect.MePOSReceiptTextLine;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -122,14 +126,21 @@ import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
+import wangpos.sdk4.libbasebinder.Core;
 
+import static com.android.support.DateUtils.getEpochTime;
 import static drivers.EMSGPrinterPT380.PRINTER_ID;
+import static jpos.POSPrinterConst.PTR_BM_ASIS;
+import static jpos.POSPrinterConst.PTR_BM_CENTER;
+import static jpos.POSPrinterConst.PTR_S_RECEIPT;
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
     /*static PrinterApiContext printerApi;*/
     static Object printerTFHKA;
     private static int PAPER_WIDTH;
+    private final int SIZE_LIMIT = 20;
+    private final int SLEEP_TIME = 100;
     protected final String FORMAT = "windows-1252";
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -148,6 +159,7 @@ public class EMSDeviceDriver {
     PrinterAPI eloPrinterApi;
     Printer eloPrinterRefresh;
     POSPrinter bixolonPrinter;
+    POSPrinter hpPrinter;
     PService mPService = null;
     MePOSReceipt mePOSReceipt;
     InputStream inputStream;
@@ -157,6 +169,11 @@ public class EMSDeviceDriver {
     private StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
     private EscCommand esc;
     POSLinkPrinter.PrintDataFormatter printDataFormatter;
+    private static final int BMP_WIDTH_OF_TIMES = 4;
+    private static final int BYTE_PER_PIXEL = 3;
+
+    wangpos.sdk4.libbasebinder.Printer aptPrinter;
+    Core aptCore;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -253,7 +270,14 @@ public class EMSDeviceDriver {
                 Global.getCurrencyFormat(Global.getBigDecimalNum(anOrder.ord_subtotal).add(itemDiscTotal).toString()), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_discount_line_item),
                 Global.getCurrencyFormat(String.valueOf(itemDiscTotal)), lineWidth, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_global_discount),
+
+        String discountName = "";
+        if (anOrder.ord_discount_id != null && !anOrder.ord_discount_id.isEmpty()) {
+            ProductsHandler productDBHandler = new ProductsHandler(activity);
+            discountName = productDBHandler.getDiscountName(anOrder.ord_discount_id);
+        }
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                context.getString(R.string.receipt_global_discount) + " " + discountName,
                 Global.getCurrencyFormat(anOrder.ord_discount), lineWidth, 0));
 
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_tax),
@@ -261,7 +285,7 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
-        if (myPref.getPreferences(MyPreferences.pref_print_taxes_brake_down)) {
+        if (myPref.getPreferences(MyPreferences.pref_print_taxes_breakdown)) {
             if (myPref.isRetailTaxes()) {
                 HashMap<String, String[]> prodTaxes = new HashMap<>();
                 for (OrderProduct product : order.getOrderProducts()) {
@@ -345,6 +369,8 @@ public class EMSDeviceDriver {
             for (String line : split) {
                 SendCmd(String.format("80*%s", line));
             }
+        } else if (this instanceof EMSAPT50) {
+            apt50RasterPrint(str);
         } else if (this instanceof EMSGPrinterPT380) {
             // print line
             esc = new EscCommand();
@@ -402,6 +428,21 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSOneil4te) {
             device.write(str);
+        } else if (this instanceof EMSHPEngageOnePrimePrinter) {
+            try {
+                hpPrinter.open("HPEngageOnePrimePrinter");
+                hpPrinter.claim(10000);
+                hpPrinter.setDeviceEnabled(true);
+                hpPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, str);
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    hpPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if (this instanceof EMSBixolon) {
             try {
                 bixolonPrinter.open(myPref.getPrinterName());
@@ -472,6 +513,9 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else if (this instanceof EMSAPT50) {
+            String str = new String(byteArray);
+            apt50RasterPrint(str);
         } else if (this instanceof EMSBlueBambooP25) {
             try {
                 outputStream.write(byteArray);
@@ -489,6 +533,21 @@ public class EMSDeviceDriver {
                 pos_sdk.textPrint(send_buf, send_buf.length);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
+            }
+        } else if (this instanceof EMSHPEngageOnePrimePrinter) {
+            try {
+                hpPrinter.open("HPEngageOnePrimePrinter");
+                hpPrinter.claim(10000);
+                hpPrinter.setDeviceEnabled(true);
+                hpPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, new String(byteArray));
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    hpPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
             }
         } else if (this instanceof EMSBixolon) {
             try {
@@ -653,6 +712,69 @@ public class EMSDeviceDriver {
         }
     }
 
+    private void apt50PrintPaper() {
+        if (this instanceof EMSAPT50) {
+            try {
+                aptPrinter.printInit();
+                aptPrinter.clearPrintDataCache();
+                aptPrinter.printPaper(30);
+                aptPrinter.printFinish();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void apt50Leds(String led) {
+        try {
+            switch (led) {
+                case "on":
+                    aptCore.led(1, 1, 1, 1, 1);
+                    break;
+                case "off":
+                    aptCore.led(0, 0, 0, 0, 0);
+                    break;
+                case "blue":
+                    aptCore.led(1, 0, 0, 0, 1);
+                    break;
+                case "yellow":
+                    aptCore.led(0, 1, 0, 0, 1);
+                    break;
+                case "green":
+                    aptCore.led(0, 0, 1, 0, 1);
+                    break;
+                case "red":
+                    aptCore.led(0, 0, 0, 1, 1);
+                    break;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void apt50RasterPrint(String stringToPrint) {
+        Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
+                stringToPrint, 20, 450, typeface);
+        if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
+            try {
+                apt50Leds("yellow");
+                aptPrinter.printInit();
+                aptPrinter.clearPrintDataCache();
+                aptPrinter.printImageBase(rescaleBitmap(bitmapFromString),
+                        bitmapFromString.getWidth(),
+                        bitmapFromString.getHeight(),
+                        wangpos.sdk4.libbasebinder.Printer.Align.LEFT,
+                        0);
+                aptPrinter.printFinish();
+                apt50Leds("off");
+                apt50Leds("blue");
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     private void posLinkRasterPrint(String stringToPrint) {
         Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
                 stringToPrint, 26, 450, typeface);
@@ -780,6 +902,8 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else if (this instanceof EMSAPT50) {
+            print(str);
         } else if (this instanceof EMSBlueBambooP25) {
             print(str);
         } else if (this instanceof EMSOneil4te) {
@@ -791,6 +915,8 @@ public class EMSDeviceDriver {
         } else if (this instanceof EMSPowaPOS) {
             powaPOS.printText(str);
         } else if (this instanceof EMSsnbc) {
+            print(str);
+        } else if (this instanceof EMSHPEngageOnePrimePrinter) {
             print(str);
         } else if (this instanceof EMSBixolon) {
             try {
@@ -1079,6 +1205,7 @@ public class EMSDeviceDriver {
     }
 
     protected void printReceipt(Order anOrder, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
+
         try {
             if (myPref.isUsePermitReceipt()) {
                 printTicketReceipt(anOrder, lineWidth);
@@ -1106,7 +1233,7 @@ public class EMSDeviceDriver {
             print(getOrderTypeDetails(fromOnHold, anOrder, lineWidth, type));
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(anOrder.ord_timecreated, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(anOrder.ord_timeStarted, 3), lineWidth, 0));
 
             if (ShiftDAO.isShiftOpen() && myPref.isUseClerks()) {
                 String clerk_id = anOrder.clerk_id;
@@ -1174,7 +1301,9 @@ public class EMSDeviceDriver {
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
                                     Global.getCurrencyFormat(String.valueOf(orderProducts.get(i).getItemTotalCalculated())), lineWidth, 3));
                             if (orderProducts.get(i).getDiscount_id() != null && !TextUtils.isEmpty(orderProducts.get(i).getDiscount_id())) {
-                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
+                                ProductsHandler productDBHandler = new ProductsHandler(activity);
+                                String discountName = productDBHandler.getDiscountName(orderProducts.get(i).getDiscount_id());
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount) + " " + discountName,
                                         Global.getCurrencyFormat(orderProducts.get(i).getDiscount_value()), lineWidth, 3));
                             }
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
@@ -1196,7 +1325,9 @@ public class EMSDeviceDriver {
                                 Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()), lineWidth, 3));
 
                         if (orderProducts.get(i).getDiscount_id() != null && !TextUtils.isEmpty(orderProducts.get(i).getDiscount_id())) {
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
+                            ProductsHandler productDBHandler = new ProductsHandler(activity);
+                            String discountName = productDBHandler.getDiscountName(orderProducts.get(i).getDiscount_id());
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount) + " " + discountName,
                                     Global.getCurrencyFormat(orderProducts.get(i).getDiscount_value()), lineWidth, 3));
                         }
 
@@ -1213,6 +1344,11 @@ public class EMSDeviceDriver {
                     }
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
+
+                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                        // wait to fix printing incomplete issues on SM-T300i models.
+                        Thread.sleep(SLEEP_TIME);
+                    }
                 }
             } else {
                 int padding = lineWidth / 4;
@@ -1239,9 +1375,9 @@ public class EMSDeviceDriver {
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
 
-                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > 20) {
+                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
                         // wait to fix printing incomplete issues on SM-T300i models.
-                        Thread.sleep(100);
+                        Thread.sleep(SLEEP_TIME);
                     }
                 }
             }
@@ -1483,9 +1619,10 @@ public class EMSDeviceDriver {
         if (myPref.isPrintWebSiteFooterEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.setLength(0);
-            sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n", lineWidth));
+            sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n\n\n", lineWidth));
             print(sb.toString());
         }
+        apt50PrintPaper();
     }
 
     public void cutPaper() {
@@ -1500,6 +1637,22 @@ public class EMSDeviceDriver {
 
         if (this instanceof EMSBixolonRD) {
             SendCmd(String.format("81*%s", " "));
+        } else if (this instanceof EMSHPEngageOnePrimePrinter) {
+            try {
+                hpPrinter.open("HPEngageOnePrimePrinter");
+                hpPrinter.claim(10000);
+                hpPrinter.setDeviceEnabled(true);
+                hpPrinter.cutPaper(100);
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    hpPrinter.setDeviceEnabled(false);
+                    hpPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if (this instanceof EMSsnbc) {
             // ******************************************************************************************
             // print in page mode
@@ -1541,7 +1694,238 @@ public class EMSDeviceDriver {
         }
     }
 
+    /** METHODS FOR INSTANCES OF HPENGAGEONEPRIMEPRINTER or BIXOLON
+     * storeImage() -> Copies logo.png from data/data/com.emobilepos.app/files/logo.png
+     *                                  to a public directory called eMobileAssets.
+     * @param imageData Bitmap you want to save
+     * @param fname Name that will be assigned to image. Include the format of image(image.png, image.jpeg, image.bmp, etc...)
+     */
+    public void storeImage(Bitmap imageData, String fname) {
+        String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets/";
+        File dir = new File(Path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        try {
+            String filePath = dir.getAbsolutePath() + "/" + fname;
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+            BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+
+            imageData.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (FileNotFoundException e) {
+            Log.w("TAG", "Error saving image file: " + e.getMessage());
+        } catch (IOException e) {
+            Log.w("TAG", "Error saving image file: " + e.getMessage());
+        }
+    }
+
+    /** changeImageHeaders()
+     * @param orgBitmap Bitmap to have its header information changed
+     * @param filePath Directory of the bitmap
+     *
+     * writeInt() and writeShort() methods belong and are only used in changeImageHeaders()
+     */
+    public static boolean changeImageHeaders(Bitmap orgBitmap, String filePath) throws IOException {
+        long start = System.currentTimeMillis();
+        if (orgBitmap == null) {
+            return false;
+        }
+
+        if (filePath == null) {
+            return false;
+        }
+
+        boolean isSaveSuccess = true;
+
+        //image size
+        int width = orgBitmap.getWidth();
+        int height = orgBitmap.getHeight();
+
+        //image dummy data size
+        //reason : the amount of bytes per image row must be a multiple of 4 (requirements of bmp format)
+        byte[] dummyBytesPerRow = null;
+        boolean hasDummy = false;
+        int rowWidthInBytes = BYTE_PER_PIXEL * width; //source image width * number of bytes to encode one pixel.
+        if (rowWidthInBytes % BMP_WIDTH_OF_TIMES > 0) {
+            hasDummy = true;
+            //the number of dummy bytes we need to add on each row
+            dummyBytesPerRow = new byte[(BMP_WIDTH_OF_TIMES - (rowWidthInBytes % BMP_WIDTH_OF_TIMES))];
+            //just fill an array with the dummy bytes we need to append at the end of each row
+            for (int i = 0; i < dummyBytesPerRow.length; i++) {
+                dummyBytesPerRow[i] = (byte) 0xFF;
+            }
+        }
+
+        //an array to receive the pixels from the source image
+        int[] pixels = new int[width * height];
+
+        //the number of bytes used in the file to store raw image data (excluding file headers)
+        int imageSize = (rowWidthInBytes + (hasDummy ? dummyBytesPerRow.length : 0)) * height;
+        //file headers size
+        int imageDataOffset = 0x36;
+
+        //final size of the file
+        int fileSize = imageSize + imageDataOffset;
+
+        //Android Bitmap Image Data
+        orgBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        //ByteArrayOutputStream baos = new ByteArrayOutputStream(fileSize);
+        ByteBuffer buffer = ByteBuffer.allocate(fileSize);
+
+        /**
+         * BITMAP FILE HEADER Write Start
+         **/
+        buffer.put((byte) 0x42);
+        buffer.put((byte) 0x4D);
+
+        //size
+        buffer.put(writeInt(fileSize));
+
+        //reserved
+        buffer.put(writeShort((short) 0));
+        buffer.put(writeShort((short) 0));
+
+        //image data start offset
+        buffer.put(writeInt(imageDataOffset));
+
+        /** BITMAP FILE HEADER Write End */
+
+        //*******************************************
+
+        /** BITMAP INFO HEADER Write Start */
+        //size
+        buffer.put(writeInt(0x28));
+
+        //width, height
+        //if we add 3 dummy bytes per row : it means we add a pixel (and the image width is modified.
+        buffer.put(writeInt(width + (hasDummy ? (dummyBytesPerRow.length == 3 ? 1 : 0) : 0)));
+        buffer.put(writeInt(height));
+
+        //planes
+        buffer.put(writeShort((short) 1));
+
+        //bit count
+        buffer.put(writeShort((short) 24));
+
+        //bit compression
+        buffer.put(writeInt(0));
+
+        //image data size
+        buffer.put(writeInt(imageSize));
+
+        //horizontal resolution in pixels per meter
+        buffer.put(writeInt(0));
+
+        //vertical resolution in pixels per meter (unreliable)
+        buffer.put(writeInt(0));
+
+        buffer.put(writeInt(0));
+
+        buffer.put(writeInt(0));
+
+        /** BITMAP INFO HEADER Write End */
+
+        int row = height;
+        int col = width;
+        int startPosition = (row - 1) * col;
+        int endPosition = row * col;
+        while (row > 0) {
+            for (int i = startPosition; i < endPosition; i++) {
+                buffer.put((byte) (pixels[i] & 0x000000FF));
+                buffer.put((byte) ((pixels[i] & 0x0000FF00) >> 8));
+                buffer.put((byte) ((pixels[i] & 0x00FF0000) >> 16));
+            }
+            if (hasDummy) {
+                buffer.put(dummyBytesPerRow);
+            }
+            row--;
+            endPosition = startPosition;
+            startPosition = startPosition - col;
+        }
+
+        FileOutputStream fos = new FileOutputStream(filePath);
+        fos.write(buffer.array());
+        fos.close();
+        Log.v("AndroidBmpUtil", System.currentTimeMillis() - start + " ms");
+
+        return isSaveSuccess;
+    }
+
+    private static byte[] writeInt(int value) throws IOException {
+        byte[] b = new byte[4];
+
+        b[0] = (byte) (value & 0x000000FF);
+        b[1] = (byte) ((value & 0x0000FF00) >> 8);
+        b[2] = (byte) ((value & 0x00FF0000) >> 16);
+        b[3] = (byte) ((value & 0xFF000000) >> 24);
+
+        return b;
+    }
+
+    private static byte[] writeShort(short value) throws IOException {
+        byte[] b = new byte[2];
+
+        b[0] = (byte) (value & 0x00FF);
+        b[1] = (byte) ((value & 0xFF00) >> 8);
+
+        return b;
+    }
+
+    /**RescaleBitmap()
+     * @param bmp Bitmap to be rescaled and fit a paper width of 300
+     */
+    private Bitmap rescaleBitmap(Bitmap bmp) {
+        if (bmp.getWidth() > 300) {
+            int width = bmp.getWidth();
+            int height = bmp.getHeight();
+            float scale = 0;
+            scale = (float) 300 / width;
+            width = (int) (width * scale);
+            height = (int) (height * scale);
+            return Bitmap.createScaledBitmap(bmp, width, height, false);
+        }
+        return bmp;
+    }
+
+    /**processImageBitmap()
+     *
+     * @param type Type of image to be processed(logo, signature or QRCode)
+     * @param myBitmap Bitmap to be stored and processed
+     * @param bitmapPath Full path directory where bitmap is stored -Should be in the eMobileAssets Folder on the Public directory-
+     */
+    private void processImageBitmap(int type, Bitmap myBitmap, String bitmapPath){
+        String imageName = "";
+        switch(type){
+            case 0:
+                imageName="logo.bmp";
+                break;
+            case 1:
+                imageName = "signature.bmp";
+                break;
+            case 2:
+                imageName="qrCode.bmp";
+                break;
+        }
+        storeImage(myBitmap, imageName);
+        Bitmap bmp = BitmapFactory.decodeFile(bitmapPath);
+        Bitmap newBitmap = rescaleBitmap(bmp);
+        storeImage(newBitmap, imageName);
+        try {
+            changeImageHeaders(newBitmap, bitmapPath);
+        } catch (IOException e) {
+            Log.e("HPPrinter", "Could not change image headers");
+            e.printStackTrace();
+        }
+    }
+    /**------------------------END OF METHODS FOR INSTANCES--------------------------*/
+
+
     protected void printImage(int type) throws JAException {
+        String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets";
+
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
             return;
@@ -1553,6 +1937,10 @@ public class EMSDeviceDriver {
                 File imgFile = new File(myPref.getAccountLogoPath());
                 if (imgFile.exists()) {
                     myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    if (this instanceof EMSHPEngageOnePrimePrinter) {
+                        bitmapPath = bitmapPath + "/logo.bmp";
+                        processImageBitmap(type,myBitmap,bitmapPath);
+                    }
                 }
                 break;
             }
@@ -1561,6 +1949,10 @@ public class EMSDeviceDriver {
                 if (!TextUtils.isEmpty(encodedSignature)) {
                     byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
                     myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
+                    if (this instanceof EMSHPEngageOnePrimePrinter) {
+                        bitmapPath = bitmapPath + "/signature.bmp";
+                        processImageBitmap(type,myBitmap,bitmapPath);
+                    }
                 }
                 break;
             }
@@ -1568,6 +1960,10 @@ public class EMSDeviceDriver {
                 if (!TextUtils.isEmpty(encodedQRCode)) {
                     byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
                     myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
+                    if (this instanceof EMSHPEngageOnePrimePrinter) {
+                        bitmapPath = bitmapPath + "/qrCode.bmp";
+                        processImageBitmap(type,myBitmap,bitmapPath);
+                    }
                 }
                 break;
             }
@@ -1587,6 +1983,24 @@ public class EMSDeviceDriver {
                 } catch (Exception e) {
                     Crashlytics.logException(e);
                 }
+            } else if (this instanceof EMSAPT50) {
+                try {
+                    int[] status = new int[1];
+                    int ret = aptPrinter.getPrinterStatus(status);
+                    if (ret == 0) {
+                        aptPrinter.printInit();
+                        aptPrinter.clearPrintDataCache();
+                        aptPrinter.printImageBase(rescaleBitmap(myBitmap),
+                                myBitmap.getWidth(),
+                                myBitmap.getHeight(),
+                                wangpos.sdk4.libbasebinder.Printer.Align.CENTER,
+                                0);
+                        aptPrinter.printFinish();
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
             } else if (this instanceof EMSBlueBambooP25) {
                 EMSBambooImageLoader loader = new EMSBambooImageLoader();
                 ArrayList<ArrayList<Byte>> arrayListList = loader.bambooDataWithAlignment(0, myBitmap);
@@ -1663,22 +2077,44 @@ public class EMSDeviceDriver {
                 esc.addQueryPrinterStatus();
                 printGPrinter(esc);
             } else if (this instanceof EMSBixolon) {
-                ByteBuffer buffer = ByteBuffer.allocate(4);
-                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
-                buffer.put((byte) 50);
-                buffer.put((byte) 0x00);
-                buffer.put((byte) 0x00);
+//                ByteBuffer buffer = ByteBuffer.allocate(4);
+//                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
+//                buffer.put((byte) 50);
+//                buffer.put((byte) 0x00);
+//                buffer.put((byte) 0x00);
                 try {
                     bixolonPrinter.open(myPref.getPrinterName());
                     bixolonPrinter.claim(10000);
                     bixolonPrinter.setDeviceEnabled(true);
-                    bixolonPrinter.printBitmap(buffer.getInt(0), myBitmap,
-                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_LEFT);
+//                    bixolonPrinter.printBitmap(buffer.getInt(0), myBitmap,
+//                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_LEFT);
+                    bixolonPrinter.printBitmap(PTR_S_RECEIPT,
+                            bitmapPath,
+                            PTR_BM_ASIS,
+                            PTR_BM_CENTER);
                 } catch (JposException e) {
                     e.printStackTrace();
                 } finally {
                     try {
                         bixolonPrinter.close();
+                    } catch (JposException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (this instanceof EMSHPEngageOnePrimePrinter) {
+                try {
+                    hpPrinter.open("HPEngageOnePrimePrinter");
+                    hpPrinter.claim(10000);
+                    hpPrinter.setDeviceEnabled(true);
+                    hpPrinter.printBitmap(PTR_S_RECEIPT,
+                            bitmapPath,
+                            PTR_BM_ASIS,
+                            PTR_BM_CENTER);
+                } catch (JposException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        hpPrinter.close();
                     } catch (JposException e) {
                         e.printStackTrace();
                     }
@@ -1722,6 +2158,24 @@ public class EMSDeviceDriver {
                 } catch (Exception e) {
                     Crashlytics.logException(e);
                 }
+            } else if (this instanceof EMSAPT50) {
+                try {
+                    int[] status = new int[1];
+                    int ret = aptPrinter.getPrinterStatus(status);
+                    if (ret == 0) {
+                        aptPrinter.printInit();
+                        aptPrinter.clearPrintDataCache();
+                        aptPrinter.printImageBase(rescaleBitmap(bitmap),
+                                bitmap.getWidth(),
+                                bitmap.getHeight(),
+                                wangpos.sdk4.libbasebinder.Printer.Align.CENTER,
+                                0);
+                        aptPrinter.printFinish();
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
             } else if (this instanceof EMSmePOS) {
                 mePOSReceipt.addLine(new MePOSReceiptImageLine(bitmap));
             } else if (this instanceof EMSBlueBambooP25) {
@@ -1765,17 +2219,23 @@ public class EMSDeviceDriver {
                 print("\n\n\n\n");
 
             } else if (this instanceof EMSBixolon) {
-                ByteBuffer buffer = ByteBuffer.allocate(4);
-                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
-                buffer.put((byte) 50);
-                buffer.put((byte) 1);
-                buffer.put((byte) 0x00);
+//                ByteBuffer buffer = ByteBuffer.allocate(4);
+//                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
+//                buffer.put((byte) 50);
+//                buffer.put((byte) 1);
+//                buffer.put((byte) 0x00);
                 try {
+                    String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets/logo.bmp";
+                    processImageBitmap(0,bitmap,bitmapPath);
                     bixolonPrinter.open(myPref.getPrinterName());
                     bixolonPrinter.claim(10000);
                     bixolonPrinter.setDeviceEnabled(true);
-                    bixolonPrinter.printBitmap(buffer.getInt(0), bitmap,
-                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_CENTER);
+//                    bixolonPrinter.printBitmap(buffer.getInt(0), bitmap,
+//                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_CENTER);
+                    bixolonPrinter.printBitmap(PTR_S_RECEIPT,
+                            bitmapPath,
+                            PTR_BM_ASIS,
+                            PTR_BM_CENTER);
                 } catch (JposException e) {
                     e.printStackTrace();
                 } finally {
@@ -2055,6 +2515,7 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
                             "*" + payArray.getCcnum_last4(), lineWidth, 0));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0)).append("\n");
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Auth Code:", payArray.getAuthcode(), lineWidth, 0)).append("\n");
                 } else if (isCheckPayment) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
                             payArray.getPay_check(), lineWidth, 0));
@@ -2190,14 +2651,25 @@ public class EMSDeviceDriver {
                     sb.append(anOrder.cust_name).append("\n");
                 sb.append(getString(R.string.order)).append(": ").append(ordID).append("\n");
                 sb.append(getString(R.string.receipt_started)).append(" ")
-                        .append(Global.formatToDisplayDate(anOrder.ord_timecreated, -1)).append("\n");
+                        .append(Global.formatToDisplayDate(anOrder.ord_timeStarted, -1)).append("\n");
 
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
                 sdf1.setTimeZone(Calendar.getInstance().getTimeZone());
                 Date startedDate = sdf1.parse(anOrder.ord_timecreated);
                 Date sentDate = new Date();
 
-                sb.append(getString(R.string.receipt_sent_by)).append(" ").append(employee.getEmpName()).append(" (");
+                String clerkName = "";
+                if (anOrder.clerk_id != null && !anOrder.clerk_id.isEmpty()) {
+                    try {
+                        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(anOrder.clerk_id));
+                        clerkName = clerk.getEmpName();
+                    } catch (Exception e) {
+                        // invalid clerk id, leave name blank
+                        clerkName = "";
+                    }
+                }
+                sb.append(getString(R.string.receipt_sent_by)).append(" ").append(clerkName).append("\n");
+                sb.append(getString(R.string.receipt_terminal)).append(" ").append(employee.getEmpName()).append(" (");
 
                 if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60)
                     sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), -1)).append(")");
@@ -2314,6 +2786,12 @@ public class EMSDeviceDriver {
                             .append("\n\n");
                 } else
                     sb.append(textHandler.newLines(1));
+
+                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    // wait to fix printing incomplete issues on SM-T300i models.
+                    Thread.sleep(SLEEP_TIME);
+                }
+
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
             }
@@ -2331,6 +2809,8 @@ public class EMSDeviceDriver {
             cutPaper();
         } catch (JAException e) {
             Crashlytics.logException(e);
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2404,6 +2884,11 @@ public class EMSDeviceDriver {
                     ordTotal += Double.parseDouble(myConsignment.get(i).invoice_total);
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
+
+                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                        // wait to fix printing incomplete issues on SM-T300i models.
+                        Thread.sleep(SLEEP_TIME);
+                    }
                 }
             }
 
@@ -2431,6 +2916,8 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
         } catch (JAException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2511,6 +2998,11 @@ public class EMSDeviceDriver {
                 }
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
+
+                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    // wait to fix printing incomplete issues on SM-T300i models.
+                    Thread.sleep(SLEEP_TIME);
+                }
             }
             sb.append(textHandler.lines(lineWidth));
             if (!isPickup) {
@@ -2534,6 +3026,8 @@ public class EMSDeviceDriver {
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (JAException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2579,6 +3073,11 @@ public class EMSDeviceDriver {
                         lineWidth, 3)).append("\n\n\n");
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
+
+                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    // wait to fix printing incomplete issues on SM-T300i models.
+                    Thread.sleep(SLEEP_TIME);
+                }
             }
 
             if (printPref.contains(MyPreferences.print_footer))
@@ -2595,6 +3094,8 @@ public class EMSDeviceDriver {
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (JAException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2622,6 +3123,7 @@ public class EMSDeviceDriver {
         sb.append(textHandler.newLines(1));
         sb.append(textHandler.centeredString("Summary", lineWidth));
         sb.append(textHandler.newLines(1));
+
         BigDecimal returnAmount = new BigDecimal("0");
         BigDecimal salesAmount = new BigDecimal("0");
         BigDecimal invoiceAmount = new BigDecimal("0");
@@ -2792,7 +3294,7 @@ public class EMSDeviceDriver {
         listPayments = paymentHandler.getPaymentsGroupDayReport(1, null, mDate);
         if (listPayments.size() > 0) {
             sb.append(textHandler.newLines(1));
-            sb.append(textHandler.centeredString("Void", lineWidth));
+            sb.append(textHandler.centeredString("Voids", lineWidth));
             for (Payment payment : listPayments) {
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
@@ -2816,7 +3318,7 @@ public class EMSDeviceDriver {
         listPayments = paymentHandler.getPaymentsGroupDayReport(2, null, mDate);
         if (listPayments.size() > 0) {
             sb.append(textHandler.newLines(1));
-            sb.append(textHandler.centeredString("Refund", lineWidth));
+            sb.append(textHandler.centeredString("Refunds", lineWidth));
             for (Payment payment : listPayments) {
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
@@ -2865,11 +3367,15 @@ public class EMSDeviceDriver {
         AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         startReceipt();
         StringBuilder sb = new StringBuilder();
+        StringBuilder sb_ord_types = new StringBuilder();
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         sb.append(textHandler.centeredString(activity.getString(R.string.shift_details), lineWidth));
         Shift shift = ShiftDAO.getShift(shiftID);
         Clerk clerk = ClerkDAO.getByEmpId(shift.getClerkId());
         sb.append(textHandler.newLines(1));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.shift_id),
+                String.format("%s-%s", clerk.getEmpId(), getEpochTime(shift.getCreationDate())),
+                lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.sales_clerk), clerk == null ?
                 shift.getAssigneeName() : clerk.getEmpName(), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.receipt_employee), employee.getEmpName(), lineWidth, 0));
@@ -2899,12 +3405,97 @@ public class EMSDeviceDriver {
         sb.append(textHandler.newLines(1));
 
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        String startDate = DateUtils.getDateAsString(shift.getCreationDate(), "yyyy-MM-dd HH:mm");
-        String endDate = DateUtils.getDateAsString(shift.getEndTime(), "yyyy-MM-dd HH:mm");
+        String startDate = DateUtils.getDateAsString(
+                shift.getCreationDate(), "yyyy-MM-dd HH:mm");
+        String endDate = DateUtils.getDateAsString(
+                shift.getEndTime(), "yyyy-MM-dd HH:mm");
+
+        List<OrderProduct> listDeptSalesByClerk = orderProductsHandler
+                .getDepartmentShiftReportByClerk(true, null, startDate, endDate);
+        sb.append(textHandler.centeredString(
+                activity.getString(R.string.eod_report_sales_by_clerk), lineWidth));
+
+        for (OrderProduct product : listDeptSalesByClerk) {
+            String clerkName = "";
+            if (!product.getCat_id().isEmpty()) {
+                Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(product.getCat_id())); // clerk id
+                if (reportClerk != null) {
+                    clerkName = String.format(
+                            "%s (%s)", reportClerk.getEmpName(), reportClerk.getEmpId());
+                }
+            } else {
+                clerkName = employee.getEmpName();
+            }
+            sb.append(
+                    textHandler.threeColumnLineItem(clerkName, // clerk name
+                            60,
+                            product.getOrdprod_qty(), // total orders
+                            20,
+                            Global.getCurrencyFormat(product.getFinalPrice()), // total
+                            20, lineWidth, 0));
+        }
+        sb.append(textHandler.newLines(1));
+
+        OrdersHandler ordHandler = new OrdersHandler(activity);
+
+        sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
+        List<Order> listOrder = ordHandler.getOrderShiftReport(null, startDate, endDate);
+        HashMap<String, List<DataTaxes>> taxesBreakdownHashMap =
+                ordHandler.getOrderShiftReportTaxesBreakdown(null, startDate, endDate);
+
+        for (Order ord : listOrder) {
+            switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
+                case RETURN:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Return", lineWidth, 0));
+                    break;
+                case ESTIMATE:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Estimate", lineWidth, 0));
+                    break;
+                case ORDER:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Order", lineWidth, 0));
+                    break;
+                case SALES_RECEIPT:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Sales Receipt", lineWidth, 0));
+                    break;
+                case INVOICE:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Invoice", lineWidth, 0));
+                    break;
+            }
+
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("SubTotal",
+                    Global.getCurrencyFormat(ord.ord_subtotal), lineWidth, 3));
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discounts",
+                    Global.getCurrencyFormat(ord.ord_discount), lineWidth, 3));
+
+            if (taxesBreakdownHashMap.containsKey(ord.ord_type)) {
+                sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                        "Taxes", lineWidth, 3));
+                for (DataTaxes dataTax : taxesBreakdownHashMap.get(ord.ord_type)) {
+                    sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            dataTax.getTax_name(), Global.getCurrencyFormat(
+                                    dataTax.getTax_amount()), lineWidth, 6));
+                }
+            } else {
+                sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        "Taxes", "N/A", lineWidth, 3));
+            }
+
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                    "Total", Global.getCurrencyFormat(ord.ord_total), lineWidth, 3));
+        }
+
+        sb.append(sb_ord_types);
+        sb.append(textHandler.newLines(1));
+
         List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(
-                true, String.valueOf(shift.getClerkId()), startDate, endDate);
+                true, null, startDate, endDate);
         List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(
-                false, String.valueOf(shift.getClerkId()), startDate, endDate);
+                false, null, startDate, endDate);
         if (!listDeptSales.isEmpty()) {
             sb.append(textHandler.centeredString(activity.getString(R.string.eod_report_dept_sales), lineWidth));
             for (OrderProduct product : listDeptSales) {
@@ -2924,6 +3515,41 @@ public class EMSDeviceDriver {
                         20, lineWidth, 0));
             }
         }
+
+        PaymentsHandler paymentHandler = new PaymentsHandler(activity);
+        List<Payment> listPayments = paymentHandler.getPaymentsGroupShiftReport(0, null, startDate, endDate);
+        if (listPayments.size() > 0) {
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.centeredString("Payments", lineWidth));
+            for (Payment payment : listPayments) {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
+            }
+            listPayments.clear();
+        }
+
+        listPayments = paymentHandler.getPaymentsGroupShiftReport(1, null, startDate, endDate);
+        if (listPayments.size() > 0) {
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.centeredString("Voids", lineWidth));
+            for (Payment payment : listPayments) {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
+            }
+            listPayments.clear();
+        }
+
+        listPayments = paymentHandler.getPaymentsGroupShiftReport(2, null, startDate, endDate);
+        if (listPayments.size() > 0) {
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.centeredString("Refunds", lineWidth));
+            for (Payment payment : listPayments) {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.getCurrencyFormat(payment.getPay_amount()), lineWidth, 2));
+            }
+            listPayments.clear();
+        }
+
         sb.append(textHandler.newLines(1));
         sb.append(textHandler.centeredString(activity.getString(R.string.endShiftReport), lineWidth));
         sb.append(textHandler.newLines(4));

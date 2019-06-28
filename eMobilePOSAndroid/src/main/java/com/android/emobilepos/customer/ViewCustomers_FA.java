@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -59,6 +60,7 @@ import util.json.UIUtils;
 public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks, EMSCallBack {
     boolean isManualEntry = true;
     private ListView myListView;
+    private ProgressBar dataProgressBar;
     private Context thisContext = this;
     private Activity activity;
     private Cursor myCursor;
@@ -90,16 +92,26 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
         myListView = findViewById(R.id.customerSelectionLV);
+        dataProgressBar = findViewById(R.id.dataProgressBar);
         search = findViewById(R.id.searchCustomer);
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
         isReaderConnected = usbDevices.size() > 0;
         handler = new CustomersHandler(this);
-        if (myCursor != null) {
-            myCursor.close();
-        }
-        myCursor = handler.getCursorAllCust();
-        adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
-        myListView.setAdapter(adap2);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+//                if (myCursor != null) myCursor.close();
+                myCursor = handler.getCursorAllCust();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setListAdapter(thisContext, myCursor);
+                    }
+                });
+            }
+        }).start();
+
         Button addNewCust = findViewById(R.id.addCustButton);
         if (myPref.getPreferences(MyPreferences.pref_allow_customer_creation))
             addNewCust.setOnClickListener(this);
@@ -126,6 +138,12 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             bbDeviceController.startBarcodeReader();
         }
         isCallingSupported = PhoneUtils.isCallingSupported(this);
+    }
+
+    private synchronized void setListAdapter(Context context, Cursor cursor) {
+        adap2 = new CustomCursorAdapter(context, cursor, CursorAdapter.NO_SELECTION);
+        myListView.setAdapter(adap2);
+        dataProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -197,12 +215,22 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
                 String test = s.toString().trim();
                 if (test.isEmpty()) {
-                    if (myCursor != null)
-                        myCursor.close();
-                    myCursor = handler.getCursorAllCust();
 
-                    adap2 = new CustomCursorAdapter(thisContext, myCursor, CursorAdapter.NO_SELECTION);
-                    myListView.setAdapter(adap2);
+                    dataProgressBar.setVisibility(View.VISIBLE);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            if (myCursor != null) myCursor.close();
+                            myCursor = handler.getCursorAllCust();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setListAdapter(thisContext, myCursor);
+                                }
+                            });
+                        }
+                    }).start();
+
                     if (!isManualEntry) {
                         if (adap2.getCount() == 1) {
                             selectCustomer(0);
@@ -303,12 +331,21 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         global.startActivityTransitionTimer();
     }
 
-    public void performSearch(String text) {
-        if (myCursor != null)
-            myCursor.close();
-        myCursor = handler.getSearchCust(text);
-        adap2 = new CustomCursorAdapter(thisContext, myCursor, CursorAdapter.NO_SELECTION);
-        myListView.setAdapter(adap2);
+    public void performSearch(final String text) {
+        dataProgressBar.setVisibility(View.VISIBLE);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+//                if (myCursor != null) myCursor.close();
+                myCursor = handler.getSearchCust(text);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setListAdapter(thisContext, myCursor);
+                    }
+                });
+            }
+        }).start();
 
     }
 

@@ -11,7 +11,9 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.android.dao.ShiftDAO;
@@ -50,10 +52,14 @@ import util.MoneyUtils;
 import util.XmlUtils;
 
 import static drivers.pax.utils.Constant.CARD_EXPIRED;
+import static drivers.pax.utils.Constant.REQUEST_TENDER_TYPE_CREDIT;
+import static drivers.pax.utils.Constant.REQUEST_TENDER_TYPE_DEBIT;
 import static drivers.pax.utils.Constant.TRANSACTION_CANCELED;
 import static drivers.pax.utils.Constant.TRANSACTION_DECLINED;
 import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
 import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
+import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_RETURN;
+import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_SALE;
 
 /**
  * Created by Luis Camayd on 10/11/2018.
@@ -64,6 +70,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     private Global global;
     private Bundle extras;
     private EditText invoiceJobIdTextView, amountTextView;
+    private RadioButton creditRadioButton;
     private ProgressDialog myProgressDialog;
     private Payment payment;
     private boolean hasBeenCreated = false;
@@ -81,6 +88,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         extras = this.getIntent().getExtras();
         invoiceJobIdTextView = findViewById(R.id.invoiceJobIdTextView);
         amountTextView = findViewById(R.id.amountTextView);
+        creditRadioButton = findViewById(R.id.creditRadioButton);
 
         Button btnProcess = findViewById(R.id.processButton);
         btnProcess.setOnClickListener(this);
@@ -114,6 +122,13 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         if (extras.containsKey("isReopen")) {
             finish();
         }
+
+        isRefund = extras.getBoolean("salesrefund", false);
+
+        if (isRefund) {
+            CheckBox refundCheckBox = findViewById(R.id.refundCheckBox);
+            refundCheckBox.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -127,10 +142,6 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
     private void processPayment() {
         String paymethod_id = extras.getString("paymethod_id");
-
-        if (extras.getBoolean("salesrefund"))
-            isRefund = true;
-
         payment = new Payment(this);
 
         if (Global.isIvuLoto) {
@@ -187,14 +198,25 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
         poslink = POSLinkCreator.createPoslink(getApplicationContext());
         PaymentRequest payrequest = new PaymentRequest();
-        payrequest.TenderType = 1;
-        payrequest.TransType = 2;
+        if (creditRadioButton.isChecked()) {
+            payrequest.TenderType = REQUEST_TENDER_TYPE_CREDIT;
+        } else {
+            payrequest.TenderType = REQUEST_TENDER_TYPE_DEBIT;
+        }
+
+        if (!isRefund) {
+            payrequest.TransType = REQUEST_TRANSACTION_TYPE_SALE;
+        } else {
+            payrequest.TransType = REQUEST_TRANSACTION_TYPE_RETURN;
+        }
+
         payrequest.Amount = String.valueOf(
                 MoneyUtils.convertDollarsToCents(
                         NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
         payrequest.ECRRefNum = DateUtils.getEpochTime();
         poslink.PaymentRequest = payrequest;
         poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+        payment.setPay_stamp(String.valueOf(payrequest.TenderType));
 
         // as processTrans is blocked, we must run it in an async task
         new Thread(new Runnable() {
@@ -232,7 +254,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payment.setPay_amount(Global.amountPaid);
             payment.setTipAmount("0.00");
             payment.setPay_tip("0.00");
-            payment.setPay_transid("");
+            payment.setPay_transid(response.RefNum);
             payment.setAuthcode(response.AuthCode);
             payment.setCcnum_last4(response.BogusAccountNum);
             payment.setPay_resultcode(response.ResultCode);
@@ -307,7 +329,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
                     showErrorDlog("Transaction Canceled!");
                     break;
                 case CARD_EXPIRED:
-                    showErrorDlog("Card is expired!");
+                    showErrorDlog("Card is invalid or expired!");
                     break;
             }
         } else if (ptr.Code == ProcessTransResultCode.TimeOut) {

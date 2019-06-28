@@ -188,86 +188,6 @@ public class OrderProductsHandler {
             insert.clearBindings();
         }
     }
-//
-//    public void insertOnHold(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-//        DBManager.getDatabase().beginTransaction();
-//        try {
-//
-//            this.data = data;
-//            dictionaryListMap = dictionary;
-//            SQLiteStatement insert;
-//            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
-//
-//            int size = this.data.size();
-//
-//            for (int i = 0; i < size; i++) {
-//
-//                if (!checkIfExist(getData(ordprod_id, i))) {
-//                    if (getData(addon, i).equals("false"))
-//                        insert.bindString(index(addon), "0"); // cust_id
-//                    else
-//                        insert.bindString(index(addon), "1"); // cust_id
-//
-//                    if (getData(isAdded, i).equals("false"))
-//                        insert.bindString(index(isAdded), "0"); // cust_id
-//                    else
-//                        insert.bindString(index(isAdded), "1"); // cust_id
-//
-//                    if (getData(isPrinted, i).equals("false"))
-//                        insert.bindString(index(isPrinted), "0");
-//                    else
-//                        insert.bindString(index(isPrinted), "1");
-//
-//                    // insert.bindString(index(isPrinted), getData(isPrinted,
-//                    // i)); // cust_id
-//                    insert.bindString(index(item_void), getData(item_void, i)); // cust_id
-//                    insert.bindString(index(ordprod_id), getData(ordprod_id, i)); // cust_id
-//                    insert.bindString(index(ord_id), getData(ord_id, i)); // cust_id
-//                    insert.bindString(index(prod_id), getData(prod_id, i)); // cust_id
-//                    insert.bindString(index(prod_sku), getData(prod_sku, i)); // cust_id
-//                    insert.bindString(index(prod_upc), getData(prod_upc, i)); // cust_id
-//                    insert.bindString(index(ordprod_qty), getData(ordprod_qty, i)); // cust_id
-//                    insert.bindString(index(overwrite_price), getData(overwrite_price, i)); // cust_id
-//                    insert.bindString(index(reason_id), getData(reason_id, i)); // cust_id
-//                    insert.bindString(index(ordprod_name), getData("prod_name", i)); // cust_id
-//                    insert.bindString(index(ordprod_desc), getData(ordprod_desc, i)); // cust_id
-//                    insert.bindString(index(pricelevel_id), getData(pricelevel_id, i)); // cust_id
-//                    insert.bindString(index(prod_seq), getData(prod_seq, i)); // cust_id
-//                    insert.bindString(index(uom_name), getData(uom_name, i)); // cust_id
-//                    insert.bindString(index(uom_conversion), getData(uom_conversion, i)); // cust_id
-//                    insert.bindString(index(uom_id), getData(uom_id, i));
-//                    insert.bindString(index(prod_taxId), getData(prod_taxId, i)); // cust_id
-//                    insert.bindDouble(index(prod_taxValue), Double.parseDouble(TextUtils.isEmpty(getData(prod_taxValue, i)) ? "0" : getData(prod_taxValue, i)));
-//                    insert.bindString(index(discount_id), getData(discount_id, i)); // cust_id
-//                    insert.bindString(index(discount_value), getData(discount_value, i)); // cust_id
-//                    insert.bindString(index(prod_istaxable), getData(prod_istaxable, i));
-//                    insert.bindString(index(discount_is_taxable), getData(discount_is_taxable, i));
-//                    insert.bindString(index(discount_is_fixed), getData(discount_is_fixed, i));
-//                    insert.bindString(index(onHand), getData(onHand, i));
-//                    insert.bindString(index(imgURL), getData(imgURL, i));
-//                    insert.bindString(index(prod_price), getData(prod_price, i));
-//                    insert.bindString(index(prod_type), getData(prod_type, i));
-//                    insert.bindString(index(itemTotal), getData(itemTotal, i));
-//                    insert.bindString(index(itemSubtotal), getData(itemSubtotal, i));
-//                    insert.bindString(index(addon_section_name), getData(addon_section_name, i));
-//                    insert.bindString(index(addon_position), getData(addon_position, i));
-//                    insert.bindString(index(assignedSeat), getData(assignedSeat, i));
-//                    String groupId = getData(seatGroupId, i);
-//                    insert.bindLong(index(seatGroupId), groupId == null || groupId.isEmpty() ? 0 : Long.parseLong(groupId));
-//
-//                    insert.execute();
-//                    insert.clearBindings();
-//                }
-//            }
-//            insert.close();
-//            DBManager.getDatabase().setTransactionSuccessful();
-//        } catch (Exception e) {
-//
-//        } finally {
-//
-//            DBManager.getDatabase().endTransaction();
-//        }
-//    }
 
     public void deleteOrderProduct(String ordprod_id) {
         DBManager.getDatabase().delete(table_name, "ordprod_id = ? or addon_ordprod_id = ?", new String[]{ordprod_id, ordprod_id});
@@ -280,7 +200,6 @@ public class OrderProductsHandler {
     public void emptyTable() {
         DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
-
 
     private boolean checkIfExist(String ordID) {
         Cursor c = null;
@@ -526,7 +445,6 @@ public class OrderProductsHandler {
         return DBManager.getDatabase().rawQuery(("SELECT op.*,pi.prod_img_name FROM " + table_name + " op LEFT OUTER JOIN Products_Images pi ON op.prod_id = pi.prod_id ") + "AND pi.type = 'I' WHERE ord_id = ?", new String[]{ordID});
     }
 
-
     public HashMap<String, List<Orders>> getStationPrinterProducts(String ordID) {
         Cursor c = null;
         try {
@@ -755,7 +673,7 @@ public class OrderProductsHandler {
             query.append(
                     "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
                             "LEFT JOIN Orders o ON op.ord_id = o.ord_id " +
-                            "WHERE o.isVoid = '0' AND o.ord_type IN ");
+                            "WHERE o.isVoid = '0' AND processed != '10' AND o.ord_type IN ");
 
             if (isSales)
                 query.append("('2','5') ");
@@ -778,7 +696,7 @@ public class OrderProductsHandler {
             }
             if (endDate != null && !endDate.isEmpty()) {
                 query.append(" AND date <= datetime(?, 'utc') ");
-                where_values.add(endDate);
+                where_values.add(endDate + ":59");
             }
 
             query.append(" GROUP BY op.cat_id ORDER BY op.cat_name");
@@ -801,6 +719,80 @@ public class OrderProductsHandler {
                     ordProd.setCat_id(c.getString(i_cat_id));
                     ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
 
+                    listOrdProd.add(ordProd);
+                } while (c.moveToNext());
+            }
+
+            c.close();
+            return listOrdProd;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+    }
+
+    public List<OrderProduct> getDepartmentShiftReportByClerk(boolean isSales, String clerk_id,
+                                                              String startDate, String endDate) {
+        Cursor c = null;
+        try {
+            StringBuilder query = new StringBuilder();
+            List<OrderProduct> listOrdProd = new ArrayList<>();
+
+            String sqlDateFunction = "date";
+            if (endDate != null) sqlDateFunction = "datetime";
+
+            query.append(
+                    "SELECT o.clerk_id as 'cat_id', count(DISTINCT o.ord_id) AS 'ordprod_qty', " +
+                            "sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
+                            "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty END) AS 'overwrite_price', ");
+            query.append(sqlDateFunction);
+            query.append("(o.ord_timecreated) as 'date'" +
+                    "FROM " + table_name + " op ");
+            query.append(
+                    "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
+                            "LEFT JOIN Orders o ON op.ord_id = o.ord_id " +
+                            "WHERE o.isVoid = '0' AND processed != '10' AND o.ord_type IN ");
+
+            if (isSales)
+                query.append("('2','5') ");
+            else// returned items
+                query.append("('1') ");
+
+            ArrayList<String> where_values = new ArrayList<>();
+            if (clerk_id != null && !clerk_id.isEmpty()) {
+                query.append(" AND o.clerk_id = ? ");
+                where_values.add(clerk_id);
+            }
+            if (startDate != null && !startDate.isEmpty()) {
+                if (endDate != null && !endDate.isEmpty()) {
+                    query.append(" AND date >= datetime(?, 'utc') ");
+                    where_values.add(startDate);
+                } else {
+                    query.append(" AND date = ? ");
+                    where_values.add(startDate);
+                }
+            }
+            if (endDate != null && !endDate.isEmpty()) {
+                query.append(" AND date <= datetime(?, 'utc') ");
+                where_values.add(endDate + ":59");
+            }
+
+            query.append(" GROUP BY o.clerk_id");
+
+            c = DBManager.getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));
+
+            if (c.moveToFirst()) {
+                int i_cat_id = c.getColumnIndex(cat_id); // clerk_id
+                int i_ordprod_qty = c.getColumnIndex(ordprod_qty); // total items
+                int i_overwrite_price = c.getColumnIndex(overwrite_price); // total
+
+                do {
+                    OrderProduct ordProd = new OrderProduct();
+                    ordProd.setCat_id(c.getString(i_cat_id)); // clerk_id
+                    ordProd.setOverwrite_price(c.getString(i_overwrite_price) == null
+                            ? null : new BigDecimal(c.getString(i_overwrite_price)));
+                    ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
                     listOrdProd.add(ordProd);
                 } while (c.moveToNext());
             }

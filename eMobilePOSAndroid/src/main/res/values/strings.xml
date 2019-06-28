@@ -633,6 +633,7 @@
     <string name="card_trans_id">TransID</string>
     <string name="error_wrong_amount">Amount to be paid must be greater than 0\u002E\u002E\u002E</string>
     <string name="account_information">Account Information</string>
+    <string name="card_swipe">"SWIPE"</string>
     <string name="general_information">General Information</string>
     <string name="card_information">Card Information</string>
     <string name="paymethod_due_amount_label">Amount Due</string>
@@ -792,6 +793,7 @@
     <string name="receipt_thankyou">Thank You</string>
     <string name="receipt_started">Started:</string>
     <string name="receipt_sent_by">Sent By:</string>
+    <string name="receipt_terminal">Device:</string>
     <string name="receipt_name">Name:</string>
     <string name="receipt_cons_trans_id">Consignment ID</string>
     <string name="receipt_consignment_pickup">Consignment Pick-up</string>
@@ -839,11 +841,12 @@
     <string name="shift_add_expense">Add No-Sale</string>
     <string name="shift_title">Shift</string>
 
-    <string name="report_per_shift">Per-Shift</string>
-    <string name="shift_details">Shift Details</string>
+    <string name="report_per_shift">Per-Shift (Z-Report)</string>
+    <string name="shift_details">Shift Details (Z-Report)</string>
+    <string name="shift_id">Shift #:</string>
     <string name="sales_clerk">Sales Clerk</string>
     <string name="begging_petty_cash">Beginning Petty Cash</string>
-    <string name="total_expenses">Total Expenses</string>
+    <string name="total_expenses">Total No Sale Transactions</string>
     <string name="ending_petty_cash">Ending Petty Cash</string>
     <string name="total_transactions_cash">Total Transactions Cash</string>
     <string name="total_ending_cash">Expected Closeout Cash</string>
@@ -888,6 +891,7 @@
     <string name="config_gift_card_settings">Gift Card Settings</string>
     <string name="config_open_cash_drawer">Open Cash Drawer</string>
     <string name="config_use_clerks">Use Clerks</string>
+    <string name="config_use_clerks_autologout">Clerk Auto Logout After Every Transaction</string>
 
     <string name="config_change_password">Change Password</string>
     <string name="config_configure_cash_drawer">Configure Cash Drawer</string>
@@ -962,7 +966,7 @@
     <string name="config_wholesale_printout">Wholesale Printout</string>
     <string name="config_prompt_customer_copy">Prompt print receipt copy for CC payments</string>
     <string name="config_print_receipt_transaction_payments">Print receipt of transaction payments</string>
-    <string name="config_print_taxes_brake_down">Print taxes brake down</string>
+    <string name="config_print_taxes_breakdown">Print taxes breakdown</string>
     <string name="config_handwritten_signature">Handwritten signature</string>
 
     <string name="config_allow_decimal_quantities">Allow Decimal Quantities</string>
@@ -1230,6 +1234,7 @@
     <string name="eod_report_shifts">Shifts</string>
     <string name="eod_report_itemsold">Items Sold</string>
     <string name="eod_report_itemsreturned">Items Returned</string>
+    <string name="eod_report_sales_by_clerk">Sales By Clerk</string>
     <string name="eod_report_dept_sales">Dept Sales</string>
     <string name="eod_report_dept_returns">Dept Returns</string>
     <string name="eod_report_payment">Payments</string>
@@ -1402,6 +1407,10 @@
     <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
+    <string name="sp_tender_type">Tender Type:</string>
+    <string name="sp_tender_credit">Credit</string>
+    <string name="sp_tender_debit">Debit</string>
+    <string name="sp_tender_refund">Refund</string>
     <string name="fingerprint_enrollment">Place any finger to start enrollment.</string>
     <string name="fingerprint_enrollment_title">Fingerprint Enrollment</string>
     <string name="rescan_fingerprint">Remove the finger place the same finger on the reader</string>
@@ -1453,5 +1462,10 @@
     <string name="seconds">Seconds</string>
     <string name="config_customer_settings">Customer Settings</string>
     <string name="config_default_customer_display_name">Select Customer Name</string>
+    <string name="dlog_sales_item_check_inventory">Checking inventory in other locations...</string>
+    <string name="sales_product_details_inventory_locations">View Other Locations</string>
+    <string name="sales_product_details_Invetory_locations_dlog_header_text">On Hand</string>
+    <string name="dlog_sales_item_check_inventory_location_text">Location</string>
+    <string name="dlog_sales_item_check_inventory_quantity_text">Quantity</string>
 
 </resources>

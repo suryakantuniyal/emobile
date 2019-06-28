@@ -33,4 +33,5 @@
     <string name="oauth_token_url" translatable="false">https://emslogin.enablermobile.com/oauth/token</string>
     <string name="sync_register_pns" translatable="false">https://sync.enablermobile.com/emsapi/RegisterPNS</string>
     <string name="sync_enablermobile_biometrics" translatable="false">https://sync.enablermobile.com/emsapi/fingerprintdata</string>
+    <string name="sync_enablermobile_multi_inventory_locations" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/getXMLLocationsInventory.aspx?empid=%s&amp;regid=%s&amp;prod_id=%s</string>
 </resources>

@@ -222,8 +222,8 @@ public class ProductsHandler {
                 if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
                     sb.append(
                             "FROM Products p " +
-                                    "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
-                                    "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
+                                    "LEFT JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
+                                    "LEFT JOIN Categories c ON c.cat_id = xr.cat_id " +
                                     "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                                     "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                                     "BETWEEN vp.minQty AND vp.maxQty  AND ");
@@ -270,7 +270,7 @@ public class ProductsHandler {
                 sb.append(
                         "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points," +
                                 "p.prod_name,p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name, CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
-                sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id, c.cat_name as 'cat_name' ");
+                sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,c.cat_id, c.cat_name as 'cat_name' ");
 
                 if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
                     if (Global.isConsignment) {
@@ -463,8 +463,8 @@ public class ProductsHandler {
                                 "where prod_type != 'Discount' AND  " +
                                 "(prod_sku = '" + value + "' OR pa.prod_alias = '" + value +
                                 "' OR prod_upc = '" + value + "'" + byIdCondition + " )) p " +
-                                "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
-                                "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
+                                "LEFT JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
+                                "LEFT JOIN Categories c ON c.cat_id = xr.cat_id " +
                                 "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                                 "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                                 "BETWEEN vp.minQty AND vp.maxQty  AND ");
@@ -896,6 +896,25 @@ public class ProductsHandler {
         }
     }
 
+    public String getDiscountName(String discountId) {
+        String discountName = "";
+        Cursor c = null;
+        try {
+            if (discountId != null && !discountId.isEmpty()) {
+                c = DBManager.getDatabase().rawQuery("SELECT prod_name FROM Products WHERE prod_id = ?", new String[]{discountId});
+                if (c.moveToFirst()) {
+                    discountName = c.getString(c.getColumnIndex(prod_name));
+                }
+                c.close();
+            }
+            return discountName;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+    }
+
     public Cursor searchProducts(String search, String type) // Transactions
     // Receipts
     // first
@@ -962,7 +981,7 @@ public class ProductsHandler {
         if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
             sb.append(
                     "FROM Products p " +
-                            "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
+                            "LEFT JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
                             "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                             "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
