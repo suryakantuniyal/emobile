@@ -132,6 +132,7 @@ public class Payment extends RealmObject {
     @Ignore
     private EMVContainer emvContainer;
     private String pay_SignatureIssync;
+    private String stadisTenderId;
 
     public String getPay_SignatureIssync() {
         return pay_SignatureIssync;
@@ -139,6 +140,14 @@ public class Payment extends RealmObject {
 
     public void setPay_SignatureIssync(String pay_SignatureIssync) {
         this.pay_SignatureIssync = pay_SignatureIssync;
+    }
+
+    public void setStadisTenderId(String stadisTenderId) {
+        this.stadisTenderId = stadisTenderId;
+    }
+
+    public String getStadisTenderId() {
+        return stadisTenderId;
     }
 
     public enum PaymentType {
