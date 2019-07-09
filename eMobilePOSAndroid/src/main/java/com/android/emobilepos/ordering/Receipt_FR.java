@@ -881,6 +881,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             }
         });
         dialog.show();
+        if(myPref.isAPT120()){
+            Window window = dialog.getWindow();
+            window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        }
     }
 
     private void showAddMoreProductsDlg() {
