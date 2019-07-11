@@ -581,19 +581,20 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
     private void addProductToOrder() {
-        if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+        if (myPref.isGroupReceiptBySku(isToGo)) {
             List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.order.getOrderProducts());
             global.order.getOrderProducts().clear();
             global.order.getOrderProducts().addAll(orderProductsGroupBySKU);
         }
+
         OrderProduct product;
-//        if (isModify) {
-//            orderProduct.setRequiredProductAttributes(global.ordProdAttr);
-//            product = orderProduct;
-//        } else {
-        orderProduct.setRequiredProductAttributes(global.ordProdAttr);
+        for (ProductAttribute attribute : global.ordProdAttr) {
+            if (orderProduct.getOrdprod_id().equals(attribute.getProductId())) {
+                orderProduct.getRequiredProductAttributes().add(attribute);
+            }
+        }
         product = orderProduct;
-//        }
+
         List<OrderProduct> products = new ArrayList<>();
         if (product != null) {
             products.add(product);
