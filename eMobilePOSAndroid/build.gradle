@@ -15,8 +15,8 @@ android {
         applicationId "com.emobilepos.app"
         minSdkVersion 16
         targetSdkVersion 28
-        versionName "1.2.9.0"
-        versionCode 169
+        versionName "1.2.10.3"
+        versionCode 170
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         multiDexEnabled = true
     }
