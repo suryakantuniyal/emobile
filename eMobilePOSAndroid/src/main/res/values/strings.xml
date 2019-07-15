@@ -1388,6 +1388,7 @@
     <string name="config_giftcard_auto_balance_request">Gift/Reward auto balance request</string>
     <string name="config_clear_customer">Clear customer after transaction</string>
     <string name="config_giftcard_show_balance">Show gift card balance after payment</string>
+    <string name="config_use_stadis_iv">Use Stadis v4</string>
     <string name="header_title_customer_custom_fields">Custom Fields</string>
     <string name="sending">Sending…</string>
     <string name="config_cash_show_change">Show cash payment change amount</string>

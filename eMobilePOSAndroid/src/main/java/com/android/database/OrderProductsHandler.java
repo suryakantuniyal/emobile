@@ -568,6 +568,26 @@ public class OrderProductsHandler {
         }
     }
 
+    public List<OrderProduct> getOrdProdGiftCardNumber(String ordprodID) {
+        StringBuilder sb = new StringBuilder();
+        List<OrderProduct> list = new ArrayList<>();
+        sb.append("SELECT name,value FROM ").append("OrderProductsAttr").append(" WHERE ordprod_id = ?");
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(),new String[]{ordprodID});
+        if (c.moveToFirst()) {
+            int gcNumber = c.getColumnIndex("value");
+            int gcName = c.getColumnIndex("name");
+            do{
+                OrderProduct ordProd = new OrderProduct();
+                ordProd.setGiftcardName(c.getString(gcName));
+                ordProd.setGiftcardNumber(c.getString(gcNumber));
+                list.add(ordProd);
+            }while (c.moveToNext()) ;
+        }
+        c.close();
+
+        return list;
+    }
+
     public void updateOrdProdCardActivated(String ordProdID) {
 
         ContentValues args = new ContentValues();

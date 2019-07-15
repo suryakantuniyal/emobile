@@ -148,6 +148,10 @@
             android:key="pref_use_loyal_patron"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_loyal_patron" />
+        <CheckBoxPreference
+            android:key="pref_use_stadis_iv"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_stadis_iv" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"

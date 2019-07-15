@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
 import android.media.AudioManager;
 import android.os.AsyncTask;
@@ -31,19 +32,21 @@ import com.android.database.DrawInfoHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
-import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
+import com.android.emobilepos.models.response.ProcessCardResponse;
 import com.android.emobilepos.ordering.BBPosShelpaDeviceDriver;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
+import com.android.payments.GiftCardPayment;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
+import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -70,12 +73,14 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -124,6 +129,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private boolean bcrScanning;
     private String email;
     private String phone;
+    private List<ProcessCardResponse> cardResponses;
+    private EMSPayGate_Default.EAction rewardAction = EMSPayGate_Default.EAction.ChargeRewardAction;
 
 
     @Override
@@ -564,7 +571,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward) && cardType.equalsIgnoreCase("GIFTCARD")) {
             processStoreForward(generatedURL, payment);
         } else {
-            new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+            new processLivePaymentAsync(generatedURL).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
     }
@@ -674,7 +681,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         bundle.putString("total_amount", Double.toString(Global
                 .formatNumFromLocale(payment.getOriginalTotalAmount())));
         bundle.putString("pay_dueamount", payment.getPay_dueamount());
-        bundle.putString("pay_amount", payment.getPay_amount());
         bundle.putString("pay_amount", payment.getPay_amount());
         Global.amountPaid = payment.getPay_amount();
         data.putExtras(bundle);
@@ -914,12 +920,16 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     }
 
-    private class processLivePaymentAsync extends AsyncTask<String, String, String> {
+    private class processLivePaymentAsync extends AsyncTask<Void, String, List<ProcessCardResponse>> {
 
         private HashMap<String, String> parsedMap = new HashMap<String, String>();
         private String urlToPost;
         private boolean wasProcessed = false;
         private String errorMsg = getString(R.string.coundnot_proceess_payment);
+
+        public processLivePaymentAsync(String url) {
+            urlToPost = url;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -935,77 +945,147 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected List<ProcessCardResponse> doInBackground(Void... params) {
+            if (!myPref.isUseStadisV4()) {
+                Post httpClient = new Post(activity);
+                SAXParserFactory spf = SAXParserFactory.newInstance();
+                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
-            Post httpClient = new Post(activity);
+                try {
+                    String xml = httpClient.postData(13, urlToPost);
+                    switch (xml) {
+                        case Global.TIME_OUT:
+                            errorMsg = getString(R.string.timeout_tryagain);
+                            break;
+                        case Global.NOT_VALID_URL:
+                            errorMsg = getString(R.string.cannot_proceed);
+                            break;
+                        default:
+                            InputSource inSource = new InputSource(new StringReader(xml));
 
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-            urlToPost = params[0];
-
-            try {
-                String xml = httpClient.postData(13, urlToPost);
-                switch (xml) {
-                    case Global.TIME_OUT:
-                        errorMsg = getString(R.string.timeout_tryagain);
-                        break;
-                    case Global.NOT_VALID_URL:
-                        errorMsg = getString(R.string.cannot_proceed);
-                        break;
-                    default:
-                        InputSource inSource = new InputSource(new StringReader(xml));
-
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
-                        payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
-                        double due = Double.parseDouble(payment.getOriginalTotalAmount() == null ? "0" : payment.getOriginalTotalAmount())
-                                - Double.parseDouble(payment.getPay_amount() == null ? "0" : payment.getPay_amount());
-                        payment.setPay_dueamount(String.valueOf(due));
-                        Global.amountPaid = payment.getPay_amount();
-                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            wasProcessed = true;
-                        else if (parsedMap != null && parsedMap.size() > 0) {
-                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                        } else
-                            errorMsg = xml;
-                        break;
+                            SAXParser sp = spf.newSAXParser();
+                            XMLReader xr = sp.getXMLReader();
+                            xr.setContentHandler(handler);
+                            xr.parse(inSource);
+                            parsedMap = handler.getData();
+                            payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
+                            double due = Double.parseDouble(
+                                    payment.getOriginalTotalAmount() == null ?
+                                            "0" : payment.getOriginalTotalAmount())
+                                    - Double.parseDouble(payment.getPay_amount() == null ?
+                                    "0" : payment.getPay_amount());
+                            payment.setPay_dueamount(String.valueOf(due));
+                            Global.amountPaid = payment.getPay_amount();
+                            if (parsedMap != null && parsedMap.size() > 0 &&
+                                    parsedMap.get("epayStatusCode").equals("APPROVED"))
+                                wasProcessed = true;
+                            else if (parsedMap != null && parsedMap.size() > 0) {
+                                errorMsg = "statusCode = " + parsedMap.get("statusCode") +
+                                        "\n" + parsedMap.get("statusMessage");
+                            } else
+                                errorMsg = xml;
+                            break;
+                    }
+                } catch (SAXException e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
-
-            } catch (SAXException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
+                return null;
+            } else {
+                try {
+                    cardResponses = GiftCardPayment.getProcessCardResponse(
+                            ProcessGiftCard_FA.this, urlToPost);
+                    if (cardResponses != null &&
+                            !cardResponses.isEmpty() &&
+                            cardResponses.get(0).getEpayStatusCode()
+                                    .equalsIgnoreCase("APPROVED")) {
+                        wasProcessed = true;
+                        if (rewardAction == EMSPayGate_Default.EAction.ChargeRewardAction) {
+                            EMSPayGate_Default payGate = new EMSPayGate_Default(
+                                    ProcessGiftCard_FA.this, payment);
+                            String xml = payGate.paymentWithAction(
+                                    EMSPayGate_Default.EAction.AddValueRewardAction,
+                                    cardInfoManager.getWasSwiped(), "REWARD", cardInfoManager);
+                            List<ProcessCardResponse> response = GiftCardPayment
+                                    .getProcessCardResponse(ProcessGiftCard_FA.this, xml);
+                        }
+                    } else if (cardResponses != null &&
+                            !cardResponses.isEmpty()) {
+                        wasProcessed = false;
+                        errorMsg = String.format("statusCode = %s\n%s", cardResponses.get(0)
+                                .getStatusCode(), cardResponses.get(0).getStatusMessage());
+                    } else {
+                        wasProcessed = false;
+                        errorMsg = getString(R.string.error_processing_payment);
+                    }
+                } catch (TimeoutException e) {
+                    errorMsg = getString(R.string.timeout_tryagain);
+                } catch (Resources.NotFoundException e) {
+                    errorMsg = getString(R.string.cannot_proceed);
+                } catch (ParserConfigurationException e) {
+                    errorMsg = getString(R.string.cannot_proceed);
+                } catch (SAXException e) {
+                    errorMsg = getString(R.string.cannot_proceed);
+                } catch (IOException e) {
+                    errorMsg = getString(R.string.cannot_proceed);
+                }
+                return cardResponses;
             }
-
-            return null;
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(List<ProcessCardResponse> responses) {
             Global.dismissDialog(ProcessGiftCard_FA.this, myProgressDialog);
-            if (wasProcessed) // payment processing succeeded
-            {
-                payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
-                payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
-                payment.setPay_transid(parsedMap.get("CreditCardTransID"));
-                payment.setAuthcode(parsedMap.get("AuthorizationCode"));
-                payment.setProcessed("9");
-                Intent intent = new Intent(activity, DrawReceiptActivity.class);
-                intent.putExtra("isFromPayment", true);
+            if (wasProcessed) {
+                if (!myPref.isUseStadisV4()) {
+                    payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
+                    payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
+                    payment.setPay_transid(parsedMap.get("CreditCardTransID"));
+                    payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+                    payment.setProcessed("9");
+                    payHandler.insert(payment);
+                    showBalancePrompt("Status: " + parsedMap.get("epayStatusCode") +
+                            "\n" + "Auth. Amount: " + (parsedMap.get("AuthorizedAmount") == null ?
+                            "0.00" : parsedMap.get("AuthorizedAmount")) + "\n" + "Card Balance: "
+                            + Global.getCurrencyFrmt(parsedMap.get("CardBalance")) + "\n");
+                } else {
+                    BigDecimal totalAuthorizedAmount = new BigDecimal(0);
+                    for (ProcessCardResponse response : responses) {
+                        double due = Double.parseDouble(payment.getOriginalTotalAmount() == null ?
+                                "0" : payment.getOriginalTotalAmount())
+                                - Double.parseDouble(payment.getPay_amount() == null ?
+                                "0" : payment.getPay_amount());
+                        payment.setPay_dueamount(String.valueOf(due));
+                        payment.setPay_resultcode(response.getPay_resultcode());
+                        payment.setPay_resultmessage(response.getPay_resultmessage());
+                        payment.setPay_transid(response.getCreditCardTransID());
+                        payment.setAuthcode(response.getAuthorizationCode());
+                        payment.setStadisTenderId(response.getStadisTenderId());
+                        payment.setProcessed("9");
+                        payHandler.insert(payment);
+                        GenerateNewID newID = new GenerateNewID(ProcessGiftCard_FA.this);
+                        payment.setPay_id(newID.getNextID(GenerateNewID.IdType.PAYMENT_ID));
+                        totalAuthorizedAmount = totalAuthorizedAmount.add(
+                                Global.getBigDecimalNum(response.getAuthorizedAmount()));
+                    }
 
-                payHandler.insert(payment);
-
-                showBalancePrompt("Status: " + parsedMap.get("epayStatusCode") + "\n" + "Auth. Amount: " + (parsedMap.get("AuthorizedAmount") == null ? "0.00" : parsedMap.get("AuthorizedAmount")) + "\n" + "Card Balance: " + Global.getCurrencyFrmt(parsedMap.get("CardBalance")) + "\n");
-            } else // payment processing failed
-            {
+                    payment.setPay_amount(totalAuthorizedAmount.toString());
+                    Global.amountPaid = payment.getPay_amount();
+                    fieldAmountTendered.setText(Global.getCurrencyFormat(
+                            totalAuthorizedAmount.toString()));
+                    int idx = cardResponses.size() - 1;
+                    ProcessCardResponse response = cardResponses.get(idx);
+                    showBalancePrompt("Status: " + response.getEpayStatusCode() + "\n" + "Auth. Amount: " +
+                            (response.getAuthorizedAmount() == null ? "0.00" : response.getAuthorizedAmount()) +
+                            "\n" + "Card Balance: " + Global.getCurrencyFrmt(response.getCardBalance()) + "\n");
+                }
+            } else { // payment processing failed
                 findViewById(R.id.processButton).setEnabled(true);
                 Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
             }

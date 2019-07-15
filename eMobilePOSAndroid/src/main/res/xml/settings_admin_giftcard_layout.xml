@@ -27,5 +27,9 @@
             android:key="pref_giftcard_show_balance"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_giftcard_show_balance" />
+        <CheckBoxPreference
+            android:key="pref_use_stadis_iv"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_stadis_iv" />
     </PreferenceCategory>
 </PreferenceScreen>
