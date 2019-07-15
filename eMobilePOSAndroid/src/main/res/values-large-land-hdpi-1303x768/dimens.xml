@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--OrderProduct Layout Sizes-->
+    <dimen name = "header_bar_height">45dp</dimen>
+    <dimen name = "header_txt_padding">6dp</dimen>
+    <dimen name = "catalog_image_size">80dp</dimen>
+    <dimen name="add_orders_sliding_drawer_size">155dp</dimen>
+    <dimen name="add_orders_slider_semiclosed_size">22dp</dimen>
+    <dimen name="add_orders_catalog_land_search_bar">45dp</dimen>
+    <dimen name="add_orders_set_customer_layout_height">25dp</dimen>
+
+    <!--Pricing Totals TextViews sizes-->
+    <dimen name="add_orders_loyalty_label_txt_size">14sp</dimen>
+    <dimen name="add_orders_loyalty_field_txt_size">15sp</dimen>
+    <dimen name="add_orders_loyalty_label_txt_size_land">17sp</dimen>
+    <dimen name="add_orders_loyalty_field_txt_size_land">17sp</dimen>
+    <dimen name="add_orders_total_field_text_size">13sp</dimen>
+    <dimen name="add_orders_total_label_txt_size">13sp</dimen>
+    <dimen name="add_orders_total_grandtotal_txt_size_land">17sp</dimen>
+    <dimen name="add_orders_total_grandtotal_txt_size">17sp</dimen>
+
+    <dimen name="txt_receipt_small">12sp</dimen>
+    <dimen name="txt_receipt_medium">15sp</dimen>
+    <dimen name="txt_receipt_large">18sp</dimen>
+</resources>
