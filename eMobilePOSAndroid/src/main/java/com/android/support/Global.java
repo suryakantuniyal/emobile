@@ -574,6 +574,10 @@ public class Global extends MultiDexApplication {
         }
         Calendar cal = Calendar.getInstance();
         TimeZone tz = cal.getTimeZone();
+        if(date.matches("^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$")){
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss",Locale.getDefault());
+            date += ("T" + timeFormat.format(cal.getTime()));
+        }
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
         sdf1.setTimeZone(tz);
         SimpleDateFormat sdf2;
