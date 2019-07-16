@@ -139,7 +139,7 @@ public class EMSDeviceDriver {
     /*static PrinterApiContext printerApi;*/
     static Object printerTFHKA;
     private static int PAPER_WIDTH;
-    private final int SIZE_LIMIT = 20;
+    private final int SIZE_LIMIT = 2;
     private final int SLEEP_TIME = 100;
     protected final String FORMAT = "windows-1252";
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
