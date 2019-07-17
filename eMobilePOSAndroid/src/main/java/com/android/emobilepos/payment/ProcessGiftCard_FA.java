@@ -1066,7 +1066,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                         payment.setPay_resultmessage(response.getPay_resultmessage());
                         payment.setPay_transid(response.getCreditCardTransID());
                         payment.setAuthcode(response.getAuthorizationCode());
-                        payment.setStadisTenderId(response.getStadisTenderId());
                         payment.setProcessed("9");
                         payHandler.insert(payment);
                         GenerateNewID newID = new GenerateNewID(ProcessGiftCard_FA.this);
