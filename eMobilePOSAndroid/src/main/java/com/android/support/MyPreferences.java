@@ -990,7 +990,7 @@ public class MyPreferences {
     }
 
     public static boolean isAPT50(){
-        return Build.MODEL.toUpperCase().contains("WPOS");
+        return Build.MODEL.toUpperCase().contains("WPOS-3");
     }
 
     public boolean isOT310() {

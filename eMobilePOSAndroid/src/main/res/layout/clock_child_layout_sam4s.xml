@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_white_page"
@@ -12,31 +10,17 @@
         android:layout_height="wrap_content"
         android:background="@drawable/blue_gradient_header_horizontal">
 
-
-        <ImageView
-            android:id="@+id/backbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:scaleX=".7"
-            android:scaleY=".7"
-            android:src="@drawable/ic_arrow_back_black_48dp"
-            android:tint="@color/common_google_signin_btn_text_dark"
-            android:visibility="gone" />
-
         <TextView
             android:id="@+id/HeaderTitle"
             style="@style/text_shadow"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|center_horizontal|center"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
             android:padding="10dp"
             android:text="@string/clock_title"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_bar_text_size"
-            tools:layout_editor_absoluteY="639dp" />
-
+            android:textSize="@dimen/header_bar_text_size" />
     </TableRow>
 
     <ScrollView
