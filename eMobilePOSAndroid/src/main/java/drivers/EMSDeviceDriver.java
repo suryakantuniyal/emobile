@@ -139,7 +139,7 @@ public class EMSDeviceDriver {
     /*static PrinterApiContext printerApi;*/
     static Object printerTFHKA;
     private static int PAPER_WIDTH;
-    private final int SIZE_LIMIT = 20;
+    private final int SIZE_LIMIT = 2;
     private final int SLEEP_TIME = 100;
     protected final String FORMAT = "windows-1252";
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
@@ -1310,8 +1310,8 @@ public class EMSDeviceDriver {
                                     Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3));
 
                             List<OrderProduct> giftcardvalues = orderProductsHandler.getOrdProdGiftCardNumber(orderProducts.get(i).getOrdprod_id());
-                            for(OrderProduct giftCard : giftcardvalues){
-                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(giftCard.getGiftcardName() + ":",giftCard.getGiftcardNumber() , lineWidth, 3));
+                            for (OrderProduct giftCard : giftcardvalues) {
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(giftCard.getGiftcardName() + ":", giftCard.getGiftcardNumber(), lineWidth, 3));
                             }
 
                             if (printPref.contains(MyPreferences.print_descriptions)) {
@@ -1341,8 +1341,8 @@ public class EMSDeviceDriver {
 
 
                         List<OrderProduct> giftcardvalues = orderProductsHandler.getOrdProdGiftCardNumber(orderProducts.get(i).getOrdprod_id());
-                        for(OrderProduct giftCard : giftcardvalues){
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(giftCard.getGiftcardName() + ":",giftCard.getGiftcardNumber() , lineWidth, 3));
+                        for (OrderProduct giftCard : giftcardvalues) {
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(giftCard.getGiftcardName() + ":", giftCard.getGiftcardNumber(), lineWidth, 3));
                         }
 
 
@@ -1706,11 +1706,13 @@ public class EMSDeviceDriver {
         }
     }
 
-    /** METHODS FOR INSTANCES OF HPENGAGEONEPRIMEPRINTER or BIXOLON
+    /**
+     * METHODS FOR INSTANCES OF HPENGAGEONEPRIMEPRINTER or BIXOLON
      * storeImage() -> Copies logo.png from data/data/com.emobilepos.app/files/logo.png
-     *                                  to a public directory called eMobileAssets.
+     * to a public directory called eMobileAssets.
+     *
      * @param imageData Bitmap you want to save
-     * @param fname Name that will be assigned to image. Include the format of image(image.png, image.jpeg, image.bmp, etc...)
+     * @param fname     Name that will be assigned to image. Include the format of image(image.png, image.jpeg, image.bmp, etc...)
      */
     public void storeImage(Bitmap imageData, String fname) {
         String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets/";
@@ -1733,11 +1735,13 @@ public class EMSDeviceDriver {
         }
     }
 
-    /** changeImageHeaders()
-     * @param orgBitmap Bitmap to have its header information changed
-     * @param filePath Directory of the bitmap
+    /**
+     * changeImageHeaders()
      *
-     * writeInt() and writeShort() methods belong and are only used in changeImageHeaders()
+     * @param orgBitmap Bitmap to have its header information changed
+     * @param filePath  Directory of the bitmap
+     *                  <p>
+     *                  writeInt() and writeShort() methods belong and are only used in changeImageHeaders()
      */
     public static boolean changeImageHeaders(Bitmap orgBitmap, String filePath) throws IOException {
         long start = System.currentTimeMillis();
@@ -1886,7 +1890,9 @@ public class EMSDeviceDriver {
         return b;
     }
 
-    /**RescaleBitmap()
+    /**
+     * RescaleBitmap()
+     *
      * @param bmp Bitmap to be rescaled and fit a paper width of 300
      */
     private Bitmap rescaleBitmap(Bitmap bmp) {
@@ -1902,23 +1908,24 @@ public class EMSDeviceDriver {
         return bmp;
     }
 
-    /**processImageBitmap()
+    /**
+     * processImageBitmap()
      *
-     * @param type Type of image to be processed(logo, signature or QRCode)
-     * @param myBitmap Bitmap to be stored and processed
+     * @param type       Type of image to be processed(logo, signature or QRCode)
+     * @param myBitmap   Bitmap to be stored and processed
      * @param bitmapPath Full path directory where bitmap is stored -Should be in the eMobileAssets Folder on the Public directory-
      */
-    private void processImageBitmap(int type, Bitmap myBitmap, String bitmapPath){
+    private void processImageBitmap(int type, Bitmap myBitmap, String bitmapPath) {
         String imageName = "";
-        switch(type){
+        switch (type) {
             case 0:
-                imageName="logo.bmp";
+                imageName = "logo.bmp";
                 break;
             case 1:
                 imageName = "signature.bmp";
                 break;
             case 2:
-                imageName="qrCode.bmp";
+                imageName = "qrCode.bmp";
                 break;
         }
         storeImage(myBitmap, imageName);
@@ -1932,7 +1939,10 @@ public class EMSDeviceDriver {
             e.printStackTrace();
         }
     }
-    /**------------------------END OF METHODS FOR INSTANCES--------------------------*/
+
+    /**
+     * ------------------------END OF METHODS FOR INSTANCES--------------------------
+     */
 
 
     protected void printImage(int type) throws JAException {
@@ -1951,7 +1961,7 @@ public class EMSDeviceDriver {
                     myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                     if (this instanceof EMSHPEngageOnePrimePrinter) {
                         bitmapPath = bitmapPath + "/logo.bmp";
-                        processImageBitmap(type,myBitmap,bitmapPath);
+                        processImageBitmap(type, myBitmap, bitmapPath);
                     }
                 }
                 break;
@@ -1963,7 +1973,7 @@ public class EMSDeviceDriver {
                     myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
                     if (this instanceof EMSHPEngageOnePrimePrinter) {
                         bitmapPath = bitmapPath + "/signature.bmp";
-                        processImageBitmap(type,myBitmap,bitmapPath);
+                        processImageBitmap(type, myBitmap, bitmapPath);
                     }
                 }
                 break;
@@ -1974,7 +1984,7 @@ public class EMSDeviceDriver {
                     myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
                     if (this instanceof EMSHPEngageOnePrimePrinter) {
                         bitmapPath = bitmapPath + "/qrCode.bmp";
-                        processImageBitmap(type,myBitmap,bitmapPath);
+                        processImageBitmap(type, myBitmap, bitmapPath);
                     }
                 }
                 break;
@@ -2238,7 +2248,7 @@ public class EMSDeviceDriver {
 //                buffer.put((byte) 0x00);
                 try {
                     String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets/logo.bmp";
-                    processImageBitmap(0,bitmap,bitmapPath);
+                    processImageBitmap(0, bitmap, bitmapPath);
                     bixolonPrinter.open(myPref.getPrinterName());
                     bixolonPrinter.claim(10000);
                     bixolonPrinter.setDeviceEnabled(true);
@@ -3163,6 +3173,18 @@ public class EMSDeviceDriver {
                     break;
                 case INVOICE:
                     sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Invoice", lineWidth, 0));
+                    invoiceAmount = new BigDecimal(ord.ord_total);
+                    break;
+                case CONSIGNMENT_FILLUP:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Fill Up", lineWidth, 0));
+                    invoiceAmount = new BigDecimal(ord.ord_total);
+                    break;
+                case CONSIGNMENT_PICKUP:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Pickup", lineWidth, 0));
+                    invoiceAmount = new BigDecimal(ord.ord_total);
+                    break;
+                case CONSIGNMENT_INVOICE:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Consignment Invoice", lineWidth, 0));
                     invoiceAmount = new BigDecimal(ord.ord_total);
                     break;
             }
