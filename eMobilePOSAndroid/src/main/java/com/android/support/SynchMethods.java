@@ -345,7 +345,10 @@ public class SynchMethods {
                     order.ord_issync = "1";
                     order.isOnHold = "1";
                     Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
-                    if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
+                    if (onHoldOrder == null ||
+                            TextUtils.isEmpty(onHoldOrder.ord_id) ||
+                            onHoldOrder.isOnHold.equals("1") ||
+                            !onHoldOrder.processed.equals("10")) {
                         ordersToDelete.remove(order);
                         i++;
                     }

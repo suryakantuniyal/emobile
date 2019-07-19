@@ -77,11 +77,14 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.clock_child_layout);
+        if((Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) && Build.MODEL.toUpperCase().equals("M2MX6OP")) {
+            setContentView(R.layout.clock_child_layout_sam4s);
+        }else{
+            setContentView(R.layout.clock_child_layout);
+        }
         activity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
-
         //If POS device is a TeamSable APT-150, Display back button.
         if(myPref.isAPT120() && myPref.getPreferences(MyPreferences.pref_use_navigationbar)){
             ImageView goBackButton = findViewById(R.id.backbtn);

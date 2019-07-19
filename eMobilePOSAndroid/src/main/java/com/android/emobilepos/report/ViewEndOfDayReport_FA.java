@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
@@ -23,7 +22,6 @@ import com.android.emobilepos.models.realms.Device;
 import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.Calendar;
@@ -56,11 +54,44 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         btnPrint.setOnClickListener(this);
         mDate = Global.formatToDisplayDate(curDate, 0);
         btnDate.setText(mDate);
-        MyPreferences preferences = new MyPreferences(this);
-        StickyListHeadersListView myListview = findViewById(R.id.listView);
+        final StickyListHeadersListView myListview = findViewById(R.id.listView);
         myListview.setAreHeadersSticky(false);
-        adapter = new ReportEndDayAdapter(this, Global.formatToDisplayDate(curDate, 4), null);
-        myListview.setAdapter(adapter);
+
+        final ProgressDialog myProgressDialog = new ProgressDialog(activity);
+        myProgressDialog.setMessage(activity.getString(R.string.loading));
+        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myProgressDialog.setCancelable(false);
+        myProgressDialog.show();
+
+        // moved data loading to a new thread to prevent UI from freezing
+        // when the databases has lots of data
+        // (quick fix requested until a better refactoring is done)
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final boolean firstLoad = adapter == null;
+                if (firstLoad) {
+                    adapter = new ReportEndDayAdapter(ViewEndOfDayReport_FA.this,
+                            Global.formatToDisplayDate(curDate, 4), null);
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (firstLoad)
+                            myListview.setAdapter(adapter);
+                        if (myProgressDialog.isShowing()) {
+                            myProgressDialog.dismiss();
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        adapter = null;
+        super.onDestroy();
     }
 
     @Override
@@ -74,11 +105,6 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
     @Override
     public void onPause() {
         super.onPause();
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn = powerManager.isScreenOn();
-//        MyPreferences myPref = new MyPreferences(this);
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -236,7 +262,6 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             Calendar cal = Calendar.getInstance();
             cal.set(year, monthOfYear, dayOfMonth);
-//            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             curDate = DateUtils.getDateAsString(cal.getTime(), DateUtils.DATE_yyyy_MM_dd);
             adapter.setNewDate(curDate);
             mDate = DateUtils.getDateAsString(cal.getTime(), "MMM dd, yyyy");

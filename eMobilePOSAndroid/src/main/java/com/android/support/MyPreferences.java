@@ -61,6 +61,7 @@ public class MyPreferences {
     public static final String pref_display_also_redeem = "pref_display_also_redeem";
     public static final String pref_display_redeem_all = "pref_display_redeem_all";
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
+    private static final String pref_use_stadis_iv = "pref_use_stadis_iv";
     public static final String pref_print_raster_mode = "pref_print_raster_mode";
 
     public static final String pref_giftcard_auto_balance_request = "pref_giftcard_auto_balance_request";
@@ -989,7 +990,7 @@ public class MyPreferences {
     }
 
     public static boolean isAPT50(){
-        return Build.MODEL.toUpperCase().contains("WPOS");
+        return Build.MODEL.toUpperCase().contains("WPOS-3");
     }
 
     public boolean isOT310() {
@@ -1519,6 +1520,10 @@ public class MyPreferences {
     public boolean isSNBC() {
         String device_snbc = "device_snbc";
         return prefs.getBoolean(device_snbc, false);
+    }
+
+    public boolean isUseStadisV4() {
+        return getPreferences(MyPreferences.pref_use_stadis_iv);
     }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}

@@ -1070,6 +1070,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 for (PaymentMethod method : payTypeList) {
                     if (!method.getPaymentmethod_type().equalsIgnoreCase("Cash") &&
                             !method.getPaymentmethod_type().equalsIgnoreCase("GiftCard") &&
+                            !method.getPaymentmethod_type().equalsIgnoreCase("Check") &&
                             !method.getPaymentmethod_type().equalsIgnoreCase("Loyalty") &&
                             !method.getPaymentmethod_type().equalsIgnoreCase("Reward")) {
                         itemsToDelete.add(method);

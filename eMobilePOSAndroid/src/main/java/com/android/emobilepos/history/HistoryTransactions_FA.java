@@ -212,9 +212,10 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
                 myCursor.close();
             }
             myCursor = ordersHandler.getReceipts1Data(orderTypes);
+        }
             myAdapter = new CustomCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
             lView.setAdapter(myAdapter);
-        }
+
     }
 
     @Override

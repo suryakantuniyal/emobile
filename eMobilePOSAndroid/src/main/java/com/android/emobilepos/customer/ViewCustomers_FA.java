@@ -551,16 +551,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         public void bindView(View view, Context context, Cursor cursor) {
             final ViewHolder holder = (ViewHolder) view.getTag();
             String temp = cursor.getString(displayNameIdx);
-//            String lastname = cursor.getString(holder.i_cust_lastName);
-            if (!TextUtils.isEmpty(temp)) {
-                holder.cust_name.setText(temp);
-            }
-//            else {
-//                temp = cursor.getString(holder.i_cust_name);
-//                if (!TextUtils.isEmpty(temp)) {
-//                    holder.cust_name.setText(temp);
-//                }
-//            }
+            holder.cust_name.setText(temp);
             temp = cursor.getString(holder.i_CompanyName);
             if (temp != null)
                 holder.CompanyName.setText(temp);
@@ -577,7 +568,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             holder.moreInfoIcon.setTag(cursor.getString(holder.i_cust_id));
             holder.moreInfoIcon.setOnTouchListener(Global.opaqueImageOnClick());
             holder.moreInfoIcon.setOnClickListener(new View.OnClickListener() {
-
                 @Override
                 public void onClick(View v) {
                     releaseReader();
@@ -587,8 +577,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
                     startActivity(intent);
                 }
             });
-
-
         }
 
         @Override

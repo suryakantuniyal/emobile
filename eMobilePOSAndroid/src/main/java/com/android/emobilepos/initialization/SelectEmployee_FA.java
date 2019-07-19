@@ -317,13 +317,15 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                 holder = new ViewHolder();
                 convertView = myInflater.inflate(R.layout.select_customer_adapter, null);
                 holder.employeeName = convertView.findViewById(R.id.employeeName);
-                holder.employeeName.setText(empName.get(position));
+                holder.employeeName.setText(
+                        String.format("%s (%s)", empName.get(position), empID.get(position)));
 
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
 
-                holder.employeeName.setText(empName.get(position));
+                holder.employeeName.setText(
+                        String.format("%s (%s)", empName.get(position), empID.get(position)));
             }
             return convertView;
         }

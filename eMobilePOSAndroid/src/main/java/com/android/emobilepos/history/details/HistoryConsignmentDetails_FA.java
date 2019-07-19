@@ -111,15 +111,17 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 
         String encodedImg = dataMap.get("encoded_signature");
         dataMap.put("cust_name", extras.getString("cust_name"));
-        if (!encodedImg.isEmpty()) {
-            Resources resources = getResources();
-            Drawable[] layers = new Drawable[2];
-            layers[0] = resources.getDrawable(R.drawable.torn_paper);
-            byte[] img = Base64.decode(encodedImg, Base64.DEFAULT);
-            layers[1] = new BitmapDrawable(resources, BitmapFactory.decodeByteArray(img, 0, img.length));
-            LayerDrawable layered = new LayerDrawable(layers);
-            layered.setLayerInset(1, 100, 30, 50, 60);
-            consignSignature.setImageDrawable(layered);
+        if(encodedImg != null) {
+            if (!encodedImg.isEmpty()) {
+                Resources resources = getResources();
+                Drawable[] layers = new Drawable[2];
+                layers[0] = resources.getDrawable(R.drawable.torn_paper);
+                byte[] img = Base64.decode(encodedImg, Base64.DEFAULT);
+                layers[1] = new BitmapDrawable(resources, BitmapFactory.decodeByteArray(img, 0, img.length));
+                LayerDrawable layered = new LayerDrawable(layers);
+                layered.setLayerInset(1, 100, 30, 50, 60);
+                consignSignature.setImageDrawable(layered);
+            }
         }
 
         custName.setText(extras.getString("cust_name"));
