@@ -260,7 +260,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payment.setPay_resultcode(response.ResultCode);
             payment.setPay_resultmessage(response.Message);
             payment.setPay_name("");
-            payment.setCard_type(response.CardType);
+            payment.setCard_type(PosLinkHelper.payMethodDictionary(response.CardType));
             payment.setProcessed("1");
             payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(response.CardType));
 

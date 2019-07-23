@@ -67,4 +67,27 @@ public class PosLinkHelper {
             return "";
         }
     }
+
+    public static String payMethodDictionary(String value) {
+        if (value == null) return "";
+
+        switch (value.toUpperCase()) {
+            case "VISA":
+                return "Visa";
+            case "MASTERCARD":
+                return "MasterCard";
+            case "AMEX":
+                return "AmericanExpress";
+            case "DISCOVER":
+                return "Discover";
+            case "DINERCLUB":
+                return "DinersClub";
+            case "JCB":
+                return "JCB";
+            case "DEBIT":
+                return "DebitCard";
+            default:
+                return "Visa";
+        }
+    }
 }
