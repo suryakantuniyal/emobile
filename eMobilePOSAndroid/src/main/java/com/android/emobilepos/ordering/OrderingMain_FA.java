@@ -314,7 +314,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String custID = preferences.getCustID();
         CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(custID);
         if (customField != null) {
-            if (customField.getCustFieldId().equalsIgnoreCase(attribute.getAttributeId())) {
+            if (customField.getCustFieldId().equalsIgnoreCase("EMS_CARD_ID_NUM") &&
+                    (attribute.getAttributeId().equalsIgnoreCase("EMS_CARD_ID_NUM") ||
+                    attribute.getAttributeId().equalsIgnoreCase("membership_id"))) {
                 attribute.setValue(customField.getCustValue());
                 product.getRequiredProductAttributes().add(attribute);
                 return true;
