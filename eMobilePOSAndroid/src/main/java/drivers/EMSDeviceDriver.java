@@ -3405,6 +3405,10 @@ public class EMSDeviceDriver {
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         sb.append(textHandler.centeredString(activity.getString(R.string.shift_details), lineWidth));
         Shift shift = ShiftDAO.getShift(shiftID);
+        if (shift.getEndTime() == null) {
+            // shift is not ended
+            shift.setEndTime(new Date());
+        }
         Clerk clerk = ClerkDAO.getByEmpId(shift.getClerkId());
         sb.append(textHandler.newLines(1));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.shift_id),

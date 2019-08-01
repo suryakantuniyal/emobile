@@ -34,6 +34,7 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.OrderRecoveryUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
@@ -204,6 +205,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         hasBeenCreated = true;
 
+        OrderRecoveryUtils orderRecoveryUtils = new OrderRecoveryUtils(this);
+        Intent intent = orderRecoveryUtils.getRecoveryIntent();
+        if (intent != null) {
+            // there is an order that needs recovery
+            startActivity(intent);
+        }
     }
 
     public void registerWithNotificationHubs() {

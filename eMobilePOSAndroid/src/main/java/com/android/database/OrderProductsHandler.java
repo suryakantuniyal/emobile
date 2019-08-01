@@ -719,6 +719,7 @@ public class OrderProductsHandler {
                 where_values.add(endDate + ":59");
             }
 
+            query.append(" AND o.ord_id IN (SELECT job_id FROM Payments GROUP BY job_id) ");
             query.append(" GROUP BY op.cat_id ORDER BY op.cat_name");
 
             c = DBManager.getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));

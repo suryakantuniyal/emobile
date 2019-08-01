@@ -391,6 +391,29 @@ public class OrdersHandler {
         }
     }
 
+    public Order getOrderForRecovery() {
+        Cursor cursor = null;
+        Order order = null;
+
+        try {
+            String sb = "SELECT * FROM " + table_name + " o " +
+                    "WHERE o.ord_id NOT IN (SELECT job_id FROM Payments GROUP BY job_id) " +
+                    "AND isVoid = '0' " +
+                    "AND isOnHold = '0' " +
+                    "AND ord_type = '5'";
+            cursor = DBManager.getDatabase().rawQuery(sb, null);
+
+            if (cursor.moveToFirst()) {
+                order = getOrder(cursor, activity);
+            }
+            return order;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+    }
+
     public boolean existsOrder(String orderId) {
         Cursor cursor = null;
         try {

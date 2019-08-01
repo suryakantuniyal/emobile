@@ -28,6 +28,7 @@ import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import main.EMSDeviceManager;
@@ -55,6 +56,10 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         Bundle extras = this.getIntent().getExtras();
         shiftID = extras.getString("shift_id");
         shift = ShiftDAO.getShift(shiftID);
+        if (shift.getEndTime() == null) {
+            // shift is not ended
+            shift.setEndTime(new Date());
+        }
         clerk = ClerkDAO.getByEmpId(shift.getClerkId());
         totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(shiftID);
         safeDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.SAFE_DROP);
