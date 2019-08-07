@@ -2,6 +2,7 @@ package com.android.emobilepos.models;
 
 import android.graphics.Bitmap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,13 +13,16 @@ public class Receipt {
     private String merchantHeader;
     private String specialHeader;
     private String header;
-    private List<String> items;
+    private List<String> items = new ArrayList<>();
     private String separator;
     private String totals;
     private String taxes;
     private String totalItems;
     private String grandTotal;
     private String paymentsDetails;
+    private String youSave;
+    private String ivuLoto;
+    private String merchantFooter;
     private String loyaltyDetails;
     private String rewardsDetails;
     private String balanceDetails;
@@ -27,7 +31,6 @@ public class Receipt {
     private String specialFooter;
     private String termsAndConditions;
     private String eNablerWebsite;
-    private String footer;
 
 
     public Bitmap getMerchantLogo() {
@@ -118,6 +121,30 @@ public class Receipt {
         this.paymentsDetails = paymentsDetails;
     }
 
+    public String getYouSave() {
+        return youSave;
+    }
+
+    public void setYouSave(String youSave) {
+        this.youSave = youSave;
+    }
+
+    public String getIvuLoto() {
+        return ivuLoto;
+    }
+
+    public void setIvuLoto(String ivuLoto) {
+        this.ivuLoto = ivuLoto;
+    }
+
+    public String getMerchantFooter() {
+        return merchantFooter;
+    }
+
+    public void setMerchantFooter(String merchantFooter) {
+        this.merchantFooter = merchantFooter;
+    }
+
     public String getLoyaltyDetails() {
         return loyaltyDetails;
     }
@@ -174,19 +201,11 @@ public class Receipt {
         this.termsAndConditions = termsAndConditions;
     }
 
-    public String geteNablerWebsite() {
+    public String getEnablerWebsite() {
         return eNablerWebsite;
     }
 
-    public void seteNablerWebsite(String eNablerWebsite) {
+    public void setEnablerWebsite(String eNablerWebsite) {
         this.eNablerWebsite = eNablerWebsite;
-    }
-
-    public String getFooter() {
-        return footer;
-    }
-
-    public void setFooter(String footer) {
-        this.footer = footer;
     }
 }

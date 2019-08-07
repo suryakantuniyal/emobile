@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import drivers.star.utils.PrinterFunctions;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
 
@@ -67,8 +66,7 @@ public class ReceiptBuilder {
     public Receipt getTransaction(Order order,
                                   Global.OrderType type,
                                   boolean isFromHistory,
-                                  boolean isFromOnHold,
-                                  EMVContainer emvContainer) {
+                                  boolean isFromOnHold) {
 
         Receipt receipt = new Receipt();
 
@@ -81,9 +79,8 @@ public class ReceiptBuilder {
             List<OrderProduct> orderProducts = order.getOrderProducts();
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 
-            boolean payWithLoyalty = false;
             StringBuilder sb = new StringBuilder();
-            int size = orderProducts.size();
+            boolean payWithLoyalty = false;
 
             File imgFile = new File(myPref.getAccountLogoPath());
             if (imgFile.exists()) {
@@ -105,19 +102,16 @@ public class ReceiptBuilder {
                     sb.insert(0, textHandler.newLines(1));
                     sb.append(textHandler.newLines(1));
                     receipt.setMerchantHeader(sb.toString());
-                    print(sb.toString(), 0, PrinterFunctions.Alignment.Left);
                     sb.setLength(0);
                 }
             }
 
-
             if (order.isVoid.equals("1")) {
                 sb.append(textHandler.centeredString("*** VOID ***", paperSize))
                         .append("\n\n");
-                print(sb.toString());
+                receipt.setSpecialHeader(sb.toString());
                 sb.setLength(0);
             }
-
 
             if (isFromOnHold) {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
@@ -153,9 +147,6 @@ public class ReceiptBuilder {
                             paperSize, 0));
                     break;
             }
-            print(sb.toString());
-            sb.setLength(0);
-
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                     context.getString(R.string.receipt_date),
@@ -184,13 +175,13 @@ public class ReceiptBuilder {
                 }
             }
 
-//        custName = getCustAccount(anOrder.cust_id);
-//        if (printPref.contains(MyPreferences.print_customer_id) &&
-//                custName != null && !TextUtils.isEmpty(custName)) {
-//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-//                    context.getString(R.string.receipt_customer_id),
-//                    custName, paperSize, 0));
-//        }
+            custName = getCustAccount(order.cust_id);
+            if (printPref.contains(MyPreferences.print_customer_id) &&
+                    custName != null && !TextUtils.isEmpty(custName)) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        context.getString(R.string.receipt_customer_id),
+                        custName, paperSize, 0));
+            }
 
             String ordComment = order.ord_comment;
             if (!TextUtils.isEmpty(ordComment)) {
@@ -200,10 +191,11 @@ public class ReceiptBuilder {
                         ordComment, paperSize, 3)).append("\n");
             }
 
-            print(sb.toString());
+            receipt.setHeader(sb.toString());
             sb.setLength(0);
 
             int totalItemstQty = 0;
+            int size = orderProducts.size();
             if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
                 boolean isRestMode = myPref.isRestaurantMode();
 
@@ -309,7 +301,6 @@ public class ReceiptBuilder {
                                 Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()),
                                 paperSize, 3));
 
-
                         List<OrderProduct> giftcardvalues = orderProductsHandler
                                 .getOrdProdGiftCardNumber(orderProducts.get(i).getOrdprod_id());
                         for (OrderProduct giftCard : giftcardvalues) {
@@ -317,7 +308,6 @@ public class ReceiptBuilder {
                                     giftCard.getGiftcardName() + ":",
                                     giftCard.getGiftcardNumber(), paperSize, 3));
                         }
-
 
                         if (printPref.contains(MyPreferences.print_descriptions)) {
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
@@ -327,9 +317,8 @@ public class ReceiptBuilder {
                                     orderProducts.get(i).getOrdprod_desc(),
                                     paperSize, 5));
                         }
-
                     }
-                    print(sb.toString());
+                    receipt.getItems().add((sb.toString()));
                     sb.setLength(0);
                 }
             } else {
@@ -360,17 +349,14 @@ public class ReceiptBuilder {
                             Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()),
                             Global.getCurrencyFormat(orderProducts.get(i).getItemTotal())))
                             .append("\n");
-                    print(sb.toString());
+                    receipt.getItems().add((sb.toString()));
                     sb.setLength(0);
                 }
             }
-            print(sb.toString());
+
+            sb.append(textHandler.lines(paperSize));
+            receipt.setSeparator(sb.toString());
             sb.setLength(0);
-
-            print(textHandler.lines(paperSize));
-
-
-//////////            addTotalLines(context, order, orderProducts, sb, paperSize);
 
             BigDecimal itemDiscTotal = new BigDecimal(0);
             for (OrderProduct orderProduct : orderProducts) {
@@ -406,8 +392,8 @@ public class ReceiptBuilder {
                     R.string.receipt_tax),
                     Global.getCurrencyFormat(order.ord_taxamount), paperSize, 0));
 
-
-//////////            addTaxesLine(listOrdTaxes, order, paperSize, sb);
+            receipt.setTotals(sb.toString());
+            sb.setLength(0);
 
             if (myPref.getPreferences(MyPreferences.pref_print_taxes_breakdown)) {
                 if (myPref.isRetailTaxes()) {
@@ -458,14 +444,20 @@ public class ReceiptBuilder {
                                 paperSize, 2));
                     }
                 }
-            }
 
+                receipt.setTaxes(sb.toString());
+                sb.setLength(0);
+            }
 
             sb.append("\n");
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                     context.getString(R.string.receipt_itemsQtyTotal),
                     String.valueOf(totalItemstQty), paperSize, 0));
             sb.append("\n");
+
+            receipt.setTotalItems(sb.toString());
+            sb.setLength(0);
+
             String granTotal = "0";
             if (!TextUtils.isEmpty(order.gran_total)) {
                 granTotal = order.gran_total;
@@ -476,6 +468,10 @@ public class ReceiptBuilder {
                     context.getString(R.string.receipt_grandtotal),
                     Global.getCurrencyFormat(granTotal), paperSize, 0));
             sb.append("\n");
+
+            receipt.setGrandTotal(sb.toString());
+            sb.setLength(0);
+
             PaymentsHandler payHandler = new PaymentsHandler(context);
             List<PaymentDetails> detailsList = payHandler
                     .getPaymentForPrintingTransactions(order.ord_id);
@@ -616,46 +612,38 @@ public class ReceiptBuilder {
                             paperSize, 0))
                             .append("\n");
                 }
-
             }
-            print(sb.toString());
 
-            print(textHandler.newLines(1));
+            sb.append(textHandler.newLines(1));
+            receipt.setPaymentsDetails(sb.toString());
+            sb.setLength(0);
 
             if (type != Global.OrderType.ORDER && saveAmount > 0) {
-//////////                printYouSave(String.valueOf(saveAmount), paperSize);
-                print(textHandler.ivuLines(paperSize));
-                sb.setLength(0);
+                sb.append(textHandler.ivuLines(paperSize));
                 sb.append(textHandler.newLines(1));
-
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                         context.getString(R.string.receipt_youSave),
                         Global.getCurrencyFormat(String.valueOf(saveAmount)),
                         paperSize, 0));
-
                 sb.append(textHandler.newLines(1));
-                print(sb.toString());
-                print(textHandler.ivuLines(paperSize));
+                sb.append(textHandler.ivuLines(paperSize));
+                receipt.setYouSave(sb.toString());
+                sb.setLength(0);
             }
 
-
-            sb.setLength(0);
-
             if (Global.isIvuLoto && detailsList.size() > 0) {
-                print((textHandler.ivuLines(2 * paperSize / 3) + "\n" +
+                sb.append((textHandler.ivuLines(2 * paperSize / 3) + "\n" +
                         context.getString(R.string.ivuloto_control_label) +
                         detailsList.get(0).getIvuLottoNumber() + "\n" +
                         context.getString(R.string.enabler_prefix) +
                         "\n" + context.getString(R.string.powered_by_enabler) + "\n" +
                         textHandler.ivuLines(2 * paperSize / 3)).getBytes());
 
+                receipt.setIvuLoto(sb.toString());
                 sb.setLength(0);
             }
 
-
             if (printPref.contains(MyPreferences.print_footer)) {
-//////////                printFooter(paperSize);
-
                 MemoTextHandler handler = new MemoTextHandler(context);
                 String[] footer = handler.getFooter();
 
@@ -668,81 +656,80 @@ public class ReceiptBuilder {
 
                 if (!TextUtils.isEmpty(sb.toString())) {
                     sb.append(textHandler.newLines(1));
-                    print(sb.toString());
-
+                    receipt.setMerchantFooter(sb.toString());
+                    sb.setLength(0);
                 }
-                sb.setLength(0);
             }
 
-            print(textHandler.newLines(1));
+            sb.append(textHandler.newLines(1));
 
             if (payWithLoyalty && Global.loyaltyCardInfo != null &&
                     !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardNumAESEncrypted())
                     && !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardLast4())) {
-                print(String.format("%s *%s\n", context.getString(R.string.receipt_cardnum),
+                sb.append(String.format("%s *%s\n", context.getString(R.string.receipt_cardnum),
                         Global.loyaltyCardInfo.getCardLast4()));
-                print(String.format("%s %s %s\n", context.getString(R.string.receipt_point_used),
+                sb.append(String.format("%s %s %s\n", context.getString(R.string.receipt_point_used),
                         Global.loyaltyCharge, context.getString(R.string.points)));
-                print(String.format("%s %s %s\n", context.getString(R.string.receipt_reward_balance),
+                sb.append(String.format("%s %s %s\n", context.getString(R.string.receipt_reward_balance),
                         Global.loyaltyPointsAvailable, context.getString(R.string.points)));
-                print(textHandler.newLines(1));
+                sb.append(textHandler.newLines(1));
+                receipt.setLoyaltyDetails(sb.toString());
+                sb.setLength(0);
             }
+
             if (Global.rewardCardInfo != null &&
                     !TextUtils.isEmpty(Global.rewardCardInfo.getCardNumAESEncrypted())
                     && !TextUtils.isEmpty(Global.rewardCardInfo.getCardLast4())) {
-                print(String.format("%s *%s\n", context.getString(R.string.receipt_cardnum),
+                sb.append(String.format("%s *%s\n", context.getString(R.string.receipt_cardnum),
                         Global.rewardCardInfo.getCardLast4()));
-                print(String.format("%s %s %s\n", context.getString(R.string.receipt_reward_balance),
+                sb.append(String.format("%s %s %s\n", context.getString(R.string.receipt_reward_balance),
                         Global.rewardCardInfo.getOriginalTotalAmount(),
                         context.getString(R.string.points)));
-                print(textHandler.newLines(1));
+                sb.append(textHandler.newLines(1));
+                receipt.setRewardsDetails(sb.toString());
+                sb.setLength(0);
             }
 
-            String receiptSignature;
-            receiptSignature = order.ord_signature;
+            String receiptSignature = order.ord_signature;
             if (!TextUtils.isEmpty(receiptSignature)) {
-//////////                printImage(1);
                 if (!TextUtils.isEmpty(receiptSignature)) {
                     byte[] img = Base64.decode(receiptSignature, Base64.DEFAULT);
                     receipt.setSignatureImage(
                             BitmapFactory.decodeByteArray(img, 0, img.length));
                 }
-
-
-                sb.setLength(0);
                 sb.append("x").append(textHandler.lines(paperSize / 2)).append("\n");
                 sb.append(context.getString(R.string.receipt_signature))
                         .append(textHandler.newLines(1));
-                print(sb.toString());
-
+                receipt.setSignature(sb.toString());
+                sb.setLength(0);
             }
 
             if (isFromHistory) {
                 sb.setLength(0);
                 sb.append(textHandler.centeredString("*** Copy ***", paperSize));
-                print(sb.toString());
-                print(textHandler.newLines(1));
+                sb.append(textHandler.newLines(1));
+                receipt.setSpecialFooter(sb.toString());
+                sb.setLength(0);
             }
-//////////            printTermsNConds();
+
             if (printPref.contains(MyPreferences.print_terms_conditions)) {
                 List<TermsNConditions> termsNConditions = TermsNConditionsDAO.getTermsNConds();
                 if (termsNConditions != null) {
                     for (TermsNConditions terms : termsNConditions) {
-                        print(terms.getTcTerm());
+                        sb.append(terms.getTcTerm());
                     }
-                    print("\n");
+                    sb.append(textHandler.newLines(1));
+                    receipt.setTermsAndConditions(sb.toString());
+                    sb.setLength(0);
                 }
             }
 
-
-//////////            printEnablerWebSite(lineWidth);
-
             if (myPref.isPrintWebSiteFooterEnabled()) {
-                sb.setLength(0);
                 sb.append(textHandler.centeredString(
                         context.getString(R.string.enabler_website) +
                                 "\n\n\n\n", paperSize));
-                print(sb.toString());
+                receipt.setEnablerWebsite(sb.toString());
+                sb.setLength(0);
             }
 
         } catch (Exception e) {
@@ -762,7 +749,7 @@ public class ReceiptBuilder {
         OrdersHandler orderHandler = new OrdersHandler(context);
         Order order = orderHandler.getPrintedOrder(orderId);
 
-        return getTransaction(order, type, isFromHistory, isFromOnHold, emvContainer);
+        return getTransaction(order, type, isFromHistory, isFromOnHold);
     }
 
     private String getCustName(String custId) {
@@ -787,6 +774,18 @@ public class ReceiptBuilder {
                     default:
                         name = customer.getCust_name();
                 }
+            }
+        }
+        return name;
+    }
+
+    private String getCustAccount(String custId) {
+        String name = "";
+        if (!TextUtils.isEmpty(custId)) {
+            CustomersHandler handler = new CustomersHandler(context);
+            Customer customer = handler.getCustomer(custId);
+            if (customer != null) {
+                return customer.getCustAccountNumber();
             }
         }
         return name;
