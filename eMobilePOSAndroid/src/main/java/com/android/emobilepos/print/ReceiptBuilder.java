@@ -3,12 +3,13 @@ package com.android.emobilepos.print;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
+import android.util.Base64;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
+import com.android.dao.TermsNConditionsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsHandler;
@@ -20,21 +21,28 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.Receipt;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.TermsNConditions;
 import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-import drivers.EMSBluetoothStarPrinter;
 import drivers.star.utils.PrinterFunctions;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
@@ -47,6 +55,7 @@ public class ReceiptBuilder {
     private MyPreferences myPref;
     private List<String> printPref;
     private int paperSize;
+    private double saveAmount;
 
     public ReceiptBuilder(Context context, int paperSize) {
         this.context = context;
@@ -64,7 +73,6 @@ public class ReceiptBuilder {
         Receipt receipt = new Receipt();
 
         try {
-
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             printPref = myPref.getPrintingPreferences();
@@ -104,7 +112,8 @@ public class ReceiptBuilder {
 
 
             if (order.isVoid.equals("1")) {
-                sb.append(textHandler.centeredString("*** VOID ***", paperSize)).append("\n\n");
+                sb.append(textHandler.centeredString("*** VOID ***", paperSize))
+                        .append("\n\n");
                 print(sb.toString());
                 sb.setLength(0);
             }
@@ -217,8 +226,9 @@ public class ReceiptBuilder {
                                             orderProducts.get(i).getOrdprod_name() + " " +
                                             uomDescription, paperSize, 1));
                             if (orderProducts.get(i).getHasAddons()) {
-                                List<OrderProduct> addons = orderProductsHandler.getOrderProductAddons(
-                                        orderProducts.get(i).getOrdprod_id());
+                                List<OrderProduct> addons = orderProductsHandler
+                                        .getOrderProductAddons(orderProducts.get(i)
+                                                .getOrdprod_id());
                                 for (OrderProduct addon : addons) {
                                     if (addon.isAdded()) {
                                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(
@@ -289,7 +299,8 @@ public class ReceiptBuilder {
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                     context.getString(R.string.receipt_discount) +
                                             " " + discountName,
-                                    Global.getCurrencyFormat(orderProducts.get(i).getDiscount_value()),
+                                    Global.getCurrencyFormat(orderProducts.get(i)
+                                            .getDiscount_value()),
                                     paperSize, 3));
                         }
 
@@ -325,8 +336,9 @@ public class ReceiptBuilder {
                 int padding = paperSize / 4;
                 String tempor = Integer.toString(padding);
                 StringBuilder tempSB = new StringBuilder();
-                tempSB.append("%").append(tempor).append("s").append("%").append(tempor).append("s")
-                        .append("%").append(tempor).append("s").append("%").append(tempor).append("s");
+                tempSB.append("%").append(tempor).append("s").append("%").append(tempor)
+                        .append("s").append("%").append(tempor).append("s").append("%")
+                        .append(tempor).append("s");
 
                 sb.append(String.format(tempSB.toString(), "Item", "Qty", "Price", "Total"))
                         .append("\n");
@@ -357,9 +369,97 @@ public class ReceiptBuilder {
 
             print(textHandler.lines(paperSize));
 
-            addTotalLines(context, order, orderProducts, sb, paperSize);
 
-            addTaxesLine(listOrdTaxes, order, paperSize, sb);
+//////////            addTotalLines(context, order, orderProducts, sb, paperSize);
+
+            BigDecimal itemDiscTotal = new BigDecimal(0);
+            for (OrderProduct orderProduct : orderProducts) {
+                try {
+                    itemDiscTotal = itemDiscTotal.add(Global.getBigDecimalNum(
+                            orderProduct.getDiscount_value()));
+                } catch (NumberFormatException e) {
+                    itemDiscTotal = new BigDecimal(0);
+                }
+            }
+            saveAmount = itemDiscTotal.add(TextUtils.isEmpty(order.ord_discount) ?
+                    new BigDecimal(0) : new BigDecimal(order.ord_discount)).doubleValue();
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(
+                    R.string.receipt_subtotal),
+                    Global.getCurrencyFormat(Global.getBigDecimalNum(order.ord_subtotal)
+                            .add(itemDiscTotal).toString()), paperSize, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(
+                    R.string.receipt_discount_line_item),
+                    Global.getCurrencyFormat(String.valueOf(itemDiscTotal)),
+                    paperSize, 0));
+
+            String discountName = "";
+            if (order.ord_discount_id != null && !order.ord_discount_id.isEmpty()) {
+                ProductsHandler productDBHandler = new ProductsHandler(context);
+                discountName = productDBHandler.getDiscountName(order.ord_discount_id);
+            }
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                    context.getString(R.string.receipt_global_discount) +
+                            " " + discountName,
+                    Global.getCurrencyFormat(order.ord_discount), paperSize, 0));
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(
+                    R.string.receipt_tax),
+                    Global.getCurrencyFormat(order.ord_taxamount), paperSize, 0));
+
+
+//////////            addTaxesLine(listOrdTaxes, order, paperSize, sb);
+
+            if (myPref.getPreferences(MyPreferences.pref_print_taxes_breakdown)) {
+                if (myPref.isRetailTaxes()) {
+                    HashMap<String, String[]> prodTaxes = new HashMap<>();
+                    for (OrderProduct product : order.getOrderProducts()) {
+                        if (product.getTaxes() != null) {
+                            for (Tax tax : product.getTaxes()) {
+                                if (prodTaxes.containsKey(tax.getTaxRate())) {
+                                    BigDecimal taxAmount = new BigDecimal(
+                                            prodTaxes.get(tax.getTaxRate())[1]);
+                                    taxAmount = taxAmount.add(TaxesCalculator.taxRounder(
+                                            tax.getTaxAmount()));
+                                    String[] arr = new String[2];
+                                    arr[0] = tax.getTaxName();
+                                    arr[1] = String.valueOf(taxAmount);
+                                    prodTaxes.put(tax.getTaxRate(), arr);
+                                } else {
+                                    BigDecimal taxAmount = TaxesCalculator.taxRounder(
+                                            tax.getTaxAmount());
+                                    String[] arr = new String[2];
+                                    arr[0] = tax.getTaxName();
+                                    arr[1] = String.valueOf(taxAmount);
+                                    prodTaxes.put(tax.getTaxRate(), arr);
+                                }
+                            }
+                        }
+                    }
+                    Iterator it = prodTaxes.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(pair.getValue()[0],
+                                Global.getCurrencyFormat(String.valueOf(pair.getValue()[1])),
+                                paperSize, 2));
+                        it.remove();
+                    }
+                } else if (listOrdTaxes != null) {
+                    for (DataTaxes tax : listOrdTaxes) {
+                        BigDecimal taxAmount = new BigDecimal(0);
+                        List<BigDecimal> rates = new ArrayList<>();
+                        rates.add(new BigDecimal(tax.getTax_rate()));
+                        for (OrderProduct product : order.getOrderProducts()) {
+                            taxAmount = taxAmount.add(TaxesCalculator.calculateTax(
+                                    product.getProductPriceTaxableAmountCalculated(), rates));
+                        }
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
+                                Global.getCurrencyFormat(String.valueOf(taxAmount)),
+                                paperSize, 2));
+                    }
+                }
+            }
+
 
             sb.append("\n");
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
@@ -380,9 +480,9 @@ public class ReceiptBuilder {
             List<PaymentDetails> detailsList = payHandler
                     .getPaymentForPrintingTransactions(order.ord_id);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                detailsList.addAll(StoredPaymentsDAO.getPaymentForPrintingTransactions(order.ord_id));
+                detailsList.addAll(StoredPaymentsDAO
+                        .getPaymentForPrintingTransactions(order.ord_id));
             }
-            String receiptSignature;
             size = detailsList.size();
 
             double tempGrandTotal = Double.parseDouble(granTotal);
@@ -447,10 +547,10 @@ public class ReceiptBuilder {
                         tempSB.append(textHandler
                                 .oneColumnLineWithLeftAlignedText(
                                         context.getString(R.string.changeLbl) +
-                                        Global.formatDoubleToCurrency(
-                                                detailsList.get(i).getAmountTender() -
-                                                        formatStrToDouble(detailsList.get(i)
-                                                                .getPay_amount())),
+                                                Global.formatDoubleToCurrency(
+                                                        detailsList.get(i).getAmountTender() -
+                                                                formatStrToDouble(detailsList.get(i)
+                                                                        .getPay_amount())),
                                         paperSize, 1));
                     }
                 }
@@ -522,23 +622,56 @@ public class ReceiptBuilder {
 
             print(textHandler.newLines(1));
 
-            if (type != Global.OrderType.ORDER && saveAmount > 0)
-                printYouSave(String.valueOf(saveAmount), paperSize);
+            if (type != Global.OrderType.ORDER && saveAmount > 0) {
+//////////                printYouSave(String.valueOf(saveAmount), paperSize);
+                print(textHandler.ivuLines(paperSize));
+                sb.setLength(0);
+                sb.append(textHandler.newLines(1));
+
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        context.getString(R.string.receipt_youSave),
+                        Global.getCurrencyFormat(String.valueOf(saveAmount)),
+                        paperSize, 0));
+
+                sb.append(textHandler.newLines(1));
+                print(sb.toString());
+                print(textHandler.ivuLines(paperSize));
+            }
+
+
             sb.setLength(0);
 
             if (Global.isIvuLoto && detailsList.size() > 0) {
-                if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-                    printIVULoto(detailsList.get(0).getIvuLottoNumber(), paperSize);
-                } else {
-                    printImage(2);
-                    printIVULoto(detailsList.get(0).getIvuLottoNumber(), paperSize);
-                }
+                print((textHandler.ivuLines(2 * paperSize / 3) + "\n" +
+                        context.getString(R.string.ivuloto_control_label) +
+                        detailsList.get(0).getIvuLottoNumber() + "\n" +
+                        context.getString(R.string.enabler_prefix) +
+                        "\n" + context.getString(R.string.powered_by_enabler) + "\n" +
+                        textHandler.ivuLines(2 * paperSize / 3)).getBytes());
+
                 sb.setLength(0);
             }
-//            printOrderAttributes(lineWidth, anOrder);
+
 
             if (printPref.contains(MyPreferences.print_footer)) {
-                printFooter(paperSize);
+//////////                printFooter(paperSize);
+
+                MemoTextHandler handler = new MemoTextHandler(context);
+                String[] footer = handler.getFooter();
+
+                if (!TextUtils.isEmpty(footer[0]))
+                    sb.append(textHandler.centeredString(footer[0], paperSize));
+                if (!TextUtils.isEmpty(footer[1]))
+                    sb.append(textHandler.centeredString(footer[1], paperSize));
+                if (!TextUtils.isEmpty(footer[2]))
+                    sb.append(textHandler.centeredString(footer[2], paperSize));
+
+                if (!TextUtils.isEmpty(sb.toString())) {
+                    sb.append(textHandler.newLines(1));
+                    print(sb.toString());
+
+                }
+                sb.setLength(0);
             }
 
             print(textHandler.newLines(1));
@@ -564,10 +697,18 @@ public class ReceiptBuilder {
                         context.getString(R.string.points)));
                 print(textHandler.newLines(1));
             }
+
+            String receiptSignature;
             receiptSignature = order.ord_signature;
             if (!TextUtils.isEmpty(receiptSignature)) {
-                encodedSignature = receiptSignature;
-                printImage(1);
+//////////                printImage(1);
+                if (!TextUtils.isEmpty(receiptSignature)) {
+                    byte[] img = Base64.decode(receiptSignature, Base64.DEFAULT);
+                    receipt.setSignatureImage(
+                            BitmapFactory.decodeByteArray(img, 0, img.length));
+                }
+
+
                 sb.setLength(0);
                 sb.append("x").append(textHandler.lines(paperSize / 2)).append("\n");
                 sb.append(context.getString(R.string.receipt_signature))
@@ -582,19 +723,32 @@ public class ReceiptBuilder {
                 print(sb.toString());
                 print(textHandler.newLines(1));
             }
-            printTermsNConds();
-            printEnablerWebSite(lineWidth);
-            cutPaper();
-        } catch (
-                JAException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-        } catch (
-                Exception e) {
+//////////            printTermsNConds();
+            if (printPref.contains(MyPreferences.print_terms_conditions)) {
+                List<TermsNConditions> termsNConditions = TermsNConditionsDAO.getTermsNConds();
+                if (termsNConditions != null) {
+                    for (TermsNConditions terms : termsNConditions) {
+                        print(terms.getTcTerm());
+                    }
+                    print("\n");
+                }
+            }
+
+
+//////////            printEnablerWebSite(lineWidth);
+
+            if (myPref.isPrintWebSiteFooterEnabled()) {
+                sb.setLength(0);
+                sb.append(textHandler.centeredString(
+                        context.getString(R.string.enabler_website) +
+                                "\n\n\n\n", paperSize));
+                print(sb.toString());
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
             Crashlytics.logException(e);
         }
-
 
         return receipt;
     }
@@ -623,8 +777,9 @@ public class ReceiptBuilder {
                         name = customer.getCust_name();
                         break;
                     case "fullName":
-                        name = String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
-                                , StringUtil.nullStringToEmpty(customer.getCust_lastName()));
+                        name = String.format("%s %s", StringUtil.nullStringToEmpty(
+                                customer.getCust_firstName()),
+                                StringUtil.nullStringToEmpty(customer.getCust_lastName()));
                         break;
                     case "CompanyName":
                         name = customer.getCompanyName();
@@ -635,6 +790,12 @@ public class ReceiptBuilder {
             }
         }
         return name;
+    }
+
+    private double formatStrToDouble(String val) {
+        if (TextUtils.isEmpty(val))
+            return 0.00;
+        return Double.parseDouble(val);
     }
 
 }
