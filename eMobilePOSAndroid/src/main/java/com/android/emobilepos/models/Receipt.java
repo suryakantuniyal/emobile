@@ -25,7 +25,6 @@ public class Receipt {
     private String merchantFooter;
     private String loyaltyDetails;
     private String rewardsDetails;
-    private String balanceDetails;
     private Bitmap signatureImage;
     private String signature;
     private String specialFooter;
@@ -159,14 +158,6 @@ public class Receipt {
 
     public void setRewardsDetails(String rewardsDetails) {
         this.rewardsDetails = rewardsDetails;
-    }
-
-    public String getBalanceDetails() {
-        return balanceDetails;
-    }
-
-    public void setBalanceDetails(String balanceDetails) {
-        this.balanceDetails = balanceDetails;
     }
 
     public Bitmap getSignatureImage() {

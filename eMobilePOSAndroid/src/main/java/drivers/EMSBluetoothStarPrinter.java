@@ -23,11 +23,13 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
+import com.android.emobilepos.print.ReceiptBuilder;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -37,11 +39,14 @@ import com.crashlytics.android.Crashlytics;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
+import com.starmicronics.starioextension.ICommandBuilder;
 import com.starmicronics.starioextension.IConnectionCallback;
+import com.starmicronics.starioextension.StarIoExt;
 import com.starmicronics.starioextension.StarIoExtManager;
 import com.starmicronics.starioextension.StarIoExtManagerListener;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -263,51 +268,119 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         }
     }
 
+    private void newPrint(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean isFromOnHold) {
+        ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+        Receipt receipt = receiptBuilder.getTransaction(order, saleTypes, isFromHistory, isFromOnHold);
+
+        ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarPRNT);
+
+        builder.beginDocument();
+
+        Charset encoding = Charset.forName("UTF-8");
+
+        if (receipt.getMerchantLogo() != null)
+            builder.appendBitmapWithAlignment(receipt.getMerchantLogo(), false,
+                    ICommandBuilder.AlignmentPosition.Center);
+        if (receipt.getMerchantHeader() != null)
+            builder.append((receipt.getMerchantHeader()).getBytes(encoding));
+        if (receipt.getSpecialHeader() != null)
+            builder.append((receipt.getSpecialHeader()).getBytes(encoding));
+        if (receipt.getHeader() != null)
+            builder.append((receipt.getHeader()).getBytes(encoding));
+        for (String s : receipt.getItems()) {
+            if (s != null)
+                builder.append((s).getBytes(encoding));
+        }
+        if (receipt.getSeparator() != null)
+            builder.append((receipt.getSeparator()).getBytes(encoding));
+        if (receipt.getTotals() != null)
+            builder.append((receipt.getTotals()).getBytes(encoding));
+        if (receipt.getTaxes() != null)
+            builder.append((receipt.getTaxes()).getBytes(encoding));
+        if (receipt.getTotalItems() != null)
+            builder.append((receipt.getTotalItems()).getBytes(encoding));
+        if (receipt.getGrandTotal() != null)
+            builder.append((receipt.getGrandTotal()).getBytes(encoding));
+        if (receipt.getPaymentsDetails() != null)
+            builder.append((receipt.getPaymentsDetails()).getBytes(encoding));
+        if (receipt.getYouSave() != null)
+            builder.append((receipt.getYouSave()).getBytes(encoding));
+        if (receipt.getIvuLoto() != null)
+            builder.append((receipt.getIvuLoto()).getBytes(encoding));
+        if (receipt.getMerchantFooter() != null)
+            builder.append((receipt.getMerchantFooter()).getBytes(encoding));
+        if (receipt.getLoyaltyDetails() != null)
+            builder.append((receipt.getLoyaltyDetails()).getBytes(encoding));
+        if (receipt.getRewardsDetails() != null)
+            builder.append((receipt.getRewardsDetails()).getBytes(encoding));
+        if (receipt.getSignatureImage() != null)
+            builder.appendBitmapWithAlignment(receipt.getSignatureImage(), false,
+                    ICommandBuilder.AlignmentPosition.Center);
+        if (receipt.getSignature() != null)
+            builder.append((receipt.getSignature()).getBytes(encoding));
+        if (receipt.getSpecialFooter() != null)
+            builder.append((receipt.getSpecialFooter()).getBytes(encoding));
+        if (receipt.getTermsAndConditions() != null)
+            builder.append((receipt.getTermsAndConditions()).getBytes(encoding));
+        if (receipt.getEnablerWebsite() != null)
+            builder.append((receipt.getEnablerWebsite()).getBytes(encoding));
+
+        builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
+
+        builder.endDocument();
+
+        byte[] commands;
+
+        commands = builder.getCommands();
+
+        try {
+            port.writePort(commands, 0, commands.length);
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
-        return true;
+        boolean result = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+            newPrint(order, saleTypes, isFromHistory, fromOnHold);
+//            printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+            releasePrinter();
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return result;
     }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        boolean result = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
             printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
             releasePrinter();
+            result = true;
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
-        return true;
+        return result;
     }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
-        boolean printTransaction = false;
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            printTransaction = printTransaction(ordID, type, isFromHistory, fromOnHold, null);
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return printTransaction;
+        return printTransaction(ordID, type, isFromHistory, fromOnHold, null);
     }
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
-        boolean printTransaction = false;
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            printTransaction = printTransaction(order, saleTypes, isFromHistory, fromOnHold, null);
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return printTransaction;
+        return printTransaction(order, saleTypes, isFromHistory, fromOnHold, null);
     }
 
     static public Bitmap createBitmapFromText(String printText, int textSize, int printWidth, Typeface typeface) {

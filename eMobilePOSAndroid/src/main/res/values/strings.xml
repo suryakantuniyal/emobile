@@ -1092,7 +1092,7 @@
     <string name="amount_zero_lbl">0.00</string>
     <string name="none_uppercase_lbl">NONE</string>
     <string name="enabler_prefix">EN</string>
-    <string name="enabler_website" translatable="false">www.emobilepos.com/</string>
+    <string name="enabler_website" translatable="false">www.emobilepos.com</string>
     <string name="powered_by_enabler">Powered by e-Nabler</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">Back</string>
