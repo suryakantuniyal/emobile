@@ -13,6 +13,7 @@ public class Receipt {
     private String merchantHeader;
     private String specialHeader;
     private String header;
+    private String emvDetails;
     private List<String> items = new ArrayList<>();
     private String separator;
     private String totals;
@@ -62,6 +63,14 @@ public class Receipt {
 
     public void setHeader(String header) {
         this.header = header;
+    }
+
+    public String getEmvDetails() {
+        return emvDetails;
+    }
+
+    public void setEmvDetails(String emvDetails) {
+        this.emvDetails = emvDetails;
     }
 
     public List<String> getItems() {

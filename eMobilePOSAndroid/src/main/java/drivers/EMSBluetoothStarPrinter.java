@@ -283,6 +283,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             builder.appendInvert((receipt.getSpecialHeader()).getBytes(encoding));
         if (receipt.getHeader() != null)
             builder.append((receipt.getHeader()).getBytes(encoding));
+        if (receipt.getEmvDetails() != null)
+            builder.append((receipt.getEmvDetails()).getBytes(encoding));
         if (receipt.getSeparator() != null)
             builder.append((receipt.getSeparator()).getBytes(encoding));
         for (String s : receipt.getItems()) {

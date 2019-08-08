@@ -1,10 +1,14 @@
 package com.android.emobilepos.print;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
@@ -18,6 +22,7 @@ import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.Tax;
@@ -27,6 +32,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.TermsNConditions;
+import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -53,7 +59,6 @@ public class ReceiptBuilder {
     private MyPreferences myPref;
     private List<String> printPref;
     private int lineWidth;
-    private double saveAmount;
 
     public ReceiptBuilder(Context context, int lineWidth) {
         this.context = context;
@@ -62,10 +67,8 @@ public class ReceiptBuilder {
         printPref = myPref.getPrintingPreferences();
     }
 
-    public Receipt getTransaction(Order order,
-                                  Global.OrderType type,
-                                  boolean isFromHistory,
-                                  boolean isFromOnHold) {
+    public Receipt getTransaction(Order order, Global.OrderType type,
+                                  boolean isFromHistory, boolean isFromOnHold) {
 
         Receipt receipt = new Receipt();
 
@@ -81,29 +84,9 @@ public class ReceiptBuilder {
             StringBuilder sb = new StringBuilder();
             boolean payWithLoyalty = false;
 
-            File imgFile = new File(myPref.getAccountLogoPath());
-            if (imgFile.exists()) {
-                receipt.setMerchantLogo(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
-            }
+            receipt.setMerchantLogo(getMerchantLogo());
 
-            if (printPref.contains(MyPreferences.print_header)) {
-                MemoTextHandler handler = new MemoTextHandler(context);
-                String[] header = handler.getHeader();
-
-                if (!TextUtils.isEmpty(header[0]))
-                    sb.append(textHandler.centeredString(header[0], lineWidth));
-                if (!TextUtils.isEmpty(header[1]))
-                    sb.append(textHandler.centeredString(header[1], lineWidth));
-                if (!TextUtils.isEmpty(header[2]))
-                    sb.append(textHandler.centeredString(header[2], lineWidth));
-
-                if (!TextUtils.isEmpty(sb.toString())) {
-                    sb.insert(0, textHandler.newLines(1));
-                    sb.append(textHandler.newLines(1));
-                    receipt.setMerchantHeader(sb.toString());
-                    sb.setLength(0);
-                }
-            }
+            receipt.setMerchantHeader(getMerchantHeader(textHandler));
 
             if (order.isVoid.equals("1")) {
                 sb.append(textHandler.centeredString("*** VOID ***", lineWidth));
@@ -370,7 +353,7 @@ public class ReceiptBuilder {
                     itemDiscTotal = new BigDecimal(0);
                 }
             }
-            saveAmount = itemDiscTotal.add(TextUtils.isEmpty(order.ord_discount) ?
+            double saveAmount = itemDiscTotal.add(TextUtils.isEmpty(order.ord_discount) ?
                     new BigDecimal(0) : new BigDecimal(order.ord_discount)).doubleValue();
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(
                     R.string.receipt_subtotal),
@@ -751,15 +734,400 @@ public class ReceiptBuilder {
         return receipt;
     }
 
-    public Receipt getTransaction(String orderId,
-                                  Global.OrderType type,
-                                  boolean isFromHistory,
-                                  boolean isFromOnHold) {
+    public Receipt getTransaction(String orderId, Global.OrderType type,
+                                  boolean isFromHistory, boolean isFromOnHold) {
 
         OrdersHandler orderHandler = new OrdersHandler(context);
         Order order = orderHandler.getPrintedOrder(orderId);
 
         return getTransaction(order, type, isFromHistory, isFromOnHold);
+    }
+
+    public Receipt getPaymentDetails(String paymentId, int type,
+                                     boolean isReprint, EMVContainer emvContainer) {
+
+        Receipt receipt = new Receipt();
+
+        try {
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+            PaymentsHandler payHandler = new PaymentsHandler(context);
+            Spanned fromHtml = null;
+            if (emvContainer != null && emvContainer.getHandpointResponse() != null &&
+                    emvContainer.getHandpointResponse().getCustomerReceipt() != null) {
+                fromHtml = Html.fromHtml(emvContainer.getHandpointResponse().getCustomerReceipt());
+            }
+            PaymentDetails payArray;
+            boolean isStoredFwd = false;
+            long pay_count = payHandler.paymentExist(paymentId, true);
+            if (pay_count == 0) {
+                isStoredFwd = true;
+                if (emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                        emvContainer.getGeniusResponse().getStatus()
+                                .equalsIgnoreCase("DECLINED")) {
+                    type = 2;
+                }
+                payArray = StoredPaymentsDAO.getPrintingForPaymentDetails(paymentId, type);
+            } else {
+                payArray = payHandler.getPrintingForPaymentDetails(paymentId, type);
+            }
+            StringBuilder sb = new StringBuilder();
+            boolean isCashPayment = false;
+            boolean isCheckPayment = false;
+            String includedTip = null;
+            String creditCardFooting = "";
+            if (payArray.getPaymethod_name() != null &&
+                    payArray.getPaymethod_name().toUpperCase(
+                            Locale.getDefault()).trim().equals("CASH"))
+                isCashPayment = true;
+            else if (payArray.getPaymethod_name() != null &&
+                    payArray.getPaymethod_name().toUpperCase(
+                            Locale.getDefault()).trim().equals("CHECK"))
+                isCheckPayment = true;
+            else {
+                includedTip = context.getString(R.string.receipt_included_tip);
+                creditCardFooting = context.getString(R.string.receipt_creditcard_terms);
+            }
+
+            receipt.setMerchantLogo(getMerchantLogo());
+
+            if (fromHtml == null) {
+                receipt.setMerchantHeader(getMerchantHeader(textHandler));
+                sb.append("* ").append(payArray.getPaymethod_name());
+                if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
+                    sb.append(" Refund *\n");
+                else
+                    sb.append(" Sale *\n");
+//                print(textHandler.centeredString(sb.toString(), lineWidth));
+//
+//                sb.setLength(0);
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        context.getString(R.string.receipt_date),
+                        context.getString(R.string.receipt_time), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getPay_date(),
+                        payArray.getPay_timecreated(), lineWidth, 0))
+                        .append("\n");
+
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        context.getString(R.string.receipt_customer),
+                        getCustName(payArray.getCustomerId()),
+                        lineWidth, 0));
+
+                if (payArray.getJob_id() != null && !TextUtils.isEmpty(payArray.getJob_id()))
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_order_id),
+                            payArray.getJob_id(), lineWidth, 0));
+                else if (payArray.getInv_id() != null && !TextUtils.isEmpty(payArray.getInv_id()))
+                    // invoice
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_invoice_ref),
+                            payArray.getInv_id(), lineWidth, 0));
+
+                if (!isStoredFwd)
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_idnum), paymentId,
+                            lineWidth, 0));
+
+                if (!isCashPayment && !isCheckPayment) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_cardnum),
+                            "*" + payArray.getCcnum_last4(), lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            "TransID:", payArray.getPay_transid(),
+                            lineWidth, 0)).append("\n");
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            "Auth Code:", payArray.getAuthcode(),
+                            lineWidth, 0)).append("\n");
+                } else if (isCheckPayment) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_checknum),
+                            payArray.getPay_check(), lineWidth, 0));
+                }
+
+                receipt.setHeader(sb.toString());
+                sb.setLength(0);
+
+                receipt.setEmvDetails(getEmvDetails(payArray.getEmvContainer(), textHandler));
+
+                String status = payArray.getEmvContainer() != null &&
+                        payArray.getEmvContainer().getGeniusResponse() != null ?
+                        payArray.getEmvContainer().getGeniusResponse().getStatus() :
+                        context.getString(R.string.approved);
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        context.getString(R.string.credit_approval_status),
+                        status, lineWidth, 0));
+                sb.append(textHandler.newLines(1));
+                if (Global.isIvuLoto && Global.subtotalAmount > 0 &&
+                        !TextUtils.isEmpty(payArray.getTax1_amount())
+                        && !TextUtils.isEmpty(payArray.getTax2_amount())) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_subtotal),
+                            Global.getCurrencyFormat(String.valueOf(Global.subtotalAmount)),
+                            lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax1_name(),
+                            Global.getCurrencyFormat(payArray.getTax1_amount()),
+                            lineWidth, 2));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
+                            Global.getCurrencyFormat(payArray.getTax2_amount()),
+                            lineWidth, 2));
+                }
+
+                if (emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                        emvContainer.getGeniusResponse().getAmountApproved() != null) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_amount),
+                            Global.getCurrencyFormat(emvContainer.getGeniusResponse()
+                                    .getAmountApproved()), lineWidth, 0));
+                } else {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_amount),
+                            Global.getCurrencyFormat(payArray.getPay_amount()),
+                            lineWidth, 0));
+                }
+                String change = payArray.getChange();
+                if (isCashPayment && isCheckPayment && !TextUtils.isEmpty(change) &&
+                        change.contains(".") && Double.parseDouble(change) > 0) {
+                    change = "";
+                }
+
+                sb.append("\n");
+
+                if (includedTip != null) {
+                    if (Double.parseDouble(change) > 0) {
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(includedTip,
+                                Global.getCurrencyFormat(change), lineWidth, 0));
+                    } else if (myPref.isRestaurantMode() &&
+                            myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                        sb.append(textHandler.newLines(1));
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                context.getString(R.string.receipt_tip),
+                                textHandler.lines(lineWidth / 2),
+                                lineWidth, 0)).append("\n");
+//                        print(sb.toString());
+//                        sb.setLength(0);
+                        sb.append(textHandler.newLines(1));
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                context.getString(R.string.receipt_total),
+                                textHandler.lines(lineWidth / 2),
+                                lineWidth, 0)).append("\n");
+//                        print(sb.toString());
+//                        sb.setLength(0);
+                    }
+                }
+                sb.append("\n");
+
+                receipt.setPaymentsDetails(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.setLength(0);
+                sb.append("\n\n");
+                sb.append(fromHtml.toString());
+
+                receipt.setPaymentsDetails(sb.toString());
+                sb.setLength(0);
+            }
+
+//            sb.setLength(0);
+            if (!isCashPayment && !isCheckPayment) {
+                if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
+                    sb.append(textHandler.newLines(1));
+                } else if (payArray.getPay_signature() != null &&
+                        !TextUtils.isEmpty(payArray.getPay_signature())) {
+                    encodedSignature = payArray.getPay_signature();
+                    printImage(1);
+                }
+                sb.append("\n\nx").append(textHandler.lines(lineWidth / 2)).append("\n");
+                sb.append(context.getString(R.string.receipt_signature))
+                        .append(textHandler.newLines(1));
+                print(sb.toString());
+                sb.setLength(0);
+            }
+            if (Global.isIvuLoto) {
+                sb = new StringBuilder();
+
+                if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
+                    printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
+                } else {
+
+                    printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
+
+                }
+                sb.setLength(0);
+            }
+
+            sb.setLength(0);
+            printFooter(lineWidth);
+
+            if (fromHtml == null) {
+                if (!isCashPayment && !isCheckPayment) {
+                    print(creditCardFooting);
+                    String temp = textHandler.newLines(1);
+                    print(temp);
+                }
+            }
+
+            sb.setLength(0);
+            if (isReprint) {
+                sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
+                print(sb.toString());
+            }
+            printTermsNConds();
+            printEnablerWebSite(lineWidth);
+            cutPaper();
+        } catch (JAException e) {
+            e.printStackTrace();
+        }
+
+        return receipt;
+    }
+
+    private Bitmap getMerchantLogo() {
+        Bitmap merchantLogo = null;
+        File imgFile = new File(myPref.getAccountLogoPath());
+        if (imgFile.exists()) {
+            merchantLogo = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        }
+        return merchantLogo;
+    }
+
+    private String getMerchantHeader(EMSPlainTextHelper emsPlainTextHelper) {
+        String merchantHeader = null;
+        if (printPref.contains(MyPreferences.print_header)) {
+            MemoTextHandler handler = new MemoTextHandler(context);
+            String[] header = handler.getHeader();
+            StringBuilder stringBuilder = new StringBuilder();
+
+            if (!TextUtils.isEmpty(header[0]))
+                stringBuilder.append(emsPlainTextHelper.centeredString(header[0], lineWidth));
+            if (!TextUtils.isEmpty(header[1]))
+                stringBuilder.append(emsPlainTextHelper.centeredString(header[1], lineWidth));
+            if (!TextUtils.isEmpty(header[2]))
+                stringBuilder.append(emsPlainTextHelper.centeredString(header[2], lineWidth));
+
+            if (!TextUtils.isEmpty(stringBuilder.toString())) {
+                stringBuilder.insert(0, emsPlainTextHelper.newLines(1));
+                stringBuilder.append(emsPlainTextHelper.newLines(1));
+                merchantHeader = stringBuilder.toString();
+            }
+        }
+
+        return merchantHeader;
+    }
+
+    private String getEmvDetails(EMVContainer emvContainer, EMSPlainTextHelper emsPlainTextHelper) {
+        String emvDetails = null;
+
+        if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
+            if (emvContainer.getGeniusResponse().getAdditionalParameters() != null &&
+                    emvContainer.getGeniusResponse()
+                            .getAdditionalParameters().getEMV() != null) {
+
+                StringBuilder stringBuilder = new StringBuilder();
+
+                // Entry Method
+                String entryMethod = emvContainer.getGeniusResponse()
+                        .getAdditionalParameters().getEMV().getEntryModeMessage();
+                if (!TextUtils.isEmpty(entryMethod)) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.pax_entry_method),
+                            entryMethod, lineWidth, 0));
+                }
+
+                // Application Label
+                String applicationLabel = emvContainer.getGeniusResponse()
+                        .getAdditionalParameters()
+                        .getEMV().getApplicationInformation().getApplicationLabel();
+                if (!TextUtils.isEmpty(applicationLabel)) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.genius_application_label),
+                            applicationLabel, lineWidth, 0));
+                }
+
+                // AID
+                String aid = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getApplicationInformation().getAid();
+                if (!TextUtils.isEmpty(aid)) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.genius_aid),
+                            aid, lineWidth, 0));
+                }
+
+                if (emvContainer.getGeniusResponse().getPaymentType()
+                        .equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
+                        emvContainer.getGeniusResponse().getPaymentType()
+                                .equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name()) ||
+                        emvContainer.getGeniusResponse().getPaymentType()
+                                .equalsIgnoreCase("EMVCo")) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.card_exp_date),
+                            emvContainer.getGeniusResponse().getAdditionalParameters()
+                                    .getEMV().getCardInformation().getCardExpiryDate(),
+                            lineWidth, 0));
+                }
+                if (emvContainer.getGeniusResponse().getPaymentType()
+                        .equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name())) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.cryptogram_type),
+                            emvContainer.getGeniusResponse().getAdditionalParameters()
+                                    .getEMV().getApplicationCryptogram()
+                                    .getCryptogramType(), lineWidth, 0));
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.cryptogram),
+                            emvContainer.getGeniusResponse().getAdditionalParameters()
+                                    .getEMV().getApplicationCryptogram().getCryptogram(),
+                            lineWidth, 0));
+                }
+
+                // PIN Statement
+                String pinStatement = emvContainer.getGeniusResponse()
+                        .getAdditionalParameters().getEMV().getPINStatement();
+                if (!TextUtils.isEmpty(pinStatement)) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.pin_statement),
+                            pinStatement, lineWidth, 0));
+                }
+
+                // TVR
+                String tvr = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getTVR();
+                if (!TextUtils.isEmpty(tvr)) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.pax_tvr),
+                            tvr, lineWidth, 0));
+                }
+
+                // IAD
+                String iad = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getIAD();
+                if (!TextUtils.isEmpty(iad)) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.pax_iad),
+                            iad, lineWidth, 0));
+                }
+
+                // TSI
+                String tsi = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getTSI();
+                if (!TextUtils.isEmpty(tsi)) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.pax_tsi_atc),
+                            tsi, lineWidth, 0));
+                }
+
+                // AC
+                String ac = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getAC();
+                if (!TextUtils.isEmpty(ac)) {
+                    stringBuilder.append(emsPlainTextHelper.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.pax_ac),
+                            ac, lineWidth, 0));
+                }
+
+                stringBuilder.append("\n\n");
+                emvDetails = stringBuilder.toString();
+            }
+        }
+
+        return emvDetails;
     }
 
     private String getCustName(String custId) {
