@@ -18,7 +18,6 @@ import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.Tax;
@@ -107,8 +106,8 @@ public class ReceiptBuilder {
             }
 
             if (order.isVoid.equals("1")) {
-                sb.append(textHandler.centeredString("*** VOID ***", lineWidth))
-                        .append("\n\n");
+                sb.append(textHandler.centeredString("*** VOID ***", lineWidth));
+                sb.append(textHandler.newLines(1));
                 receipt.setSpecialHeader(sb.toString());
                 sb.setLength(0);
             }
@@ -186,13 +185,13 @@ public class ReceiptBuilder {
 
             String ordComment = order.ord_comment;
             if (!TextUtils.isEmpty(ordComment)) {
-                sb.append("\n\n");
-                sb.append("Comments:\n");
+                sb.append(textHandler.newLines(2));
+                sb.append("Comments:");
+                sb.append(textHandler.newLines(1));
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                        ordComment, lineWidth, 3)).append("\n");
+                        ordComment, lineWidth, 3));
             }
 
-            sb.append(textHandler.newLines(1));
             receipt.setHeader(sb.toString());
             sb.setLength(0);
 
@@ -330,9 +329,8 @@ public class ReceiptBuilder {
                 tempSB.append("%").append(tempor).append("s").append("%").append(tempor)
                         .append("s").append("%").append(tempor).append("s").append("%")
                         .append(tempor).append("s");
-
-                sb.append(String.format(tempSB.toString(), "Item", "Qty", "Price", "Total"))
-                        .append("\n");
+                sb.append(String.format(tempSB.toString(), "Item", "Qty", "Price", "Total"));
+                sb.append(textHandler.newLines(1));
 
                 for (int i = 0; i < size; i++) {
                     if (!TextUtils.isEmpty(orderProducts.get(i).getProd_price_points()) &&
@@ -342,23 +340,24 @@ public class ReceiptBuilder {
                     totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).getOrdprod_qty()) ? 0
                             : Double.parseDouble(orderProducts.get(i).getOrdprod_qty());
                     sb.append(orderProducts.get(i).getOrdprod_name()).append("-")
-                            .append(orderProducts.get(i).getOrdprod_desc()).append("\n");
+                            .append(orderProducts.get(i).getOrdprod_desc());
+                    sb.append(textHandler.newLines(1));
 
-                    sb.append(String.format("Discount %s\n", Global.getCurrencyFormat(
+                    sb.append(String.format("Discount %s", Global.getCurrencyFormat(
                             orderProducts.get(i).getDiscountTotal().toString())));
+                    sb.append(textHandler.newLines(1));
                     sb.append(String.format(tempSB.toString(), "   ",
                             orderProducts.get(i).getOrdprod_qty(),
                             Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()),
-                            Global.getCurrencyFormat(orderProducts.get(i).getItemTotal())))
-                            .append("\n");
+                            Global.getCurrencyFormat(orderProducts.get(i).getItemTotal())));
+                    sb.append(textHandler.newLines(1));
                     receipt.getItems().add((sb.toString()));
                     sb.setLength(0);
                 }
             }
 
-            sb.append(textHandler.newLines(1));
             sb.append(textHandler.lines(lineWidth));
-            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.newLines(2));
             receipt.setSeparator(sb.toString());
             sb.setLength(0);
 
@@ -453,11 +452,11 @@ public class ReceiptBuilder {
                 sb.setLength(0);
             }
 
-            sb.append("\n");
+            sb.append(textHandler.newLines(1));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                     context.getString(R.string.receipt_itemsQtyTotal),
                     String.valueOf(totalItemstQty), lineWidth, 0));
-            sb.append("\n");
+            sb.append(textHandler.newLines(1));
 
             receipt.setTotalItems(sb.toString());
             sb.setLength(0);
@@ -471,7 +470,7 @@ public class ReceiptBuilder {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                     context.getString(R.string.receipt_grandtotal),
                     Global.getCurrencyFormat(granTotal), lineWidth, 0));
-            sb.append("\n");
+            sb.append(textHandler.newLines(1));
 
             receipt.setGrandTotal(sb.toString());
             sb.setLength(0);
@@ -576,12 +575,12 @@ public class ReceiptBuilder {
                     if (myPref.isRestaurantMode() &&
                             myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                         if (tempTipAmount == 0) {
-                            sb.append("\n");
+                            sb.append(textHandler.newLines(1));
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                     context.getString(R.string.receipt_total_tip_paid),
                                     textHandler.lines(lineWidth / 2),
                                     lineWidth, 0));
-                            sb.append("\n");
+                            sb.append(textHandler.newLines(1));
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                     context.getString(R.string.receipt_total),
                                     textHandler.lines(lineWidth / 2),
@@ -613,8 +612,8 @@ public class ReceiptBuilder {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                             context.getString(R.string.receipt_amountreturned),
                             Global.getCurrencyFormat(Double.toString(tempAmount)),
-                            lineWidth, 0))
-                            .append("\n");
+                            lineWidth, 0));
+                    sb.append(textHandler.newLines(1));
                 }
             }
 
@@ -636,12 +635,17 @@ public class ReceiptBuilder {
             }
 
             if (Global.isIvuLoto && detailsList.size() > 0) {
-                sb.append((textHandler.ivuLines(2 * lineWidth / 3) + "\n" +
-                        context.getString(R.string.ivuloto_control_label) +
-                        detailsList.get(0).getIvuLottoNumber() + "\n" +
-                        context.getString(R.string.enabler_prefix) +
-                        "\n" + context.getString(R.string.powered_by_enabler) + "\n" +
-                        textHandler.ivuLines(2 * lineWidth / 3)).getBytes());
+                sb.append(textHandler.ivuLines(2 * lineWidth / 3));
+                sb.append(textHandler.newLines(1));
+                sb.append(context.getString(R.string.ivuloto_control_label));
+                sb.append(detailsList.get(0).getIvuLottoNumber());
+                sb.append(textHandler.newLines(1));
+                sb.append(context.getString(R.string.enabler_prefix));
+                sb.append(textHandler.newLines(1));
+                sb.append(context.getString(R.string.powered_by_enabler));
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.ivuLines(2 * lineWidth / 3));
+                sb.append(textHandler.newLines(2));
 
                 receipt.setIvuLoto(sb.toString());
                 sb.setLength(0);
@@ -670,13 +674,15 @@ public class ReceiptBuilder {
             if (payWithLoyalty && Global.loyaltyCardInfo != null &&
                     !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardNumAESEncrypted())
                     && !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardLast4())) {
-                sb.append(String.format("%s *%s\n", context.getString(R.string.receipt_cardnum),
+                sb.append(String.format("%s *%s", context.getString(R.string.receipt_cardnum),
                         Global.loyaltyCardInfo.getCardLast4()));
-                sb.append(String.format("%s %s %s\n", context.getString(R.string.receipt_point_used),
-                        Global.loyaltyCharge, context.getString(R.string.points)));
-                sb.append(String.format("%s %s %s\n", context.getString(R.string.receipt_reward_balance),
-                        Global.loyaltyPointsAvailable, context.getString(R.string.points)));
                 sb.append(textHandler.newLines(1));
+                sb.append(String.format("%s %s %s", context.getString(R.string.receipt_point_used),
+                        Global.loyaltyCharge, context.getString(R.string.points)));
+                sb.append(textHandler.newLines(1));
+                sb.append(String.format("%s %s %s", context.getString(R.string.receipt_reward_balance),
+                        Global.loyaltyPointsAvailable, context.getString(R.string.points)));
+                sb.append(textHandler.newLines(2));
                 receipt.setLoyaltyDetails(sb.toString());
                 sb.setLength(0);
             }
@@ -684,12 +690,12 @@ public class ReceiptBuilder {
             if (Global.rewardCardInfo != null &&
                     !TextUtils.isEmpty(Global.rewardCardInfo.getCardNumAESEncrypted())
                     && !TextUtils.isEmpty(Global.rewardCardInfo.getCardLast4())) {
-                sb.append(String.format("%s *%s\n", context.getString(R.string.receipt_cardnum),
+                sb.append(String.format("%s *%s", context.getString(R.string.receipt_cardnum),
                         Global.rewardCardInfo.getCardLast4()));
-                sb.append(String.format("%s %s %s\n", context.getString(R.string.receipt_reward_balance),
-                        Global.rewardCardInfo.getOriginalTotalAmount(),
-                        context.getString(R.string.points)));
                 sb.append(textHandler.newLines(1));
+                sb.append(String.format("%s %s %s", context.getString(R.string.receipt_reward_balance),
+                        Global.rewardCardInfo.getOriginalTotalAmount(), context.getString(R.string.points)));
+                sb.append(textHandler.newLines(2));
                 receipt.setRewardsDetails(sb.toString());
                 sb.setLength(0);
             }
@@ -701,9 +707,9 @@ public class ReceiptBuilder {
                     receipt.setSignatureImage(
                             BitmapFactory.decodeByteArray(img, 0, img.length));
                 }
-                sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
-                sb.append(context.getString(R.string.receipt_signature))
-                        .append(textHandler.newLines(1));
+                sb.append("x").append(textHandler.lines(lineWidth / 2));
+                sb.append(textHandler.newLines(1));
+                sb.append(context.getString(R.string.receipt_signature)).append(textHandler.newLines(1));
                 receipt.setSignature(sb.toString());
                 sb.setLength(0);
             }
@@ -748,8 +754,7 @@ public class ReceiptBuilder {
     public Receipt getTransaction(String orderId,
                                   Global.OrderType type,
                                   boolean isFromHistory,
-                                  boolean isFromOnHold,
-                                  EMVContainer emvContainer) {
+                                  boolean isFromOnHold) {
 
         OrdersHandler orderHandler = new OrdersHandler(context);
         Order order = orderHandler.getPrintedOrder(orderId);
@@ -801,5 +806,4 @@ public class ReceiptBuilder {
             return 0.00;
         return Double.parseDouble(val);
     }
-
 }

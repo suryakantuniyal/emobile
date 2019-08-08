@@ -268,25 +268,23 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         }
     }
 
-    private void newPrint(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean isFromOnHold) {
-        ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
-        Receipt receipt = receiptBuilder.getTransaction(order, saleTypes, isFromHistory, isFromOnHold);
-
+    private void printReceipt(Receipt receipt) {
         ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarPRNT);
-
         builder.beginDocument();
-
         Charset encoding = Charset.forName("UTF-8");
+        builder.appendCodePage(ICommandBuilder.CodePageType.UTF8);
 
         if (receipt.getMerchantLogo() != null)
             builder.appendBitmapWithAlignment(receipt.getMerchantLogo(), false,
                     ICommandBuilder.AlignmentPosition.Center);
         if (receipt.getMerchantHeader() != null)
-            builder.append((receipt.getMerchantHeader()).getBytes(encoding));
+            builder.appendEmphasis((receipt.getMerchantHeader()).getBytes(encoding));
         if (receipt.getSpecialHeader() != null)
-            builder.append((receipt.getSpecialHeader()).getBytes(encoding));
+            builder.appendInvert((receipt.getSpecialHeader()).getBytes(encoding));
         if (receipt.getHeader() != null)
             builder.append((receipt.getHeader()).getBytes(encoding));
+        if (receipt.getSeparator() != null)
+            builder.append((receipt.getSeparator()).getBytes(encoding));
         for (String s : receipt.getItems()) {
             if (s != null)
                 builder.append((s).getBytes(encoding));
@@ -300,7 +298,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         if (receipt.getTotalItems() != null)
             builder.append((receipt.getTotalItems()).getBytes(encoding));
         if (receipt.getGrandTotal() != null)
-            builder.append((receipt.getGrandTotal()).getBytes(encoding));
+            builder.appendMultiple((receipt.getGrandTotal()).getBytes(encoding), 2, 2);
         if (receipt.getPaymentsDetails() != null)
             builder.append((receipt.getPaymentsDetails()).getBytes(encoding));
         if (receipt.getYouSave() != null)
@@ -308,7 +306,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         if (receipt.getIvuLoto() != null)
             builder.append((receipt.getIvuLoto()).getBytes(encoding));
         if (receipt.getMerchantFooter() != null)
-            builder.append((receipt.getMerchantFooter()).getBytes(encoding));
+            builder.appendEmphasis((receipt.getMerchantFooter()).getBytes(encoding));
         if (receipt.getLoyaltyDetails() != null)
             builder.append((receipt.getLoyaltyDetails()).getBytes(encoding));
         if (receipt.getRewardsDetails() != null)
@@ -319,18 +317,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         if (receipt.getSignature() != null)
             builder.append((receipt.getSignature()).getBytes(encoding));
         if (receipt.getSpecialFooter() != null)
-            builder.append((receipt.getSpecialFooter()).getBytes(encoding));
+            builder.appendInvert((receipt.getSpecialFooter()).getBytes(encoding));
         if (receipt.getTermsAndConditions() != null)
             builder.append((receipt.getTermsAndConditions()).getBytes(encoding));
         if (receipt.getEnablerWebsite() != null)
-            builder.append((receipt.getEnablerWebsite()).getBytes(encoding));
+            builder.appendEmphasis((receipt.getEnablerWebsite()).getBytes(encoding));
 
         builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
-
         builder.endDocument();
-
         byte[] commands;
-
         commands = builder.getCommands();
 
         try {
@@ -341,13 +336,19 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory,
+                                    boolean fromOnHold, EMVContainer emvContainer) {
         boolean result = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            newPrint(order, saleTypes, isFromHistory, fromOnHold);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getTransaction(
+                    order, saleTypes, isFromHistory, fromOnHold);
+            printReceipt(receipt);
 //            printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+
             releasePrinter();
             result = true;
         } catch (Exception e) {
@@ -358,12 +359,19 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory,
+                                    boolean fromOnHold, EMVContainer emvContainer) {
         boolean result = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getTransaction(
+                    ordID, saleTypes, isFromHistory, fromOnHold);
+            printReceipt(receipt);
+//            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+
             releasePrinter();
             result = true;
         } catch (Exception e) {
