@@ -307,8 +307,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             builder.append((receipt.getYouSave()).getBytes(encoding));
         if (receipt.getIvuLoto() != null)
             builder.append((receipt.getIvuLoto()).getBytes(encoding));
-        if (receipt.getMerchantFooter() != null)
-            builder.appendEmphasis((receipt.getMerchantFooter()).getBytes(encoding));
         if (receipt.getLoyaltyDetails() != null)
             builder.append((receipt.getLoyaltyDetails()).getBytes(encoding));
         if (receipt.getRewardsDetails() != null)
@@ -318,6 +316,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     ICommandBuilder.AlignmentPosition.Center);
         if (receipt.getSignature() != null)
             builder.append((receipt.getSignature()).getBytes(encoding));
+        if (receipt.getMerchantFooter() != null)
+            builder.appendEmphasis((receipt.getMerchantFooter()).getBytes(encoding));
         if (receipt.getSpecialFooter() != null)
             builder.appendInvert((receipt.getSpecialFooter()).getBytes(encoding));
         if (receipt.getTermsAndConditions() != null)
@@ -384,16 +384,19 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory,
+                                    boolean fromOnHold) {
         return printTransaction(ordID, type, isFromHistory, fromOnHold, null);
     }
 
     @Override
-    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory,
+                                    boolean fromOnHold) {
         return printTransaction(order, saleTypes, isFromHistory, fromOnHold, null);
     }
 
-    static public Bitmap createBitmapFromText(String printText, int textSize, int printWidth, Typeface typeface) {
+    static public Bitmap createBitmapFromText(String printText, int textSize, int printWidth,
+                                              Typeface typeface) {
         Paint paint = new Paint();
         Bitmap bitmap;
         Canvas canvas;
@@ -404,10 +407,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         paint.getTextBounds(printText, 0, printText.length(), new Rect());
 
         TextPaint textPaint = new TextPaint(paint);
-        android.text.StaticLayout staticLayout = new StaticLayout(printText, textPaint, printWidth, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
+        android.text.StaticLayout staticLayout = new StaticLayout(printText, textPaint,
+                printWidth, Layout.Alignment.ALIGN_NORMAL,
+                1, 0, false);
 
         // Create bitmap
-        bitmap = Bitmap.createBitmap(staticLayout.getWidth(), staticLayout.getHeight(), Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap(staticLayout.getWidth(), staticLayout.getHeight(),
+                Bitmap.Config.ARGB_8888);
 
         // Create canvas
         canvas = new Canvas(bitmap);
@@ -418,13 +424,19 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return bitmap;
     }
 
-
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint,
+                                       EMVContainer emvContainer) {
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getPaymentDetails(
+                    payID, type, isReprint, emvContainer);
+            printReceipt(receipt);
+//            printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();

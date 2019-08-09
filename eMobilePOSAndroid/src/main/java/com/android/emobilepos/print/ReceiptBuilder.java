@@ -8,7 +8,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Base64;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
@@ -86,7 +85,7 @@ public class ReceiptBuilder {
 
             receipt.setMerchantLogo(getMerchantLogo());
 
-            receipt.setMerchantHeader(getMerchantHeader(textHandler));
+            fillMerchantHeaderAndFooter(receipt, textHandler);
 
             if (order.isVoid.equals("1")) {
                 sb.append(textHandler.centeredString("*** VOID ***", lineWidth));
@@ -168,7 +167,7 @@ public class ReceiptBuilder {
 
             String ordComment = order.ord_comment;
             if (!TextUtils.isEmpty(ordComment)) {
-                sb.append(textHandler.newLines(2));
+                sb.append(textHandler.newLines(1));
                 sb.append("Comments:");
                 sb.append(textHandler.newLines(1));
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(
@@ -596,7 +595,6 @@ public class ReceiptBuilder {
                             context.getString(R.string.receipt_amountreturned),
                             Global.getCurrencyFormat(Double.toString(tempAmount)),
                             lineWidth, 0));
-                    sb.append(textHandler.newLines(1));
                 }
             }
 
@@ -611,48 +609,16 @@ public class ReceiptBuilder {
                         context.getString(R.string.receipt_youSave),
                         Global.getCurrencyFormat(String.valueOf(saveAmount)),
                         lineWidth, 0));
-                sb.append(textHandler.newLines(1));
                 sb.append(textHandler.ivuLines(lineWidth));
+                sb.append(textHandler.newLines(2));
                 receipt.setYouSave(sb.toString());
                 sb.setLength(0);
             }
 
             if (Global.isIvuLoto && detailsList.size() > 0) {
-                sb.append(textHandler.ivuLines(2 * lineWidth / 3));
-                sb.append(textHandler.newLines(1));
-                sb.append(context.getString(R.string.ivuloto_control_label));
-                sb.append(detailsList.get(0).getIvuLottoNumber());
-                sb.append(textHandler.newLines(1));
-                sb.append(context.getString(R.string.enabler_prefix));
-                sb.append(textHandler.newLines(1));
-                sb.append(context.getString(R.string.powered_by_enabler));
-                sb.append(textHandler.newLines(1));
-                sb.append(textHandler.ivuLines(2 * lineWidth / 3));
-                sb.append(textHandler.newLines(2));
-
-                receipt.setIvuLoto(sb.toString());
-                sb.setLength(0);
+                receipt.setIvuLoto(getIvuLotoDetails(
+                        detailsList.get(0).getIvuLottoNumber(), textHandler));
             }
-
-            if (printPref.contains(MyPreferences.print_footer)) {
-                MemoTextHandler handler = new MemoTextHandler(context);
-                String[] footer = handler.getFooter();
-
-                if (!TextUtils.isEmpty(footer[0]))
-                    sb.append(textHandler.centeredString(footer[0], lineWidth));
-                if (!TextUtils.isEmpty(footer[1]))
-                    sb.append(textHandler.centeredString(footer[1], lineWidth));
-                if (!TextUtils.isEmpty(footer[2]))
-                    sb.append(textHandler.centeredString(footer[2], lineWidth));
-
-                if (!TextUtils.isEmpty(sb.toString())) {
-                    sb.append(textHandler.newLines(1));
-                    receipt.setMerchantFooter(sb.toString());
-                    sb.setLength(0);
-                }
-            }
-
-            sb.append(textHandler.newLines(1));
 
             if (payWithLoyalty && Global.loyaltyCardInfo != null &&
                     !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardNumAESEncrypted())
@@ -683,48 +649,29 @@ public class ReceiptBuilder {
                 sb.setLength(0);
             }
 
-            String receiptSignature = order.ord_signature;
-            if (!TextUtils.isEmpty(receiptSignature)) {
-                if (!TextUtils.isEmpty(receiptSignature)) {
-                    byte[] img = Base64.decode(receiptSignature, Base64.DEFAULT);
-                    receipt.setSignatureImage(
-                            BitmapFactory.decodeByteArray(img, 0, img.length));
-                }
-                sb.append("x").append(textHandler.lines(lineWidth / 2));
+            if (!TextUtils.isEmpty(order.ord_signature)) {
+                byte[] img = Base64.decode(order.ord_signature, Base64.DEFAULT);
+                receipt.setSignatureImage(
+                        BitmapFactory.decodeByteArray(img, 0, img.length));
+                sb.append("x").append(textHandler.lines(lineWidth - 5));
                 sb.append(textHandler.newLines(1));
-                sb.append(context.getString(R.string.receipt_signature)).append(textHandler.newLines(1));
+                sb.append(textHandler.centeredString(context.getString(R.string.receipt_signature),
+                        lineWidth));
+                sb.append(textHandler.newLines(1));
                 receipt.setSignature(sb.toString());
                 sb.setLength(0);
             }
 
             if (isFromHistory) {
-                sb.setLength(0);
                 sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
                 sb.append(textHandler.newLines(1));
                 receipt.setSpecialFooter(sb.toString());
                 sb.setLength(0);
             }
 
-            if (printPref.contains(MyPreferences.print_terms_conditions)) {
-                List<TermsNConditions> termsNConditions = TermsNConditionsDAO.getTermsNConds();
-                if (termsNConditions != null) {
-                    for (TermsNConditions terms : termsNConditions) {
-                        sb.append(terms.getTcTerm());
-                    }
-                    sb.append(textHandler.newLines(1));
-                    receipt.setTermsAndConditions(sb.toString());
-                    sb.setLength(0);
-                }
-            }
+            receipt.setTermsAndConditions(getTermsAndConditions(textHandler));
 
-            if (myPref.isPrintWebSiteFooterEnabled()) {
-                sb.append(textHandler.newLines(1));
-                sb.append(textHandler.centeredString(
-                        context.getString(R.string.enabler_website), lineWidth));
-                sb.append(textHandler.newLines(4));
-                receipt.setEnablerWebsite(sb.toString());
-                sb.setLength(0);
-            }
+            receipt.setEnablerWebsite(getEnablerWebsite(textHandler));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -775,13 +722,11 @@ public class ReceiptBuilder {
             boolean isCheckPayment = false;
             String includedTip = null;
             String creditCardFooting = "";
-            if (payArray.getPaymethod_name() != null &&
-                    payArray.getPaymethod_name().toUpperCase(
-                            Locale.getDefault()).trim().equals("CASH"))
+            if (payArray.getPayType() != null &&
+                    payArray.getPayType().equalsIgnoreCase("Cash"))
                 isCashPayment = true;
-            else if (payArray.getPaymethod_name() != null &&
-                    payArray.getPaymethod_name().toUpperCase(
-                            Locale.getDefault()).trim().equals("CHECK"))
+            else if (payArray.getPayType() != null &&
+                    payArray.getPayType().equalsIgnoreCase("Check"))
                 isCheckPayment = true;
             else {
                 includedTip = context.getString(R.string.receipt_included_tip);
@@ -791,14 +736,24 @@ public class ReceiptBuilder {
             receipt.setMerchantLogo(getMerchantLogo());
 
             if (fromHtml == null) {
-                receipt.setMerchantHeader(getMerchantHeader(textHandler));
-                sb.append("* ").append(payArray.getPaymethod_name());
+                fillMerchantHeaderAndFooter(receipt, textHandler);
+
+                if (payArray.getIsVoid().equals("1")) {
+                    sb.append(textHandler.centeredString("*** VOID ***", lineWidth));
+                    sb.append(textHandler.newLines(1));
+                    receipt.setSpecialHeader(sb.toString());
+                    sb.setLength(0);
+                }
+
+                StringBuilder tempSb = new StringBuilder();
+                tempSb.append("* ").append(payArray.getPaymethod_name());
                 if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
-                    sb.append(" Refund *\n");
+                    tempSb.append(" Refund *\n");
                 else
-                    sb.append(" Sale *\n");
-//                print(textHandler.centeredString(sb.toString(), lineWidth));
-//
+                    tempSb.append(" Sale *\n");
+
+                sb.append(textHandler.centeredString(tempSb.toString(), lineWidth));
+
 //                sb.setLength(0);
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                         context.getString(R.string.receipt_date),
@@ -889,7 +844,7 @@ public class ReceiptBuilder {
                     change = "";
                 }
 
-                sb.append("\n");
+                sb.append(textHandler.newLines(1));
 
                 if (includedTip != null) {
                     if (Double.parseDouble(change) > 0) {
@@ -901,25 +856,27 @@ public class ReceiptBuilder {
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                 context.getString(R.string.receipt_tip),
                                 textHandler.lines(lineWidth / 2),
-                                lineWidth, 0)).append("\n");
+                                lineWidth, 0));
+                        sb.append(textHandler.newLines(1));
 //                        print(sb.toString());
 //                        sb.setLength(0);
                         sb.append(textHandler.newLines(1));
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                 context.getString(R.string.receipt_total),
                                 textHandler.lines(lineWidth / 2),
-                                lineWidth, 0)).append("\n");
+                                lineWidth, 0));
+                        sb.append(textHandler.newLines(1));
 //                        print(sb.toString());
 //                        sb.setLength(0);
                     }
                 }
-                sb.append("\n");
+                sb.append(textHandler.newLines(1));
 
                 receipt.setPaymentsDetails(sb.toString());
                 sb.setLength(0);
             } else {
                 sb.setLength(0);
-                sb.append("\n\n");
+                sb.append(textHandler.newLines(2));
                 sb.append(fromHtml.toString());
 
                 receipt.setPaymentsDetails(sb.toString());
@@ -929,52 +886,47 @@ public class ReceiptBuilder {
 //            sb.setLength(0);
             if (!isCashPayment && !isCheckPayment) {
                 if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-                    sb.append(textHandler.newLines(1));
+                    sb.append(textHandler.newLines(2));
                 } else if (payArray.getPay_signature() != null &&
                         !TextUtils.isEmpty(payArray.getPay_signature())) {
-                    encodedSignature = payArray.getPay_signature();
-                    printImage(1);
+                    byte[] img = Base64.decode(payArray.getPay_signature(), Base64.DEFAULT);
+                    receipt.setSignatureImage(
+                            BitmapFactory.decodeByteArray(img, 0, img.length));
                 }
-                sb.append("\n\nx").append(textHandler.lines(lineWidth / 2)).append("\n");
-                sb.append(context.getString(R.string.receipt_signature))
-                        .append(textHandler.newLines(1));
-                print(sb.toString());
+                sb.append("x").append(textHandler.lines(lineWidth - 5));
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.centeredString(context.getString(R.string.receipt_signature),
+                        lineWidth));
+                sb.append(textHandler.newLines(1));
+
+                if (fromHtml == null) {
+                    sb.append(creditCardFooting);
+                    sb.append(textHandler.newLines(2));
+                }
+
+                receipt.setSignature(sb.toString());
                 sb.setLength(0);
             }
+
             if (Global.isIvuLoto) {
-                sb = new StringBuilder();
-
-                if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-                    printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
-                } else {
-
-                    printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
-
-                }
-                sb.setLength(0);
+                receipt.setIvuLoto(getIvuLotoDetails(payArray.getIvuLottoNumber(), textHandler));
             }
 
-            sb.setLength(0);
-            printFooter(lineWidth);
-
-            if (fromHtml == null) {
-                if (!isCashPayment && !isCheckPayment) {
-                    print(creditCardFooting);
-                    String temp = textHandler.newLines(1);
-                    print(temp);
-                }
-            }
-
-            sb.setLength(0);
+//            sb.setLength(0);
             if (isReprint) {
                 sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
-                print(sb.toString());
+                sb.append(textHandler.newLines(1));
+                receipt.setSpecialFooter(sb.toString());
+                sb.setLength(0);
             }
-            printTermsNConds();
-            printEnablerWebSite(lineWidth);
-            cutPaper();
-        } catch (JAException e) {
+
+            receipt.setTermsAndConditions(getTermsAndConditions(textHandler));
+
+            receipt.setEnablerWebsite(getEnablerWebsite(textHandler));
+
+        } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
 
         return receipt;
@@ -989,28 +941,44 @@ public class ReceiptBuilder {
         return merchantLogo;
     }
 
-    private String getMerchantHeader(EMSPlainTextHelper emsPlainTextHelper) {
-        String merchantHeader = null;
-        if (printPref.contains(MyPreferences.print_header)) {
+    private void fillMerchantHeaderAndFooter(Receipt rcpt, EMSPlainTextHelper emsPlainTextHelper) {
+        if (printPref.contains(MyPreferences.print_header) ||
+                printPref.contains(MyPreferences.print_footer)) {
+
             MemoTextHandler handler = new MemoTextHandler(context);
-            String[] header = handler.getHeader();
             StringBuilder stringBuilder = new StringBuilder();
 
-            if (!TextUtils.isEmpty(header[0]))
-                stringBuilder.append(emsPlainTextHelper.centeredString(header[0], lineWidth));
-            if (!TextUtils.isEmpty(header[1]))
-                stringBuilder.append(emsPlainTextHelper.centeredString(header[1], lineWidth));
-            if (!TextUtils.isEmpty(header[2]))
-                stringBuilder.append(emsPlainTextHelper.centeredString(header[2], lineWidth));
+            if (printPref.contains(MyPreferences.print_header)) {
+                String[] header = handler.getHeader();
+                if (!TextUtils.isEmpty(header[0]))
+                    stringBuilder.append(emsPlainTextHelper.centeredString(header[0], lineWidth));
+                if (!TextUtils.isEmpty(header[1]))
+                    stringBuilder.append(emsPlainTextHelper.centeredString(header[1], lineWidth));
+                if (!TextUtils.isEmpty(header[2]))
+                    stringBuilder.append(emsPlainTextHelper.centeredString(header[2], lineWidth));
+                if (!TextUtils.isEmpty(stringBuilder.toString())) {
+                    stringBuilder.insert(0, emsPlainTextHelper.newLines(1));
+                    stringBuilder.append(emsPlainTextHelper.newLines(1));
+                    rcpt.setMerchantHeader(stringBuilder.toString());
+                    stringBuilder.setLength(0);
+                }
+            }
 
-            if (!TextUtils.isEmpty(stringBuilder.toString())) {
-                stringBuilder.insert(0, emsPlainTextHelper.newLines(1));
-                stringBuilder.append(emsPlainTextHelper.newLines(1));
-                merchantHeader = stringBuilder.toString();
+            if (printPref.contains(MyPreferences.print_footer)) {
+                String[] footer = handler.getFooter();
+                if (!TextUtils.isEmpty(footer[0]))
+                    stringBuilder.append(emsPlainTextHelper.centeredString(footer[0], lineWidth));
+                if (!TextUtils.isEmpty(footer[1]))
+                    stringBuilder.append(emsPlainTextHelper.centeredString(footer[1], lineWidth));
+                if (!TextUtils.isEmpty(footer[2]))
+                    stringBuilder.append(emsPlainTextHelper.centeredString(footer[2], lineWidth));
+                if (!TextUtils.isEmpty(stringBuilder.toString())) {
+                    stringBuilder.insert(0, emsPlainTextHelper.newLines(1));
+                    stringBuilder.append(emsPlainTextHelper.newLines(1));
+                    rcpt.setMerchantFooter(stringBuilder.toString());
+                }
             }
         }
-
-        return merchantHeader;
     }
 
     private String getEmvDetails(EMVContainer emvContainer, EMSPlainTextHelper emsPlainTextHelper) {
@@ -1128,6 +1096,52 @@ public class ReceiptBuilder {
         }
 
         return emvDetails;
+    }
+
+    private String getIvuLotoDetails(String ivuLotoNumber, EMSPlainTextHelper emsPlainTextHelper) {
+        return emsPlainTextHelper.ivuLines(2 * lineWidth / 3) +
+                emsPlainTextHelper.newLines(1) +
+                context.getString(R.string.ivuloto_control_label) +
+                ivuLotoNumber +
+                emsPlainTextHelper.newLines(1) +
+                context.getString(R.string.enabler_prefix) +
+                emsPlainTextHelper.newLines(1) +
+                context.getString(R.string.powered_by_enabler) +
+                emsPlainTextHelper.newLines(1) +
+                emsPlainTextHelper.ivuLines(2 * lineWidth / 3) +
+                emsPlainTextHelper.newLines(2);
+    }
+
+    private String getTermsAndConditions(EMSPlainTextHelper emsPlainTextHelper) {
+        String termsAndConditions = null;
+
+        if (printPref.contains(MyPreferences.print_terms_conditions)) {
+            StringBuilder stringBuilder = new StringBuilder();
+            List<TermsNConditions> termsNConditions = TermsNConditionsDAO.getTermsNConds();
+            if (termsNConditions != null) {
+                for (TermsNConditions terms : termsNConditions) {
+                    stringBuilder.append(terms.getTcTerm());
+                }
+                stringBuilder.append(emsPlainTextHelper.newLines(2));
+                termsAndConditions = stringBuilder.toString();
+            }
+        }
+
+        return termsAndConditions;
+    }
+
+    private String getEnablerWebsite(EMSPlainTextHelper emsPlainTextHelper) {
+        String eNablerWebsite = null;
+
+        if (myPref.isPrintWebSiteFooterEnabled()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(emsPlainTextHelper.centeredString(
+                    context.getString(R.string.enabler_website), lineWidth));
+            stringBuilder.append(emsPlainTextHelper.newLines(2));
+            eNablerWebsite = stringBuilder.toString();
+        }
+
+        return eNablerWebsite;
     }
 
     private String getCustName(String custId) {
