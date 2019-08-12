@@ -669,7 +669,8 @@ public class ReceiptBuilder {
                 sb.setLength(0);
             }
 
-            receipt.setTermsAndConditions(getTermsAndConditions(textHandler));
+            receipt.setTermsAndConditions(textHandler.oneColumnLineWithLeftAlignedText(
+                    getTermsAndConditions(textHandler), lineWidth + 2, 0));
 
             receipt.setEnablerWebsite(getEnablerWebsite(textHandler));
 
@@ -747,20 +748,21 @@ public class ReceiptBuilder {
 
                 StringBuilder tempSb = new StringBuilder();
                 tempSb.append("* ").append(payArray.getPaymethod_name());
-                if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
-                    tempSb.append(" Refund *\n");
-                else
-                    tempSb.append(" Sale *\n");
+                if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1")) {
+                    tempSb.append(" Refund *");
+                    tempSb.append(textHandler.newLines(1));
+                } else {
+                    tempSb.append(" Sale *");
+                    tempSb.append(textHandler.newLines(1));
+                }
 
                 sb.append(textHandler.centeredString(tempSb.toString(), lineWidth));
-
-//                sb.setLength(0);
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                         context.getString(R.string.receipt_date),
                         context.getString(R.string.receipt_time), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getPay_date(),
-                        payArray.getPay_timecreated(), lineWidth, 0))
-                        .append("\n");
+                        payArray.getPay_timecreated(), lineWidth, 0));
+                sb.append(textHandler.newLines(1));
 
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                         context.getString(R.string.receipt_customer),
@@ -788,10 +790,12 @@ public class ReceiptBuilder {
                             "*" + payArray.getCcnum_last4(), lineWidth, 0));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                             "TransID:", payArray.getPay_transid(),
-                            lineWidth, 0)).append("\n");
+                            lineWidth, 0));
+                    sb.append(textHandler.newLines(1));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                             "Auth Code:", payArray.getAuthcode(),
-                            lineWidth, 0)).append("\n");
+                            lineWidth, 0));
+                    sb.append(textHandler.newLines(1));
                 } else if (isCheckPayment) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                             context.getString(R.string.receipt_checknum),
@@ -858,16 +862,12 @@ public class ReceiptBuilder {
                                 textHandler.lines(lineWidth / 2),
                                 lineWidth, 0));
                         sb.append(textHandler.newLines(1));
-//                        print(sb.toString());
-//                        sb.setLength(0);
                         sb.append(textHandler.newLines(1));
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                 context.getString(R.string.receipt_total),
                                 textHandler.lines(lineWidth / 2),
                                 lineWidth, 0));
                         sb.append(textHandler.newLines(1));
-//                        print(sb.toString());
-//                        sb.setLength(0);
                     }
                 }
                 sb.append(textHandler.newLines(1));
@@ -883,7 +883,6 @@ public class ReceiptBuilder {
                 sb.setLength(0);
             }
 
-//            sb.setLength(0);
             if (!isCashPayment && !isCheckPayment) {
                 if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                     sb.append(textHandler.newLines(2));
@@ -900,8 +899,9 @@ public class ReceiptBuilder {
                 sb.append(textHandler.newLines(1));
 
                 if (fromHtml == null) {
-                    sb.append(creditCardFooting);
-                    sb.append(textHandler.newLines(2));
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(creditCardFooting,
+                            lineWidth + 2, 0));
+                    sb.append(textHandler.newLines(1));
                 }
 
                 receipt.setSignature(sb.toString());
@@ -912,7 +912,6 @@ public class ReceiptBuilder {
                 receipt.setIvuLoto(getIvuLotoDetails(payArray.getIvuLottoNumber(), textHandler));
             }
 
-//            sb.setLength(0);
             if (isReprint) {
                 sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
                 sb.append(textHandler.newLines(1));
@@ -920,7 +919,8 @@ public class ReceiptBuilder {
                 sb.setLength(0);
             }
 
-            receipt.setTermsAndConditions(getTermsAndConditions(textHandler));
+            receipt.setTermsAndConditions(textHandler.oneColumnLineWithLeftAlignedText(
+                    getTermsAndConditions(textHandler), lineWidth + 2, 0));
 
             receipt.setEnablerWebsite(getEnablerWebsite(textHandler));
 
@@ -1090,7 +1090,6 @@ public class ReceiptBuilder {
                             ac, lineWidth, 0));
                 }
 
-                stringBuilder.append("\n\n");
                 emvDetails = stringBuilder.toString();
             }
         }
@@ -1122,7 +1121,7 @@ public class ReceiptBuilder {
                 for (TermsNConditions terms : termsNConditions) {
                     stringBuilder.append(terms.getTcTerm());
                 }
-                stringBuilder.append(emsPlainTextHelper.newLines(2));
+                stringBuilder.append(emsPlainTextHelper.newLines(1));
                 termsAndConditions = stringBuilder.toString();
             }
         }
