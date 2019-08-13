@@ -350,16 +350,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     private void printRasterReceipt(Receipt receipt) {
+        Bitmap bitmapFromText;
         ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarGraphic);
         builder.beginDocument();
-        Charset encoding = Charset.forName("UTF-8");
-        builder.appendCodePage(ICommandBuilder.CodePageType.UTF8);
 
-        Bitmap bitmapFromText;
-
-        if (receipt.getMerchantLogo() != null)
-            builder.appendBitmapWithAlignment(receipt.getMerchantLogo(), false,
-                    ICommandBuilder.AlignmentPosition.Center);
+        if (receipt.getMerchantLogo() != null) {
+            int logoPosition = (PAPER_WIDTH / 3 - receipt.getMerchantLogo().getWidth()) / 2 + 30;
+            builder.appendBitmapWithAbsolutePosition(receipt.getMerchantLogo(),
+                    false, logoPosition);
+        }
 
         if (receipt.getMerchantHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
@@ -476,8 +475,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         }
 
         if (receipt.getSignatureImage() != null) {
-            builder.appendBitmapWithAlignment(receipt.getSignatureImage(), false,
-                    ICommandBuilder.AlignmentPosition.Center);
+            int logoPosition = (PAPER_WIDTH / 3 - receipt.getSignatureImage().getWidth()) / 2 + 30;
+            builder.appendBitmapWithAbsolutePosition(receipt.getSignatureImage(),
+                    false, logoPosition);
         }
 
         if (receipt.getSignature() != null) {
