@@ -640,7 +640,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printed = printBalanceInquiry(values, LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getBalanceInquiry(values);
+            printReceipt(receipt);
+            printed = true;
+//            printed = printBalanceInquiry(values, LINE_WIDTH);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();

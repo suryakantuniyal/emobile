@@ -33,6 +33,7 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.TermsNConditions;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.Customer;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
@@ -41,6 +42,7 @@ import com.crashlytics.android.Crashlytics;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -750,11 +752,10 @@ public class ReceiptBuilder {
                 tempSb.append("* ").append(payArray.getPaymethod_name());
                 if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1")) {
                     tempSb.append(" Refund *");
-                    tempSb.append(textHandler.newLines(1));
                 } else {
                     tempSb.append(" Sale *");
-                    tempSb.append(textHandler.newLines(1));
                 }
+                tempSb.append(textHandler.newLines(1));
 
                 sb.append(textHandler.centeredString(tempSb.toString(), lineWidth));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
@@ -927,6 +928,74 @@ public class ReceiptBuilder {
         } catch (Exception e) {
             e.printStackTrace();
             Crashlytics.logException(e);
+        }
+
+        return receipt;
+    }
+
+    public Receipt getBalanceInquiry(HashMap<String, String> values) {
+
+        Receipt receipt = new Receipt();
+
+        try {
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+            StringBuilder sb = new StringBuilder();
+
+            receipt.setMerchantLogo(getMerchantLogo());
+
+            if (myPref.isCustSelected()) {
+                sb.append(textHandler.centeredString(myPref.getCustName(), lineWidth));
+                sb.append(textHandler.newLines(1));
+                receipt.setSpecialHeader(sb.toString());
+                sb.setLength(0);
+            }
+
+            fillMerchantHeaderAndFooter(receipt, textHandler);
+
+            StringBuilder tempSb = new StringBuilder();
+            if (values.containsKey("amountAdded")) {
+                tempSb.append("* ").append(context.getString(R.string.add_balance));
+            } else {
+                tempSb.append("* ").append(context.getString(R.string.balance_inquiry));
+            }
+            tempSb.append(" *");
+            tempSb.append(textHandler.newLines(1));
+
+            sb.append(textHandler.centeredString(tempSb.toString(), lineWidth));
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_date),
+                    context.getString(R.string.receipt_time), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                    DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"),
+                    DateUtils.getDateAsString(new Date(), "hh:mm:ss"),
+                    lineWidth, 0));
+            sb.append(textHandler.newLines(1));
+
+            receipt.setHeader(sb.toString());
+            sb.setLength(0);
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.card_number),
+                    "*" + values.get("pay_maccount"), lineWidth, 0));
+            if (values.containsKey("amountAdded")) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.status),
+                        values.get("epayStatusCode"), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.amount_added),
+                        values.get("amountAdded"), lineWidth, 0));
+            }
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.balanceAmount),
+                    Global.getCurrencyFormat(values.get("CardBalance")), lineWidth, 0));
+
+            receipt.setTotalItems(sb.toString());
+            sb.setLength(0);
+
+            receipt.setTermsAndConditions(textHandler.oneColumnLineWithLeftAlignedText(
+                    getTermsAndConditions(textHandler), lineWidth + 2, 0));
+
+            receipt.setEnablerWebsite(getEnablerWebsite(textHandler));
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return receipt;
