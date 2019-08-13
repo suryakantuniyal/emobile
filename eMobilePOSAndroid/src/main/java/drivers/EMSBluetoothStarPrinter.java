@@ -622,7 +622,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             verifyConnectivity();
 
             ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
-            Receipt receipt = receiptBuilder.getPaymentDetails(
+            Receipt receipt = receiptBuilder.getPayment(
                     payID, type, isReprint, emvContainer);
             printReceipt(receipt);
 //            printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
@@ -723,16 +723,22 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        boolean printed = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getConsignment(myConsignment, encodedSig);
+            printReceipt(receipt);
+            printed = true;
+//            printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
+        return printed;
     }
 
     @Override
