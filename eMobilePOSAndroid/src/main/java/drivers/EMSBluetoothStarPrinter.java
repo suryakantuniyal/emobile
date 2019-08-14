@@ -743,34 +743,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void releaseCardReader() {
-//        if (!isPOSPrinter) {
-//            callBack = null;
-//            try {
-//                if (port != null) {
-//                    port.writePort(new byte[]{0x04}, 0, 1);
-//                    Log.d("eMobilePOS", "### port.writePort ### @ releaseCardReader()");
-//                    stopLoop = true;
-//                    try {
-//                        Thread.sleep(500);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            } catch (StarIOPortException e) {
-//                e.printStackTrace();
-//            }
-//        }
+
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-//        callBack = _callBack;
-//        if (handler == null)
-//            handler = new Handler();
-//        if (!isPOSPrinter) {
-//            StartCardReaderThread temp = new StartCardReaderThread();
-//            temp.start();
-//        }
+
     }
 
     @Override
@@ -926,7 +904,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getSplitOrderPreview(splitedOrder);
+            printReceipt(receipt);
+//            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1212,24 +1195,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         }
     }
-
-//    private class StartCardReaderThread extends Thread {
-//        public void run() {
-//            try {
-//                if (port == null) {
-//                    port = getStarIOPort();
-//                }
-//                stopLoop = false;
-//                ReceiveThread receiveThread = new ReceiveThread();
-//                receiveThread.start();
-//                port.writePort(new byte[]{0x1b, 0x4d, 0x45}, 0, 3);
-//                Log.d("eMobilePOS", "### port.writePort ### @ StartCardReaderThread()");
-//                handler.post(doUpdateDidConnect);
-//            } catch (StarIOPortException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     class ReceiveThread extends Thread {
         public void run() {
