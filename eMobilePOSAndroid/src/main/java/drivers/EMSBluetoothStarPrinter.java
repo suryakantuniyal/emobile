@@ -290,6 +290,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             builder.appendEmphasis((receipt.getMerchantHeader()).getBytes(encoding));
         if (receipt.getSpecialHeader() != null)
             builder.appendInvert((receipt.getSpecialHeader()).getBytes(encoding));
+        if (receipt.getRemoteStationHeader() != null)
+            builder.appendMultiple((receipt.getRemoteStationHeader()).getBytes(encoding), 2, 2);
         if (receipt.getHeader() != null)
             builder.append((receipt.getHeader()).getBytes(encoding));
         if (receipt.getEmvDetails() != null)
@@ -299,6 +301,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         for (String s : receipt.getItems()) {
             if (s != null)
                 builder.append((s).getBytes(encoding));
+        }
+        for (String s : receipt.getRemoteStationItems()) {
+            if (s != null)
+                builder.appendMultiple((s).getBytes(encoding), 2, 2);
         }
         if (receipt.getSeparator() != null)
             builder.append((receipt.getSeparator()).getBytes(encoding));
@@ -381,6 +387,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             builder.appendBitmap(bitmapFromText, false);
         }
 
+        if (receipt.getRemoteStationHeader() != null) {
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
+            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+                    receipt.getRemoteStationHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
         if (receipt.getEmvDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
             bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
@@ -398,6 +411,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         for (String s : receipt.getItems()) {
             if (s != null) {
                 typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+                bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+                        s, FONT_SIZE, PAPER_WIDTH, typeface);
+                builder.appendBitmap(bitmapFromText, false);
+            }
+        }
+
+        for (String s : receipt.getRemoteStationItems()) {
+            if (s != null) {
+                typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
                 bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
                         s, FONT_SIZE, PAPER_WIDTH, typeface);
                 builder.appendBitmap(bitmapFromText, false);
@@ -780,21 +802,24 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper,
-                                      boolean printHeader) {
-        return printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
-    }
-
-    public void printRemote(String str, int size, PrinterFunctions.Alignment alignment) {
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+        boolean result = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            super.print(str, FORMAT, size, alignment);
-            super.cutPaper();
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getRemoteStation(orders, ordID);
+            printReceipt(receipt);
+//            printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
+
             releasePrinter();
+            result = true;
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
+        return result;
     }
 
     public void print(String str, int size, PrinterFunctions.Alignment alignment) {

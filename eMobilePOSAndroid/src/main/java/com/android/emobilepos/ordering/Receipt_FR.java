@@ -103,8 +103,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import drivers.EMSBluetoothStarPrinter;
-import drivers.star.utils.PrinterFunctions;
 import interfaces.PayWithLoyalty;
 import main.EMSDeviceManager;
 import util.StringUtil;
@@ -2214,22 +2212,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         new String[temp.keySet().size()]);
                 int printMap;
                 boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
-                EMSBluetoothStarPrinter currentDevice = null;
-                boolean printHeader = true;
-                StringBuffer receipt = new StringBuffer();
+                // todo: implement single receipt per order
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
                         if (Global.multiPrinterManager.get(printMap) != null
-                                && Global.multiPrinterManager.get(printMap).getCurrentDevice() != null) {
-
-                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).getCurrentDevice();
-                            if (currentDevice != null) {
-                                receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
-                                        orderId, splitByCat, printHeader));
-                                currentDevice.printRemote(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
-                                receipt.setLength(0);
-                            }
+                                && Global.multiPrinterManager.get(printMap)
+                                .getCurrentDevice() != null) {
+                            Global.multiPrinterManager.get(printMap).getCurrentDevice()
+                                    .printRemoteStation(temp.get(aSArr), orderId);
                         }
                     }
                 }

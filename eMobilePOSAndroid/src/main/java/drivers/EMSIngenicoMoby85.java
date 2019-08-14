@@ -172,9 +172,8 @@ public class EMSIngenicoMoby85
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID,
-                                      boolean cutPaper, boolean printHeader) {
-        return null;
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+        return false;
     }
 
     @Override

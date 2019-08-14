@@ -426,9 +426,9 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
-        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
-
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+//        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
+        return false;
     }
 
     @Override

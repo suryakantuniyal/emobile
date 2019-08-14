@@ -119,9 +119,10 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
         hpPrinter = new POSPrinter();
-        return printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+//        return printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+        return false;
     }
 
     @Override

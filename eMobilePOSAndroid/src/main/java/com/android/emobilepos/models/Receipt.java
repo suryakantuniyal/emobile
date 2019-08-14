@@ -13,8 +13,10 @@ public class Receipt {
     private String merchantHeader;
     private String specialHeader;
     private String header;
+    private String remoteStationHeader;
     private String emvDetails;
     private List<String> items = new ArrayList<>();
+    private List<String> remoteStationItems = new ArrayList<>();
     private String separator;
     private String totals;
     private String taxes;
@@ -65,6 +67,14 @@ public class Receipt {
         this.header = header;
     }
 
+    public String getRemoteStationHeader() {
+        return remoteStationHeader;
+    }
+
+    public void setRemoteStationHeader(String remoteStationHeader) {
+        this.remoteStationHeader = remoteStationHeader;
+    }
+
     public String getEmvDetails() {
         return emvDetails;
     }
@@ -79,6 +89,14 @@ public class Receipt {
 
     public void setItems(List<String> items) {
         this.items = items;
+    }
+
+    public List<String> getRemoteStationItems() {
+        return remoteStationItems;
+    }
+
+    public void setRemoteStationItems(List<String> remoteStationItems) {
+        this.remoteStationItems = remoteStationItems;
     }
 
     public String getSeparator() {

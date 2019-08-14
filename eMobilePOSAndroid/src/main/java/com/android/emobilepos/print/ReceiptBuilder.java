@@ -22,6 +22,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.SplittedOrder;
@@ -43,7 +44,9 @@ import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1039,6 +1042,135 @@ public class ReceiptBuilder {
                     getTermsAndConditions(textHandler), lineWidth + 2, 0));
 
             receipt.setEnablerWebsite(getEnablerWebsite(textHandler));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+
+        return receipt;
+    }
+
+    public Receipt getRemoteStation(List<Orders> orders, String ordID) {
+
+        Receipt receipt = new Receipt();
+
+        try {
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+            StringBuilder sb = new StringBuilder();
+
+            OrdersHandler orderHandler = new OrdersHandler(context);
+            OrderProductsHandler ordProdHandler = new OrderProductsHandler(context);
+            Order anOrder = orderHandler.getPrintedOrder(ordID);
+
+            if (!TextUtils.isEmpty(anOrder.ord_HoldName)) {
+                sb.append(context.getString(R.string.receipt_name)).append(anOrder.ord_HoldName);
+                sb.append(textHandler.newLines(1));
+            }
+            if (!TextUtils.isEmpty(anOrder.cust_name)) {
+                sb.append(anOrder.cust_name);
+                sb.append(textHandler.newLines(1));
+            }
+            sb.append(context.getString(R.string.order)).append(": ").append(ordID);
+            sb.append(textHandler.newLines(1));
+            sb.append(context.getString(R.string.receipt_started)).append(" ")
+                    .append(Global.formatToDisplayDate(anOrder.ord_timeStarted, -1));
+            sb.append(textHandler.newLines(1));
+            SimpleDateFormat sdf1 = new SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            sdf1.setTimeZone(Calendar.getInstance().getTimeZone());
+            Date startedDate = sdf1.parse(anOrder.ord_timecreated);
+            Date sentDate = new Date();
+
+            String clerkName = "";
+            if (anOrder.clerk_id != null && !anOrder.clerk_id.isEmpty()) {
+                try {
+                    Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(anOrder.clerk_id));
+                    clerkName = clerk.getEmpName();
+                } catch (Exception e) {
+                    // invalid clerk id, leave name blank
+                    clerkName = "";
+                }
+            }
+            sb.append(context.getString(R.string.receipt_sent_by)).append(" ").append(clerkName);
+            sb.append(textHandler.newLines(1));
+            sb.append(context.getString(R.string.receipt_terminal)).append(" ")
+                    .append(employee.getEmpName()).append(" (");
+
+            if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60) {
+                sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), -1))
+                        .append(")");
+            } else {
+                sb.append(Global.formatToDisplayDate(anOrder.ord_timecreated, -1)).append(")");
+            }
+
+            String ordComment = anOrder.ord_comment;
+            if (ordComment != null && !TextUtils.isEmpty(ordComment)) {
+                sb.append(textHandler.newLines(1));
+                sb.append("Comments:");
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment,
+                        lineWidth, 3));
+            }
+            sb.append(textHandler.newLines(1));
+
+            receipt.setRemoteStationHeader(sb.toString());
+            sb.setLength(0);
+
+            sb.append(textHandler.newDivider('=', lineWidth / 2));
+            sb.append(textHandler.newLines(1));
+            int m;
+            int size = orders.size();
+            for (int i = 0; i < size; i++) {
+                if (orders.get(i).hasAddon()) {
+                    m = i;
+                    ordProdHandler.updateIsPrinted(orders.get(m).getOrdprodID());
+                    sb.append(orders.get(m).getQty()).append("x ").append(orders.get(m).getName());
+                    sb.append(textHandler.newLines(1));
+                    if (!TextUtils.isEmpty(orders.get(m).getAttrDesc())) {
+                        sb.append("  [").append(orders.get(m).getAttrDesc()).append("]");
+                        sb.append(textHandler.newLines(1));
+                    }
+                    if ((m + 1) < size && orders.get(m + 1).isAddon()) {
+                        for (int j = i + 1; j < size; j++) {
+                            ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
+                            if (orders.get(j).isAdded()) {
+                                sb.append("  >").append(orders.get(j).getName());
+                            } else {
+                                sb.append("  >NO ").append(orders.get(j).getName());
+                            }
+                            sb.append(textHandler.newLines(1));
+
+                            if ((j + 1 < size && !orders.get(j + 1).isAddon()) || (j + 1 >= size)) {
+                                i = j;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!TextUtils.isEmpty(orders.get(m).getOrderProdComment())) {
+                        sb.append("  ").append(orders.get(m).getOrderProdComment());
+                        sb.append(textHandler.newLines(1));
+                    }
+                    sb.append(textHandler.lines(lineWidth / 2));
+                    sb.append(textHandler.newLines(1));
+
+                } else {
+                    ordProdHandler.updateIsPrinted(orders.get(i).getOrdprodID());
+                    sb.append(orders.get(i).getQty()).append("x ").append(orders.get(i).getName());
+                    sb.append(textHandler.newLines(1));
+                    if (!TextUtils.isEmpty(orders.get(i).getOrderProdComment())) {
+                        sb.append("  ").append(orders.get(i).getOrderProdComment());
+                        sb.append(textHandler.newLines(1));
+                    }
+                    sb.append(textHandler.lines(lineWidth / 2));
+                    sb.append(textHandler.newLines(1));
+
+                }
+                receipt.getRemoteStationItems().add((sb.toString()));
+                sb.setLength(0);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

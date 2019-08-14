@@ -299,25 +299,25 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
-        try {
-            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
-                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
-                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
-                return receipt;
-            } else {
-                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-                eloPrinterApi = new PrinterAPI(eloPrinterPort);
-                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
-                eloPrinterPort.getInputStream().close();
-                eloPrinterPort.getOutputStream().close();
-                eloPrinterPort.close();
-                return receipt;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+//        try {
+//            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+//                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+//                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+//                return receipt;
+//            } else {
+//                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+//                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+//                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+//                eloPrinterPort.getInputStream().close();
+//                eloPrinterPort.getOutputStream().close();
+//                eloPrinterPort.close();
+//                return receipt;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        return false;
     }
 
     @Override

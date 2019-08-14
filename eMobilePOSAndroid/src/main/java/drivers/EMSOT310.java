@@ -161,8 +161,8 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
-        return "";
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+        return false;
     }
 
     @Override
