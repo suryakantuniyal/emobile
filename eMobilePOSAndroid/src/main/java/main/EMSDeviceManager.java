@@ -31,6 +31,7 @@ import drivers.EMSDeviceDriver;
 import drivers.EMSELO;
 import drivers.EMSEM100;
 import drivers.EMSEM70;
+import drivers.EMSEpson;
 import drivers.EMSGPrinterPT380;
 import drivers.EMSHandpoint;
 import drivers.EMSIngenico;
@@ -184,6 +185,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSPaxA920();
                 aDevice.connect(activity, -1, false, this);
                 break;
+            case Global.EPSON:
+                aDevice = new EMSEpson();
+                aDevice.connect(activity, -1, false, this);
+                break;
         }
     }
 
@@ -272,6 +277,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.PAX_A920:
                 aDevice = new EMSPaxA920();
+                break;
+            case Global.EPSON:
+                aDevice = new EMSEpson();
                 break;
         }
         return aDevice != null && aDevice.autoConnect(activity, this, paperSize, isPOSPrinter, portName, portNumber);

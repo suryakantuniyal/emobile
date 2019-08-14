@@ -143,6 +143,7 @@ public class Global extends MultiDexApplication {
     public static final int HP_EONEPRIME = 28;
 
     public static final int APT_50 = 29;
+    public static final int EPSON = 30;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -381,6 +382,9 @@ public class Global extends MultiDexApplication {
                 break;
             case HP_EONEPRIME:
                 _name = "HPEngageOnePrimePrinter";
+                break;
+            case EPSON:
+                _name = "EPSON";
                 break;
             case MAGTEK:
                 _name = "MAGTEK";
