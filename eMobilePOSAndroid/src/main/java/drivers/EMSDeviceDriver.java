@@ -161,6 +161,7 @@ public class EMSDeviceDriver {
     POSPrinter bixolonPrinter;
     POSPrinter hpPrinter;
     PService mPService = null;
+    com.epson.epos2.printer.Printer epsonPrinter = null;
     MePOSReceipt mePOSReceipt;
     InputStream inputStream;
     OutputStream outputStream;

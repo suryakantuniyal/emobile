@@ -36,6 +36,7 @@ import java.util.Set;
 
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
+import drivers.EMSEpson;
 import drivers.EMSHPEngageOnePrimePrinter;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
@@ -276,6 +277,8 @@ public class DeviceUtils {
             }
         }else if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
             connectHPEngageOnePrimePrinter(activity,usbDevice);
+        }else if (myPref.isEpson() && usbDevice instanceof EMSEpson){
+            connectEpsonPrinter(activity);
         }
         ArrayList<Device> connected = new ArrayList(Global.printerDevices);
 
@@ -319,6 +322,9 @@ public class DeviceUtils {
             Log.d("USB product ID:", String.valueOf(device.getProductId()));
             int productId = device.getProductId();
             switch (productId) {
+                case 514:
+                    preferences.setEpson(true);
+                    return new EMSEpson();
                 case 3690:
                     preferences.setHPEOnePrime(true);
                     return new EMSHPEngageOnePrimePrinter();
@@ -566,6 +572,35 @@ public class DeviceUtils {
                 DeviceTableDAO.insert(devices);
                 Global.printerDevices.add(device);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void connectEpsonPrinter(Context context) {
+        try {
+//            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                MyPreferences preferences = new MyPreferences(context);
+                preferences.setPrinterType(Global.EPSON);
+                preferences.posPrinter(false, true);
+                preferences.printerAreaSize(false, 58);
+                EMSDeviceManager edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(context, Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
+                List<Device> devices = new ArrayList<>();
+                Device device = DeviceTableDAO.getByName("Epson");
+                if (device == null) {
+                    device = new Device();
+                }
+                device.setTextAreaSize(58);
+                device.setName("Epson");
+                device.setId("EPSON");
+                device.setType(String.valueOf(Global.EPSON));
+                device.setRemoteDevice(false);
+                devices.add(device);
+                DeviceTableDAO.insert(devices);
+                Global.printerDevices.add(device);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

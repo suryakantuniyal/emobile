@@ -1028,6 +1028,18 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isEpson() {
+        String device_hp = "device_Epson";
+        return prefs.getBoolean(device_hp, false);
+    }
+
+    public boolean setEpson(boolean value) {
+        String device_hp = "device_Epson";
+        prefEditor.putBoolean(device_hp, value);
+        prefEditor.commit();
+        return false;
+    }
+
     public boolean isBixolonRD() {
         String device_bixolon = "device_bixolon_rd";
         return prefs.getBoolean(device_bixolon, false);
