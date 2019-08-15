@@ -14,7 +14,6 @@ import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Log;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -378,9 +377,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

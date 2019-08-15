@@ -12,7 +12,6 @@ import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Base64;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.database.MemoTextHandler;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
@@ -26,7 +25,6 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.starmicronics.stario.StarIOPortException;
 import com.zebra.printer.MobilePrinter;
 
 import java.io.File;
@@ -575,9 +573,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -11,7 +11,6 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
@@ -39,7 +38,6 @@ import com.magtek.mobile.android.mtlib.MTConnectionType;
 import com.magtek.mobile.android.mtlib.MTEMVEvent;
 import com.magtek.mobile.android.mtlib.MTSCRA;
 import com.magtek.mobile.android.mtlib.MTSCRAEvent;
-import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
 import java.io.IOException;
@@ -520,14 +518,12 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 eloPrinterPort.getOutputStream().close();
                 eloPrinterPort.close();
             }
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

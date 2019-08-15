@@ -248,8 +248,6 @@ public class DeviceUtils {
             int txtAreaSize = myPref.printerAreaSize(true, -1);
             if (myPref.getPrinterType() != Global.POWA
                     && myPref.getPrinterType() != Global.MEPOS
-                    && myPref.getPrinterType() != Global.MIURA
-//                    && myPref.getPrinterType() != Global.ELOPAYPOINT
                     && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                     if (!Global.mainPrinterManager.getCurrentDevice().isConnected()) {

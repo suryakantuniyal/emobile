@@ -13,7 +13,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.ClockInOut;
@@ -246,9 +245,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         try {
             setPaperWidth(LINE_WIDTH);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

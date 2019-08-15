@@ -216,8 +216,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             if (!isUSB && result.toString().length() > 0)
                 Toast.makeText(BaseFragmentActivityActionBar.this, result.toString(), Toast.LENGTH_LONG).show();
             else if (isUSB && (Global.mainPrinterManager == null ||
-                    Global.mainPrinterManager.getCurrentDevice() == null)
-                    || myPref.getPrinterType() == Global.MIURA) {
+                    Global.mainPrinterManager.getCurrentDevice() == null)) {
 //                if (global.getGlobalDlog() != null)
 //                    global.getGlobalDlog().dismiss();
                 EMSDeviceManager edm = new EMSDeviceManager();

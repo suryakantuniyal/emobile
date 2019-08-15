@@ -30,7 +30,6 @@ import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.print.ReceiptBuilder;
-import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
@@ -45,9 +44,7 @@ import com.starmicronics.starioextension.StarIoExt;
 import com.starmicronics.starioextension.StarIoExtManager;
 import com.starmicronics.starioextension.StarIoExtManagerListener;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -1218,63 +1215,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
             }
 
-        }
-    }
-
-    class ReceiveThread extends Thread {
-        public void run() {
-            byte[] mcrData1 = new byte[1];
-            try {
-                StringBuilder tr1 = new StringBuilder();
-                StringBuilder tr2 = new StringBuilder();
-                List<String> listTrack = new ArrayList<>();
-                String t;
-                boolean doneParsing = false;
-                while (!stopLoop) {
-                    if (port != null) {
-                        if (port.readPort(mcrData1, 0, 1) > 0) {
-                            if (!doneParsing) {
-                                t = new String(mcrData1, "windows-1252");
-                                if (t.equals("\r") || t.equals("\n")) {
-                                    for (String data : listTrack) {
-                                        if (data.contains("B")) {
-                                            if (!data.startsWith("%"))
-                                                tr1.append("%");
-                                            tr1.append(data);
-
-                                            if (!data.endsWith("?"))
-                                                tr1.append("?");
-                                        } else if (data.contains("=")) {
-                                            if (!data.startsWith(";"))
-                                                tr1.append(";");
-
-                                            tr1.append(data);
-
-                                            if (!data.endsWith("?"))
-                                                tr1.append("?");
-                                        }
-                                    }
-                                    cardManager = new CreditCardInfo();
-                                    CardParser.parseCreditCard(activity, tr1.toString(), cardManager);
-                                    doneParsing = true;
-                                    handler.post(doUpdateViews);
-                                    tr1.setLength(0);
-                                } else if (mcrData1[0] == 28 && tr2.length() > 0) {
-                                    listTrack.add(tr2.toString());
-                                    tr2.setLength(0);
-                                } else {
-                                    tr2.append(t.trim());
-                                }
-                            }
-                        }
-                    } else {
-                        stopLoop = true;
-                    }
-                }
-            } catch (StarIOPortException ignored) {
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

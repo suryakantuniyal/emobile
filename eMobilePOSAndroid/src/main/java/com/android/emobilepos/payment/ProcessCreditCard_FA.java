@@ -1645,12 +1645,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         }
     }
 
-    private void redetectMiuraPrinter() {
-        EMSDeviceManager edm = new EMSDeviceManager();
-        Global.mainPrinterManager = edm.getManager();
-        Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1660,7 +1654,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
         if (requestCode == 202) {
-            redetectMiuraPrinter();
             final String cardNumber = data == null ? "" : data.getStringExtra("cardNumber");
             final String cardHolderName = data == null ? "" : data.getStringExtra("cardHolderName");
             final String responseCode = data == null ? "" : data.getStringExtra("responseCode");

@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
@@ -30,7 +29,6 @@ import com.android.support.CreditCardInfo;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.starmicronics.stario.StarIOPortException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -252,9 +250,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JAException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
@@ -578,9 +573,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (JAException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } finally {
             device.close();
         }
@@ -894,9 +886,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
