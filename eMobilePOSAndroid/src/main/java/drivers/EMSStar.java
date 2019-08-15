@@ -6,17 +6,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
@@ -52,6 +45,7 @@ import drivers.star.utils.PrinterFunctions;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
+import util.BitmapUtils;
 
 public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, IConnectionCallback {
 
@@ -365,42 +359,42 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
         if (receipt.getMerchantHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getMerchantHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getSpecialHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getSpecialHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getRemoteStationHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getRemoteStationHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getEmvDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getEmvDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getSeparator() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getSeparator(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
@@ -408,7 +402,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         for (String s : receipt.getItems()) {
             if (s != null) {
                 typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-                bitmapFromText = EMSStar.createBitmapFromText(
+                bitmapFromText = BitmapUtils.createBitmapFromText(
                         s, FONT_SIZE, PAPER_WIDTH, typeface);
                 builder.appendBitmap(bitmapFromText, false);
             }
@@ -417,7 +411,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         for (String s : receipt.getRemoteStationItems()) {
             if (s != null) {
                 typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-                bitmapFromText = EMSStar.createBitmapFromText(
+                bitmapFromText = BitmapUtils.createBitmapFromText(
                         s, FONT_SIZE, PAPER_WIDTH, typeface);
                 builder.appendBitmap(bitmapFromText, false);
             }
@@ -425,70 +419,70 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
         if (receipt.getSeparator() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getSeparator(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getTotals() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getTotals(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getTaxes() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getTaxes(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getTotalItems() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getTotalItems(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getGrandTotal() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getGrandTotal(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getPaymentsDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getPaymentsDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getYouSave() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getYouSave(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getIvuLoto() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getIvuLoto(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getLoyaltyDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getLoyaltyDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getRewardsDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getRewardsDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
@@ -501,35 +495,35 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
         if (receipt.getSignature() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getSignature(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getMerchantFooter() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getMerchantFooter(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getSpecialFooter() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getSpecialFooter(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getTermsAndConditions() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getTermsAndConditions(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getEnablerWebsite() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSStar.createBitmapFromText(
+            bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getEnablerWebsite(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
@@ -602,35 +596,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory,
                                     boolean fromOnHold) {
         return printTransaction(order, saleTypes, isFromHistory, fromOnHold, null);
-    }
-
-    static public Bitmap createBitmapFromText(String printText, int textSize, int printWidth,
-                                              Typeface typeface) {
-        Paint paint = new Paint();
-        Bitmap bitmap;
-        Canvas canvas;
-
-        paint.setTextSize(textSize);
-        paint.setTypeface(typeface);
-
-        paint.getTextBounds(printText, 0, printText.length(), new Rect());
-
-        TextPaint textPaint = new TextPaint(paint);
-        android.text.StaticLayout staticLayout = new StaticLayout(printText, textPaint,
-                printWidth, Layout.Alignment.ALIGN_NORMAL,
-                1, 0, false);
-
-        // Create bitmap
-        bitmap = Bitmap.createBitmap(staticLayout.getWidth(), staticLayout.getHeight(),
-                Bitmap.Config.ARGB_8888);
-
-        // Create canvas
-        canvas = new Canvas(bitmap);
-        canvas.drawColor(Color.WHITE);
-        canvas.translate(0, 0);
-        staticLayout.draw(canvas);
-
-        return bitmap;
     }
 
     @Override

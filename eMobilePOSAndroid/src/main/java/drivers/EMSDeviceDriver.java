@@ -122,6 +122,7 @@ import jpos.POSPrinter;
 import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
+import util.BitmapUtils;
 import util.StringUtil;
 import wangpos.sdk4.libbasebinder.Core;
 
@@ -727,7 +728,7 @@ public class EMSDeviceDriver {
     }
 
     private void apt50RasterPrint(String stringToPrint) {
-        Bitmap bitmapFromString = EMSStar.createBitmapFromText(
+        Bitmap bitmapFromString = BitmapUtils.createBitmapFromText(
                 stringToPrint, 20, 450, typeface);
         if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
             try {
@@ -750,7 +751,7 @@ public class EMSDeviceDriver {
     }
 
     private void posLinkRasterPrint(String stringToPrint) {
-        Bitmap bitmapFromString = EMSStar.createBitmapFromText(
+        Bitmap bitmapFromString = BitmapUtils.createBitmapFromText(
                 stringToPrint, 26, 450, typeface);
         if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
             POSLinkPrinter.getInstance(activity).print(bitmapFromString,
@@ -817,7 +818,7 @@ public class EMSDeviceDriver {
             port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
         } else {
             if (myPref.isRasterModePrint()) {
-                Bitmap bitmapFromText = EMSStar.createBitmapFromText(str, 20
+                Bitmap bitmapFromText = BitmapUtils.createBitmapFromText(str, 20
                         , PAPER_WIDTH, typeface);
                 ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
                 builder.beginDocument();
