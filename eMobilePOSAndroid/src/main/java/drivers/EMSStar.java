@@ -53,7 +53,7 @@ import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
 
-public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, IConnectionCallback {
+public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, IConnectionCallback {
 
     private int connectionRetries = 0;
     private boolean isNetworkPrinter = false;
@@ -67,7 +67,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private StarIoExtManager mStarIoExtManager;
     private Handler handler;
     private ProgressDialog myProgressDialog;
-    private EMSBluetoothStarPrinter thisInstance;
+    private EMSStar thisInstance;
     private boolean stopLoop = false;
     private String portNumber = "";
     private EMSDeviceManager edm;
@@ -365,42 +365,42 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         if (receipt.getMerchantHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getMerchantHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getSpecialHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getSpecialHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getRemoteStationHeader() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getRemoteStationHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getEmvDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getEmvDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getSeparator() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getSeparator(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
@@ -408,7 +408,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         for (String s : receipt.getItems()) {
             if (s != null) {
                 typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-                bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+                bitmapFromText = EMSStar.createBitmapFromText(
                         s, FONT_SIZE, PAPER_WIDTH, typeface);
                 builder.appendBitmap(bitmapFromText, false);
             }
@@ -417,7 +417,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         for (String s : receipt.getRemoteStationItems()) {
             if (s != null) {
                 typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-                bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+                bitmapFromText = EMSStar.createBitmapFromText(
                         s, FONT_SIZE, PAPER_WIDTH, typeface);
                 builder.appendBitmap(bitmapFromText, false);
             }
@@ -425,70 +425,70 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         if (receipt.getSeparator() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getSeparator(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getTotals() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getTotals(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getTaxes() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getTaxes(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getTotalItems() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getTotalItems(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getGrandTotal() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getGrandTotal(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getPaymentsDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getPaymentsDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getYouSave() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getYouSave(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getIvuLoto() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getIvuLoto(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getLoyaltyDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getLoyaltyDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getRewardsDetails() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getRewardsDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
@@ -501,35 +501,35 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         if (receipt.getSignature() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getSignature(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getMerchantFooter() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getMerchantFooter(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getSpecialFooter() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getSpecialFooter(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getTermsAndConditions() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getTermsAndConditions(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
 
         if (receipt.getEnablerWebsite() != null) {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+            bitmapFromText = EMSStar.createBitmapFromText(
                     receipt.getEnablerWebsite(), FONT_SIZE, PAPER_WIDTH, typeface);
             builder.appendBitmap(bitmapFromText, false);
         }
@@ -1040,25 +1040,25 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     private void starIoExtManagerConnect() {
-        final Dialog mProgressDialog = new ProgressDialog(EMSBluetoothStarPrinter.this.activity);
+        final Dialog mProgressDialog = new ProgressDialog(EMSStar.this.activity);
         AsyncTask<Void, Void, Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {
 
             @Override
             protected void onPreExecute() {
-                if (!((Activity) EMSBluetoothStarPrinter.this.activity).isFinishing())
+                if (!((Activity) EMSStar.this.activity).isFinishing())
                     mProgressDialog.show();
             }
 
             @Override
             protected Boolean doInBackground(Void... params) {
-                mStarIoExtManager.disconnect(EMSBluetoothStarPrinter.this);
-                mStarIoExtManager.connect(EMSBluetoothStarPrinter.this);
+                mStarIoExtManager.disconnect(EMSStar.this);
+                mStarIoExtManager.connect(EMSStar.this);
                 return true;
             }
 
             @Override
             protected void onPostExecute(Boolean result) {
-                if (!((Activity) EMSBluetoothStarPrinter.this.activity).isFinishing()) {
+                if (!((Activity) EMSStar.this.activity).isFinishing()) {
                     mProgressDialog.dismiss();
                 }
             }

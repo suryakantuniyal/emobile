@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import drivers.EMSBluetoothStarPrinter;
+import drivers.EMSStar;
 import drivers.EMSDeviceDriver;
 import drivers.EMSHPEngageOnePrimePrinter;
 import drivers.EMSPowaPOS;
@@ -468,7 +468,7 @@ public class DeviceUtils {
                 preferences.setPrinterMACAddress(portName);
                 preferences.posPrinter(false, true);
                 preferences.printerAreaSize(false, 48);
-                EMSBluetoothStarPrinter aDevice = new EMSBluetoothStarPrinter();
+                EMSStar aDevice = new EMSStar();
                 Global.mainPrinterManager = edm.getManager();
                 aDevice.autoConnect((Activity) context, edm, 48, true, preferences.getPrinterMACAddress(), "");
                 List<Device> devices = new ArrayList<>();

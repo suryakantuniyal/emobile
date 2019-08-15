@@ -25,7 +25,7 @@ import drivers.EMSAPT50;
 import drivers.EMSBixolon;
 import drivers.EMSBixolonRD;
 import drivers.EMSBlueBambooP25;
-import drivers.EMSBluetoothStarPrinter;
+import drivers.EMSStar;
 import drivers.EMSDeviceDriver;
 import drivers.EMSELO;
 import drivers.EMSEM100;
@@ -80,7 +80,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice.connect(activity, -1, false, this);
                 break;
             case Global.STAR:
-                aDevice = new EMSBluetoothStarPrinter();
+                aDevice = new EMSStar();
                 if (interfase == PrinterInterfase.BLUETOOTH)
                     promptTypeOfStarPrinter(activity);
                 else
@@ -222,7 +222,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSIngenico();
                 break;
             case Global.STAR:
-                aDevice = new EMSBluetoothStarPrinter();
+                aDevice = new EMSStar();
                 break;
             case Global.GPRINTER:
                 aDevice = new EMSGPrinterPT380();
