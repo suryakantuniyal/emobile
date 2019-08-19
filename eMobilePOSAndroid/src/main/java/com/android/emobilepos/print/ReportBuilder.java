@@ -5,6 +5,7 @@ import android.content.Context;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
+import com.android.dao.ShiftExpensesDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
@@ -18,16 +19,20 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import plaintext.EMSPlainTextHelper;
+
+import static com.android.support.DateUtils.getEpochTime;
 
 /**
  * Created by Luis Camayd on 8/19/2019.
@@ -35,14 +40,12 @@ import plaintext.EMSPlainTextHelper;
 public class ReportBuilder {
     private Context context;
     private MyPreferences myPref;
-//    private List<String> printPref;
     private int lineWidth;
 
     public ReportBuilder(Context context, int lineWidth) {
         this.context = context;
         this.lineWidth = lineWidth;
         myPref = new MyPreferences(context);
-//        printPref = myPref.getPrintingPreferences();
     }
 
     public Report getEndOfDay(String currentDate, boolean printDetails) {
@@ -557,6 +560,282 @@ public class ReportBuilder {
             report.setPayments(sb.toString());
             report.setRefunds(sb_refunds.toString());
             sb.setLength(0);
+
+            sb.append(textHandler.centeredString("** End of report **", lineWidth));
+            sb.append(textHandler.newLines(1));
+            report.setSpecialFooter(sb.toString());
+
+            report.setEnablerWebsite(getEnablerWebsite(textHandler));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+
+        return report;
+    }
+
+    public Report getShift(String shiftId) {
+
+        Report report = new Report();
+
+        try {
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sb_ord_types = new StringBuilder();
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+
+            sb.append(textHandler.centeredString(context.getString(R.string.shift_details), lineWidth));
+            sb.append(textHandler.newLines(1));
+
+            report.setSpecialHeader(sb.toString());
+            sb.setLength(0);
+
+            Shift shift = ShiftDAO.getShift(shiftId);
+            if (shift.getEndTime() == null) {
+                // shift is not ended
+                shift.setEndTime(new Date());
+            }
+            Clerk clerk = ClerkDAO.getByEmpId(shift.getClerkId());
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.shift_id),
+                    String.format("%s-%s", clerk.getEmpId(), getEpochTime(shift.getCreationDate())),
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.sales_clerk), clerk == null ?
+                    shift.getAssigneeName() : clerk.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_employee),
+                    employee.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.from),
+                    DateUtils.getDateAsString(shift.getStartTime()), lineWidth, 0));
+            if (shift.getShiftStatus() == Shift.ShiftStatus.OPEN) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.to),
+                        Shift.ShiftStatus.OPEN.name(), lineWidth, 0));
+            } else {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.to),
+                        DateUtils.getDateAsString(shift.getEndTime()), lineWidth, 0));
+            }
+            sb.append(textHandler.newLines(1));
+
+            report.setHeader(sb.toString());
+            sb.setLength(0);
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.begging_petty_cash),
+                    Global.getCurrencyFormat(shift.getBeginningPettyCash()), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.total_expenses),
+                    Global.getCurrencyFormat(shift.getTotalExpenses()), lineWidth, 0));
+            List<ShiftExpense> shiftExpenses = ShiftExpensesDAO.getShiftExpenses(shiftId);
+            if (shiftExpenses != null) {
+                for (ShiftExpense expense : shiftExpenses) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(expense.getProductName(),
+                            Global.getCurrencyFormat(expense.getCashAmount()),
+                            lineWidth, 3));
+                }
+            }
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.total_transactions_cash),
+                    Global.getCurrencyFormat(shift.getTotalTransactionsCash()),
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.total_ending_cash),
+                    Global.getCurrencyFormat(shift.getTotal_ending_cash()),
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.entered_close_amount),
+                    Global.getCurrencyFormat(shift.getEnteredCloseAmount()),
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.shortage_overage_amount),
+                    Global.getCurrencyFormat(shift.getOver_short()),
+                    lineWidth, 0));
+            sb.append(textHandler.newLines(2));
+
+            report.setSummary(sb.toString());
+            sb.setLength(0);
+
+            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(context);
+            String startDate = DateUtils.getDateAsString(
+                    shift.getCreationDate(), "yyyy-MM-dd HH:mm");
+            String endDate = DateUtils.getDateAsString(
+                    shift.getEndTime(), "yyyy-MM-dd HH:mm");
+
+            List<OrderProduct> listDeptSalesByClerk = orderProductsHandler
+                    .getDepartmentShiftReportByClerk(true, null, startDate, endDate);
+            sb.append(textHandler.centeredString(
+                    context.getString(R.string.eod_report_sales_by_clerk), lineWidth));
+            for (OrderProduct product : listDeptSalesByClerk) {
+                String clerkName = "";
+                if (!product.getCat_id().isEmpty()) {
+                    Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(product.getCat_id()));
+                    if (reportClerk != null) {
+                        clerkName = String.format(
+                                "%s (%s)", reportClerk.getEmpName(), reportClerk.getEmpId());
+                    }
+                } else {
+                    clerkName = employee.getEmpName();
+                }
+                sb.append(
+                        textHandler.threeColumnLineItem(clerkName, // clerk name
+                                60,
+                                product.getOrdprod_qty(), // total orders
+                                20,
+                                Global.getCurrencyFormat(product.getFinalPrice()), // total
+                                20, lineWidth, 0));
+            }
+            sb.append(textHandler.newLines(3));
+
+            report.setSalesByClerk(sb.toString());
+            sb.setLength(0);
+
+            OrdersHandler ordHandler = new OrdersHandler(context);
+            sb_ord_types.append(textHandler.centeredString("Totals By Order Types",
+                    lineWidth));
+            sb_ord_types.append(textHandler.newLines(1));
+            List<Order> listOrder = ordHandler.getOrderShiftReport(null, startDate, endDate);
+            HashMap<String, List<DataTaxes>> taxesBreakdownHashMap =
+                    ordHandler.getOrderShiftReportTaxesBreakdown(null, startDate, endDate);
+
+            for (Order ord : listOrder) {
+                switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
+                    case RETURN:
+                        sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                "Return", lineWidth, 0));
+                        break;
+                    case ESTIMATE:
+                        sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                "Estimate", lineWidth, 0));
+                        break;
+                    case ORDER:
+                        sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                "Order", lineWidth, 0));
+                        break;
+                    case SALES_RECEIPT:
+                        sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                "Sales Receipt", lineWidth, 0));
+                        break;
+                    case INVOICE:
+                        sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                "Invoice", lineWidth, 0));
+                        break;
+                }
+
+                sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("SubTotal",
+                        Global.getCurrencyFormat(ord.ord_subtotal), lineWidth, 3));
+                sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discounts",
+                        Global.getCurrencyFormat(ord.ord_discount), lineWidth, 3));
+
+                if (taxesBreakdownHashMap.containsKey(ord.ord_type)) {
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            "Taxes", lineWidth, 3));
+                    for (DataTaxes dataTax : taxesBreakdownHashMap.get(ord.ord_type)) {
+                        sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                dataTax.getTax_name(), Global.getCurrencyFormat(
+                                        dataTax.getTax_amount()), lineWidth, 6));
+                    }
+                } else {
+                    sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            "Taxes", "N/A", lineWidth, 3));
+                }
+
+                sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        "Total", Global.getCurrencyFormat(ord.ord_total),
+                        lineWidth, 3));
+            }
+
+            sb.append(sb_ord_types);
+            sb.append(textHandler.newLines(2));
+
+            report.setTotalsByTypes(sb.toString());
+            sb.setLength(0);
+
+            List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(
+                    true, null, startDate, endDate);
+            List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(
+                    false, null, startDate, endDate);
+            if (!listDeptSales.isEmpty()) {
+                sb.append(textHandler.centeredString(context.getString(R.string.eod_report_dept_sales), lineWidth));
+                for (OrderProduct product : listDeptSales) {
+                    sb.append(textHandler.threeColumnLineItem(
+                            product.getCat_name(), 60,
+                            product.getOrdprod_qty(), 20,
+                            Global.getCurrencyFormat(product.getFinalPrice()),
+                            20, lineWidth, 0));
+                }
+                sb.append(textHandler.newLines(2));
+
+                report.setDepartmentSales(sb.toString());
+                sb.setLength(0);
+            }
+            if (!listDeptReturns.isEmpty()) {
+                sb.append(textHandler.centeredString(context.getString(R.string.eod_report_return), lineWidth));
+                for (OrderProduct product : listDeptReturns) {
+                    sb.append(textHandler.threeColumnLineItem(
+                            product.getCat_name(), 60,
+                            product.getOrdprod_qty(), 20,
+                            Global.getCurrencyFormat(product.getFinalPrice()),
+                            20, lineWidth, 0));
+                }
+                sb.append(textHandler.newLines(2));
+
+                report.setDepartmentReturns(sb.toString());
+                sb.setLength(0);
+            }
+
+            PaymentsHandler paymentHandler = new PaymentsHandler(context);
+            List<Payment> listPayments = paymentHandler
+                    .getPaymentsGroupShiftReport(0, null, startDate, endDate);
+            if (listPayments.size() > 0) {
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.centeredString("Payments", lineWidth));
+                sb.append(textHandler.newLines(1));
+                for (Payment payment : listPayments) {
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(),
+                            lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount",
+                            Global.getCurrencyFormat(payment.getPay_amount()),
+                            lineWidth, 2));
+                }
+                listPayments.clear();
+                sb.append(textHandler.newLines(2));
+
+                report.setPayments(sb.toString());
+                sb.setLength(0);
+            }
+
+            listPayments = paymentHandler.getPaymentsGroupShiftReport(1, null,
+                    startDate, endDate);
+            if (listPayments.size() > 0) {
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.centeredString("Voids", lineWidth));
+                sb.append(textHandler.newLines(1));
+                for (Payment payment : listPayments) {
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(),
+                            lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount",
+                            Global.getCurrencyFormat(payment.getPay_amount()),
+                            lineWidth, 2));
+                }
+                listPayments.clear();
+                sb.append(textHandler.newLines(2));
+
+                report.setVoids(sb.toString());
+                sb.setLength(0);
+            }
+
+            listPayments = paymentHandler
+                    .getPaymentsGroupShiftReport(2, null, startDate, endDate);
+            if (listPayments.size() > 0) {
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.centeredString("Refunds", lineWidth));
+                sb.append(textHandler.newLines(1));
+                for (Payment payment : listPayments) {
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            payment.getCard_type(), lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            "Amount", Global.getCurrencyFormat(payment.getPay_amount()),
+                            lineWidth, 2));
+                }
+                listPayments.clear();
+                sb.append(textHandler.newLines(2));
+
+                report.setRefunds(sb.toString());
+                sb.setLength(0);
+            }
 
             sb.append(textHandler.centeredString("** End of report **", lineWidth));
             sb.append(textHandler.newLines(1));

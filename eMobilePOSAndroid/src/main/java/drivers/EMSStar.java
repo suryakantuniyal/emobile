@@ -271,11 +271,11 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         if (myPref.isRasterModePrint()) {
             printRasterReceipt(receipt);
         } else {
-            printNormalReceipt(receipt);
+            printTextReceipt(receipt);
         }
     }
 
-    private void printNormalReceipt(Receipt receipt) {
+    private void printTextReceipt(Receipt receipt) {
         ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarPRNT);
         builder.beginDocument();
         Charset encoding = Charset.forName("UTF-8");
@@ -529,11 +529,11 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         if (myPref.isRasterModePrint()) {
             printRasterReport(report);
         } else {
-            printNormalReport(report);
+            printTextReport(report);
         }
     }
 
-    private void printNormalReport(Report report) {
+    private void printTextReport(Report report) {
         ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarPRNT);
         builder.beginDocument();
         Charset encoding = Charset.forName("UTF-8");
@@ -547,6 +547,8 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             builder.append((report.getSummary()).getBytes(encoding));
         if (report.getArTransactions() != null)
             builder.append((report.getArTransactions()).getBytes(encoding));
+        if (report.getSalesByClerk() != null)
+            builder.append((report.getSalesByClerk()).getBytes(encoding));
         if (report.getTotalsByShifts() != null)
             builder.append((report.getTotalsByShifts()).getBytes(encoding));
         if (report.getTotalsByTypes() != null)
@@ -614,6 +616,12 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         if (report.getArTransactions() != null) {
             bitmapFromText = BitmapUtils.createBitmapFromText(
                     report.getArTransactions(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getSalesByClerk() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getSalesByClerk(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
             builder.appendBitmap(bitmapFromText, false);
         }
 
@@ -941,7 +949,12 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+
+            ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
+            Report report = reportBuilder.getShift(shiftID);
+            printReport(report);
+//            printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+
             releasePrinter();
         } catch (Exception e) {
             Crashlytics.logException(e);

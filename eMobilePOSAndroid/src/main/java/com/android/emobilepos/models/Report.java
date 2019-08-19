@@ -8,6 +8,7 @@ public class Report {
     private String header;
     private String summary;
     private String arTransactions;
+    private String salesByClerk;
     private String totalsByShifts;
     private String totalsByTypes;
     private String itemsSold;
@@ -52,6 +53,14 @@ public class Report {
 
     public void setArTransactions(String arTransactions) {
         this.arTransactions = arTransactions;
+    }
+
+    public String getSalesByClerk() {
+        return salesByClerk;
+    }
+
+    public void setSalesByClerk(String salesByClerk) {
+        this.salesByClerk = salesByClerk;
     }
 
     public String getTotalsByShifts() {
