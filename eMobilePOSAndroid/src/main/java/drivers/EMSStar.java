@@ -17,12 +17,14 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Receipt;
+import com.android.emobilepos.models.Report;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.print.ReceiptBuilder;
+import com.android.emobilepos.print.ReportBuilder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
@@ -61,10 +63,16 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     private Handler handler;
     private ProgressDialog myProgressDialog;
     private EMSStar thisInstance;
-    private boolean stopLoop = false;
     private String portNumber = "";
     private EMSDeviceManager edm;
     private CreditCardInfo cardManager;
+
+    private Typeface typefaceNormal = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+    private Typeface typefaceBold = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
+    private Typeface typefaceBoldItalic = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
+    private int FONT_SIZE_NORMAL = 20;
+    private int FONT_SIZE_LARGE = 44;
+
     private Runnable doUpdateViews = new Runnable() {
         public void run() {
             try {
@@ -347,11 +355,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     private void printRasterReceipt(Receipt receipt) {
         Bitmap bitmapFromText;
-        Typeface typefaceNormal = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-        Typeface typefaceBold = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-        Typeface typefaceBoldItalic = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
-        int FONT_SIZE_NORMAL = 20;
-        int FONT_SIZE_LARGE = 44;
 
         ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarGraphic);
         builder.beginDocument();
@@ -522,6 +525,174 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         }
     }
 
+    private void printReport(Report report) {
+        if (myPref.isRasterModePrint()) {
+            printRasterReport(report);
+        } else {
+            printNormalReport(report);
+        }
+    }
+
+    private void printNormalReport(Report report) {
+        ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarPRNT);
+        builder.beginDocument();
+        Charset encoding = Charset.forName("UTF-8");
+        builder.appendCodePage(ICommandBuilder.CodePageType.UTF8);
+
+        if (report.getSpecialHeader() != null)
+            builder.appendInvert((report.getSpecialHeader()).getBytes(encoding));
+        if (report.getHeader() != null)
+            builder.append((report.getHeader()).getBytes(encoding));
+        if (report.getSummary() != null)
+            builder.append((report.getSummary()).getBytes(encoding));
+        if (report.getArTransactions() != null)
+            builder.append((report.getArTransactions()).getBytes(encoding));
+        if (report.getTotalsByShifts() != null)
+            builder.append((report.getTotalsByShifts()).getBytes(encoding));
+        if (report.getTotalsByTypes() != null)
+            builder.append((report.getTotalsByTypes()).getBytes(encoding));
+        if (report.getItemsSold() != null)
+            builder.append((report.getItemsSold()).getBytes(encoding));
+        if (report.getDepartmentSales() != null)
+            builder.append((report.getDepartmentSales()).getBytes(encoding));
+        if (report.getDepartmentReturns() != null)
+            builder.append((report.getDepartmentReturns()).getBytes(encoding));
+        if (report.getPayments() != null)
+            builder.append((report.getPayments()).getBytes(encoding));
+        if (report.getVoids() != null)
+            builder.append((report.getVoids()).getBytes(encoding));
+        if (report.getRefunds() != null)
+            builder.append((report.getRefunds()).getBytes(encoding));
+        if (report.getItemsReturned() != null)
+            builder.append((report.getItemsReturned()).getBytes(encoding));
+        if (report.getFooter() != null)
+            builder.append((report.getFooter()).getBytes(encoding));
+        if (report.getSpecialFooter() != null)
+            builder.appendInvert((report.getSpecialFooter()).getBytes(encoding));
+
+        builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
+        builder.endDocument();
+        byte[] commands;
+        commands = builder.getCommands();
+
+        try {
+            port.writePort(commands, 0, commands.length);
+            port.setEndCheckedBlockTimeoutMillis(30000);
+//            StarPrinterStatus status = port.endCheckedBlock();
+            // todo: implement status
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void printRasterReport(Report report) {
+        Bitmap bitmapFromText;
+
+        ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarGraphic);
+        builder.beginDocument();
+
+        if (report.getSpecialHeader() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getSpecialHeader(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getHeader() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getHeader(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getSummary() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getSummary(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getArTransactions() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getArTransactions(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getTotalsByShifts() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getTotalsByShifts(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getTotalsByTypes() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getTotalsByTypes(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getItemsSold() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getItemsSold(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getDepartmentSales() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getDepartmentSales(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getDepartmentReturns() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getDepartmentReturns(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getPayments() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getPayments(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getVoids() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getVoids(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getRefunds() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getRefunds(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getItemsReturned() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getItemsReturned(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getFooter() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getFooter(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        if (report.getSpecialFooter() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getSpecialFooter(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
+        builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
+        builder.endDocument();
+        byte[] commands;
+        commands = builder.getCommands();
+
+        try {
+            port.writePort(commands, 0, commands.length);
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory,
                                     boolean fromOnHold, EMVContainer emvContainer) {
@@ -649,7 +820,12 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+
+            ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
+            Report report = reportBuilder.getEndOfDay(curDate, printDetails);
+            printReport(report);
+//            printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
@@ -661,7 +837,10 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
+
+
             printReportReceipt(curDate, LINE_WIDTH);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
