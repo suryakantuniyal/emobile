@@ -19,6 +19,7 @@ public class Report {
     private String itemsReturned;
     private String footer;
     private String specialFooter;
+    private String eNablerWebsite;
 
 
     public String getSpecialHeader() {
@@ -139,5 +140,13 @@ public class Report {
 
     public void setSpecialFooter(String specialFooter) {
         this.specialFooter = specialFooter;
+    }
+
+    public String getEnablerWebsite() {
+        return eNablerWebsite;
+    }
+
+    public void setEnablerWebsite(String eNablerWebsite) {
+        this.eNablerWebsite = eNablerWebsite;
     }
 }

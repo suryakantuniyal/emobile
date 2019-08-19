@@ -569,6 +569,8 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             builder.append((report.getFooter()).getBytes(encoding));
         if (report.getSpecialFooter() != null)
             builder.appendInvert((report.getSpecialFooter()).getBytes(encoding));
+        if (report.getEnablerWebsite() != null)
+            builder.appendEmphasis((report.getEnablerWebsite()).getBytes(encoding));
 
         builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
         builder.endDocument();
@@ -681,6 +683,12 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             builder.appendBitmap(bitmapFromText, false);
         }
 
+        if (report.getEnablerWebsite() != null) {
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    report.getEnablerWebsite(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+            builder.appendBitmap(bitmapFromText, false);
+        }
+
         builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
         builder.endDocument();
         byte[] commands;
@@ -752,6 +760,44 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+        boolean result = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getRemoteStation(orders, ordID);
+            printReceipt(receipt);
+//            printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
+
+            releasePrinter();
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getSplitOrderPreview(splitedOrder);
+            printReceipt(receipt);
+//            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint,
                                        EMVContainer emvContainer) {
         try {
@@ -792,81 +838,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public boolean printOnHold(Object onHold) {
-        return true;
-    }
-
-    @Override
-    public void setBitmap(Bitmap bmp) {
-    }
-
-    @Override
-    public void playSound() {
-
-    }
-
-    @Override
-    public void turnOnBCR() {
-
-    }
-
-    @Override
-    public void turnOffBCR() {
-
-    }
-
-    @Override
-    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-
-            ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
-            Report report = reportBuilder.getEndOfDay(curDate, printDetails);
-            printReport(report);
-//            printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
-
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public boolean printReport(String curDate) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-
-
-            printReportReceipt(curDate, LINE_WIDTH);
-
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    @Override
-    public void registerPrinter() {
-        edm.setCurrentDevice(this);
-        String ip = "";
-        if (portName.contains("TCP:")) {
-            ip = portName.substring(portName.indexOf(':') + 1);
-        }
-        Device kitchenPrinter = DeviceTableDAO.getByIp(ip);
-        if (kitchenPrinter == null) {
-            Global.mainPrinterManager = edm;
-        }
-    }
-
-    @Override
-    public void unregisterPrinter() {
-        edm.setCurrentDevice(null);
-    }
-
-    @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         boolean printed = false;
         try {
@@ -887,13 +858,19 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public void releaseCardReader() {
+    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+            printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+            releasePrinter();
+        } catch (StarIOPortException e) {
+            return false;
 
-    }
-
-    @Override
-    public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
@@ -925,24 +902,85 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public boolean printRemoteStation(List<Orders> orders, String ordID) {
-        boolean result = false;
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
 
-            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
-            Receipt receipt = receiptBuilder.getRemoteStation(orders, ordID);
-            printReceipt(receipt);
-//            printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
+            ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
+            Report report = reportBuilder.getEndOfDay(curDate, printDetails);
+            printReport(report);
+//            printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
 
             releasePrinter();
-            result = true;
         } catch (Exception e) {
             e.printStackTrace();
-            Crashlytics.logException(e);
         }
-        return result;
+    }
+
+    @Override
+    public boolean printReport(String curDate) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+
+            ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
+            Report report = reportBuilder.getDaySummary(curDate);
+            printReport(report);
+//            printReportReceipt(curDate, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
+    public void printShiftDetailsReport(String shiftID) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+            printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+            releasePrinter();
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+            printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void printExpenseReceipt(ShiftExpense expense) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+            printExpenseReceipt(LINE_WIDTH, expense);
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void printFooter() {
+        super.printFooter(LINE_WIDTH);
+    }
+
+    @Override
+    public void printHeader() {
+        super.printHeader(LINE_WIDTH);
     }
 
     public void print(String str, int size, PrinterFunctions.Alignment alignment) {
@@ -955,6 +993,58 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     public void print(String str, String FORMAT) {
         super.print(str, FORMAT);
+    }
+
+    @Override
+    public boolean printOnHold(Object onHold) {
+        return true;
+    }
+
+    @Override
+    public void setBitmap(Bitmap bmp) {
+    }
+
+    @Override
+    public void playSound() {
+
+    }
+
+    @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
+    public void registerPrinter() {
+        edm.setCurrentDevice(this);
+        String ip = "";
+        if (portName.contains("TCP:")) {
+            ip = portName.substring(portName.indexOf(':') + 1);
+        }
+        Device kitchenPrinter = DeviceTableDAO.getByIp(ip);
+        if (kitchenPrinter == null) {
+            Global.mainPrinterManager = edm;
+        }
+    }
+
+    @Override
+    public void unregisterPrinter() {
+        edm.setCurrentDevice(null);
+    }
+
+    @Override
+    public void releaseCardReader() {
+
+    }
+
+    @Override
+    public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
+
     }
 
     @Override
@@ -982,35 +1072,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             e.printStackTrace();
         } finally {
             releasePrinter();
-        }
-    }
-
-    @Override
-    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
-            releasePrinter();
-        } catch (StarIOPortException e) {
-            return false;
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    @Override
-    public void printShiftDetailsReport(String shiftID) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            printShiftDetailsReceipt(LINE_WIDTH, shiftID);
-            releasePrinter();
-        } catch (Exception e) {
-            Crashlytics.logException(e);
-            e.printStackTrace();
         }
     }
 
@@ -1045,23 +1106,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
     public void toggleBarcodeReader() {
 
-    }
-
-    @Override
-    public void printReceiptPreview(SplittedOrder splitedOrder) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-
-            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
-            Receipt receipt = receiptBuilder.getSplitOrderPreview(splitedOrder);
-            printReceipt(receipt);
-//            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -1141,30 +1185,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return status != null && !status.offline;
     }
 
-    @Override
-    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            printClockInOut(timeClocks, LINE_WIDTH, clerkID);
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void printExpenseReceipt(ShiftExpense expense) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            printExpenseReceipt(LINE_WIDTH, expense);
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void starIoExtManagerConnect() {
         final Dialog mProgressDialog = new ProgressDialog(EMSStar.this.activity);
         AsyncTask<Void, Void, Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {
@@ -1191,16 +1211,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         };
 
         asyncTask.execute();
-    }
-
-    @Override
-    public void printFooter() {
-        super.printFooter(LINE_WIDTH);
-    }
-
-    @Override
-    public void printHeader() {
-        super.printHeader(LINE_WIDTH);
     }
 
     private StarIOPort getStarIOPort() throws StarIOPortException {

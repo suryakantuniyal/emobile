@@ -7,6 +7,7 @@ import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
+import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
@@ -34,14 +35,14 @@ import plaintext.EMSPlainTextHelper;
 public class ReportBuilder {
     private Context context;
     private MyPreferences myPref;
-    private List<String> printPref;
+//    private List<String> printPref;
     private int lineWidth;
 
     public ReportBuilder(Context context, int lineWidth) {
         this.context = context;
         this.lineWidth = lineWidth;
         myPref = new MyPreferences(context);
-        printPref = myPref.getPrintingPreferences();
+//        printPref = myPref.getPrintingPreferences();
     }
 
     public Report getEndOfDay(String currentDate, boolean printDetails) {
@@ -463,8 +464,11 @@ public class ReportBuilder {
 
             sb.append(textHandler.newLines(1));
             sb.append(textHandler.centeredString("** End of report **", lineWidth));
-            sb.append(textHandler.newLines(4));
+            sb.append(textHandler.newLines(1));
             report.setSpecialFooter(sb.toString());
+
+            report.setEnablerWebsite(getEnablerWebsite(textHandler));
+
         } catch (Exception e) {
             e.printStackTrace();
             Crashlytics.logException(e);
@@ -473,5 +477,112 @@ public class ReportBuilder {
         return report;
     }
 
-    
+    public Report getDaySummary(String currentDate) {
+
+        Report report = new Report();
+
+        try {
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+            PaymentsHandler paymentHandler = new PaymentsHandler(context);
+            PayMethodsHandler payMethodHandler = new PayMethodsHandler(context);
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sb_refunds = new StringBuilder();
+
+            sb.append(textHandler.centeredString("Day Summary Report", lineWidth));
+            sb.append(textHandler.newLines(1));
+
+            report.setSpecialHeader(sb.toString());
+            sb.setLength(0);
+
+            sb.append(textHandler.centeredString(Global.formatToDisplayDate(currentDate, 0),
+                    lineWidth));
+            sb.append(textHandler.newLines(1));
+
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee",
+                    employee.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.newLines(1));
+
+            report.setHeader(sb.toString());
+            sb.setLength(0);
+
+            sb.append(textHandler.oneColumnLineWithLeftAlignedText(context.getString(R.string.receipt_pay_summary),
+                    lineWidth, 0));
+            sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(context.getString(R.string.receipt_refund_summmary),
+                    lineWidth, 0));
+            HashMap<String, String> paymentMap = paymentHandler
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(
+                            currentDate, 4), 0);
+            HashMap<String, String> refundMap = paymentHandler
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(
+                            currentDate, 4), 1);
+            List<String[]> payMethodsNames = payMethodHandler.getPayMethodsName();
+
+            double payGranTotal = 0.00;
+            double refundGranTotal = 0.00;
+            int size = payMethodsNames.size();
+            for (int i = 0; i < size; i++) {
+                if (paymentMap.containsKey(payMethodsNames.get(i)[0])) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            payMethodsNames.get(i)[1], Global.getCurrencyFormat(
+                                    paymentMap.get(payMethodsNames.get(i)[0])),
+                            lineWidth, 3));
+                    payGranTotal += Double.parseDouble(paymentMap.get(payMethodsNames.get(i)[0]));
+                } else
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            payMethodsNames.get(i)[1], Global.formatDoubleToCurrency(0.00),
+                            lineWidth, 3));
+                if (refundMap.containsKey(payMethodsNames.get(i)[0])) {
+                    sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            payMethodsNames.get(i)[1], Global.getCurrencyFormat(refundMap.get(
+                                    payMethodsNames.get(i)[0])), lineWidth, 3));
+                    refundGranTotal += Double.parseDouble(refundMap.get(payMethodsNames.get(i)[0]));
+                } else
+                    sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            payMethodsNames.get(i)[1], Global.formatDoubleToCurrency(0.00),
+                            lineWidth, 3));
+            }
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_total),
+                    Global.getCurrencyFormat(Double.toString(payGranTotal)),
+                    lineWidth, 2));
+            sb.append(textHandler.newLines(2));
+            sb_refunds.append(textHandler.newLines(1));
+            sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_total),
+                    Global.getCurrencyFormat(Double.toString(refundGranTotal)),
+                    lineWidth, 2));
+            sb_refunds.append(textHandler.newLines(2));
+
+            report.setPayments(sb.toString());
+            report.setRefunds(sb_refunds.toString());
+            sb.setLength(0);
+
+            sb.append(textHandler.centeredString("** End of report **", lineWidth));
+            sb.append(textHandler.newLines(1));
+            report.setSpecialFooter(sb.toString());
+
+            report.setEnablerWebsite(getEnablerWebsite(textHandler));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+
+        return report;
+    }
+
+    private String getEnablerWebsite(EMSPlainTextHelper emsPlainTextHelper) {
+        String eNablerWebsite = null;
+
+        if (myPref.isPrintWebSiteFooterEnabled()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(emsPlainTextHelper.centeredString(
+                    context.getString(R.string.enabler_website), lineWidth));
+            stringBuilder.append(emsPlainTextHelper.newLines(2));
+            eNablerWebsite = stringBuilder.toString();
+        }
+
+        return eNablerWebsite;
+    }
 }
