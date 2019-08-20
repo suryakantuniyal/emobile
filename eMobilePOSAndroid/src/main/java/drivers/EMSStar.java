@@ -886,7 +886,12 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getConsignmentPickup(myConsignment, encodedSig);
+            printReceipt(receipt);
+//            printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1004,18 +1009,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
-    }
-
-    public void print(String str, int size, PrinterFunctions.Alignment alignment) {
-        super.print(str, FORMAT, size, alignment);
-    }
-
-    public void print(String str) {
-        super.print(str);
-    }
-
-    public void print(String str, String FORMAT) {
-        super.print(str, FORMAT);
     }
 
     @Override
