@@ -20,6 +20,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -1254,6 +1255,7 @@ public class ReceiptBuilder {
 
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
 
         return receipt;
@@ -1395,6 +1397,69 @@ public class ReceiptBuilder {
 
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+
+        return receipt;
+    }
+
+    public Receipt getClockInOut(List<ClockInOut> timeClocks, String clerkId) {
+
+        Receipt receipt = new Receipt();
+
+        try {
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+            StringBuilder sb = new StringBuilder();
+
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(clerkId));
+            sb.append(textHandler.centeredString(context.getString(R.string.clockReceipt), lineWidth));
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                    DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_dd_h_mm_a),
+                    String.format("%s%s", context.getString(R.string.receipt_employee),
+                            clerk.getEmpName()), lineWidth, 0));
+            sb.append(textHandler.newDivider('-', lineWidth));
+            sb.append(textHandler.fourColumnLineWithLeftAlignedTextPercentWidth(
+                    context.getString(R.string.date), 25,
+                    context.getString(R.string.clock_in), 25,
+                    context.getString(R.string.clock_out), 25,
+                    context.getString(R.string.hours), 25,
+                    lineWidth, 0));
+
+            double hours;
+            double totalHours = 0;
+
+            for (ClockInOut clock : timeClocks) {
+                Date in = DateUtils.getDateStringAsDate(clock.getClockIn(),
+                        DateUtils.DATE_PATTERN);
+                Date out = null;
+                hours = 0;
+
+                if (clock.getClockOut() != null) {
+                    out = DateUtils.getDateStringAsDate(clock.getClockOut(),
+                            DateUtils.DATE_PATTERN);
+                    hours = DateUtils.computeDiffInHours(in, out);
+                    totalHours += hours;
+                }
+
+                sb.append(textHandler.fourColumnLineWithLeftAlignedTextPercentWidth(
+                        DateUtils.getDateAsString(in, DateUtils.DATE_MM_DD), 25,
+                        DateUtils.getDateAsString(in, DateUtils.DATE_h_mm_a), 25,
+                        DateUtils.getDateAsString(out, DateUtils.DATE_h_mm_a), 25,
+                        String.format(Locale.getDefault(), "%.2f", hours), 25,
+                        lineWidth, 0));
+            }
+
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString(String.format(Locale.getDefault(),
+                    "%s  %.2f", context.getString(R.string.total_hours_worked), totalHours), lineWidth));
+            sb.append(textHandler.newLines(3));
+
+            receipt.setHeader(sb.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
         }
 
         return receipt;
