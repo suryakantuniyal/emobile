@@ -350,6 +350,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             // todo: implement status
         } catch (StarIOPortException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -522,6 +523,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             port.writePort(commands, 0, commands.length);
         } catch (StarIOPortException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -586,6 +588,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             // todo: implement status
         } catch (StarIOPortException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -706,6 +709,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             port.writePort(commands, 0, commands.length);
         } catch (StarIOPortException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -841,6 +845,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
         return printed;
     }
@@ -861,28 +866,35 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
         return printed;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+        boolean printed = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
-            releasePrinter();
-        } catch (StarIOPortException e) {
-            return false;
 
-        } catch (InterruptedException e) {
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getConsignmentHistory(map, c, isPickup);
+            printReceipt(receipt);
+            printed = true;
+//            printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
-        return true;
+        return printed;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        boolean printed = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
@@ -890,14 +902,15 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
             Receipt receipt = receiptBuilder.getConsignmentPickup(myConsignment, encodedSig);
             printReceipt(receipt);
+            printed = true;
 //            printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            Crashlytics.logException(e);
         }
-        return true;
+        return printed;
     }
 
     @Override
@@ -933,6 +946,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public boolean printReport(String curDate) {
+        boolean printed = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
@@ -940,13 +954,15 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
             Report report = reportBuilder.getDaySummary(curDate);
             printReport(report);
+            printed = true;
 //            printReportReceipt(curDate, LINE_WIDTH);
 
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
-        return true;
+        return printed;
     }
 
     @Override
@@ -962,8 +978,8 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
             releasePrinter();
         } catch (Exception e) {
-            Crashlytics.logException(e);
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -981,6 +997,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -998,17 +1015,16 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
     @Override
     public void printFooter() {
-        super.printFooter(LINE_WIDTH);
     }
 
     @Override
     public void printHeader() {
-        super.printHeader(LINE_WIDTH);
     }
 
     @Override
