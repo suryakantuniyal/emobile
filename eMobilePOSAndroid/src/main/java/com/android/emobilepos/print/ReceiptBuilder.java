@@ -33,6 +33,8 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.models.realms.TermsNConditions;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
@@ -1454,6 +1456,43 @@ public class ReceiptBuilder {
             sb.append(textHandler.centeredString(String.format(Locale.getDefault(),
                     "%s  %.2f", context.getString(R.string.total_hours_worked), totalHours), lineWidth));
             sb.append(textHandler.newLines(3));
+
+            receipt.setHeader(sb.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+
+        return receipt;
+    }
+
+    public Receipt getExpense(ShiftExpense expense) {
+
+        Receipt receipt = new Receipt();
+
+        try {
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+            StringBuilder sb = new StringBuilder();
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+
+            sb.append(textHandler.centeredString(context.getString(R.string.shift_expense), lineWidth));
+            Shift shift = ShiftDAO.getShift(expense.getShiftId());
+            Clerk clerk = ClerkDAO.getByEmpId(shift.getClerkId());
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.sales_clerk), clerk == null ?
+                    shift.getAssigneeName() : clerk.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_employee), employee.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.date), DateUtils.getDateAsString(expense.getCreationDate()), lineWidth, 0));
+
+            sb.append(textHandler.newLines(1));
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(expense.getProductName(),
+                    Global.getCurrencyFormat(expense.getCashAmount()), lineWidth, 3));
+            sb.append(textHandler.centeredString(context.getString(R.string.receipt_description), lineWidth));
+            sb.append(textHandler.oneColumnLineWithLeftAlignedText(expense.getProductDescription(), lineWidth, 0));
+            sb.append(textHandler.newLines(4));
 
             receipt.setHeader(sb.toString());
 

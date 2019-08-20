@@ -984,7 +984,12 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printExpenseReceipt(LINE_WIDTH, expense);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getExpense(expense);
+            printReceipt(receipt);
+//            printExpenseReceipt(LINE_WIDTH, expense);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
