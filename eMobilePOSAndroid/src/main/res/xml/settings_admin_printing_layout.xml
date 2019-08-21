@@ -63,7 +63,10 @@
             android:key="pref_star_info"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_star_info" />
-
+        <Preference
+            android:key="pref_epson_setup"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_epson_model" />
         <Preference
             android:key="pref_snbc_setup"
             android:layout="@layout/settings_custom_layout"

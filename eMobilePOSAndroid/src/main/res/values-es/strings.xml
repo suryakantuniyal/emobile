@@ -947,6 +947,7 @@
     <string name="config_enable_printing">"Habilitar impresión"</string>
     <string name="config_printek_info">"Printek Info"</string>
     <string name="config_star_info">"Star Info"</string>
+    <string name="config_epson_model">"Configuración Epson"</string>
     <string name="config_snbc_setup">"Configuración SNBC"</string>
     <string name="config_set_printing_preferences">"Establecer preferencias de impresión"</string>
     <string name="config_automatic_printing">"Impresión automática"</string>

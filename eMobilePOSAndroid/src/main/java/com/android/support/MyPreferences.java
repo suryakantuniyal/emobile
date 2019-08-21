@@ -191,6 +191,7 @@ public class MyPreferences {
     private final String rsa_pub_key = "rsa_pub_key";
     private final String aes_key = "aes_key";
     private final String aes_iv = "aes_iv";
+    private final String epsonModel = "Epson_Model";
     public Context context;
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
@@ -886,6 +887,14 @@ public class MyPreferences {
         prefEditor.putInt(printer_type, -1);
         prefEditor.putInt(swiper_type, -1);
         prefEditor.commit();
+    }
+
+    public void setEpsonModel(int value) {
+        prefEditor.putInt(epsonModel, value);
+        prefEditor.commit();
+    }
+    public int getEpsonModel() {
+        return prefs.getInt(epsonModel, 0);
     }
 
     /*

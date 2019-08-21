@@ -285,6 +285,7 @@ public class Global extends MultiDexApplication {
     public static List<OrderProduct> cons_issue_products = new ArrayList<OrderProduct>();
     public static Order cons_issue_order;
     public static HashMap<String, String> cons_issue_qtyCounter = new HashMap<String, String>();
+    public static ArrayList<HashMap<String, String>> epson_device_list = new ArrayList<HashMap<String, String>>();
     public static List<OrderProduct> cons_return_products = new ArrayList<OrderProduct>();
     public static Order cons_return_order;
     public static HashMap<String, String> cons_return_qtyCounter = new HashMap<String, String>();

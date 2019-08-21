@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.util.Log;
 
 import com.android.emobilepos.models.ClockInOut;
@@ -13,6 +12,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.print.ReceiptBuilder;
@@ -31,7 +31,6 @@ import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
 import com.epson.epos2.printer.ReceiveListener;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,10 +46,38 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private EMSDeviceDriver thisInstance;
     private Context activity;
     private Boolean isPOSPrinter;
-
     private FilterOption mFilterOption = null;
-    private ArrayList<HashMap<String, String>> mPrinterList = null;
 
+
+    public boolean FindPrinter(Context activity){
+        mFilterOption = new FilterOption();
+        mFilterOption.setPortType(Discovery.PORTTYPE_USB);
+        mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
+        mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
+
+        try {
+            Discovery.start(activity, mFilterOption, mDiscoveryListener);
+            return true;
+        } catch (Epos2Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private DiscoveryListener mDiscoveryListener = new DiscoveryListener() {
+        @Override
+        public void onDiscovery(final DeviceInfo deviceInfo) {
+            HashMap<String, String> item = new HashMap<String, String>();
+            item.put("PrinterName", deviceInfo.getDeviceName());
+            item.put("Target", deviceInfo.getTarget());
+            Global.epson_device_list.add(item);
+//            if (!initPrinter())
+//                Log.e("EMSEpson", "***Could not Initialize to Epson Printer***");
+//            else if (!connectPrinter(deviceInfo.getTarget())) {
+//                Log.e("EMSEpson", "***Could not Connect to Epson Printer***");
+//            }
+        }
+    };
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -60,15 +87,13 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.edm = edm;
         thisInstance = this;
         LINE_WIDTH = paperSize;
-
+        //initialize printer here instead od setupPrinter()
         setupPrinter();
     }
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
-        boolean didConnect = false;
-
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.isPOSPrinter = isPOSPrinter;
@@ -76,34 +101,31 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         thisInstance = this;
         LINE_WIDTH = paperSize;
 
-        setupPrinter();
-
-        return didConnect;
+        //initialize printer here instead od setupPrinter()
+        return setupPrinter();
     }
 
-    private void setupPrinter() {
+    private boolean setupPrinter() {
         //FOR NOW, ONLY USB CONNECTIONS ARE PERMITED TO EPSON PRINTERS
-        mFilterOption = new FilterOption();
-        mFilterOption.setPortType(Discovery.PORTTYPE_USB);
-        mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
-        mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
+        if(mFilterOption == null) {
+            mFilterOption = new FilterOption();
+            mFilterOption.setPortType(Discovery.PORTTYPE_USB);
+            mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
+            mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
+        }
         try {
             Discovery.start(activity, mFilterOption, mDiscoveryListener);
+            return true;
         } catch (Exception e) {
             Log.e("EMSEpson", e.toString());
         }
+//        if (!initPrinter())
+//            Log.e("EMSEpson", "***Could not Initialize to Epson Printer***");
+//        else if (!connectPrinter(deviceInfo.getTarget())) {
+//            Log.e("EMSEpson", "***Could not Connect to Epson Printer***");
+//        }
+        return false;
     }
-
-    private DiscoveryListener mDiscoveryListener = new DiscoveryListener() {
-        @Override
-        public void onDiscovery(final DeviceInfo deviceInfo) {
-            if (!initPrinter())
-                Log.e("EMSEpson", "***Could not Initialize to Epson Printer***");
-            else if (!connectPrinter(deviceInfo.getTarget())) {
-                Log.e("EMSEpson", "***Could not Connect to Epson Printer***");
-            }
-        }
-    };
 
     private boolean connectPrinter(String target) {
         boolean isBeginTransaction = false;
@@ -166,7 +188,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private boolean initPrinter() {
         try {
             //MUST EDIT THIS LINE TO SUPPORT OTHER PRINTERS
-            epsonPrinter = new Printer(12, 0, activity);
+            epsonPrinter = new Printer(myPref.getEpsonModel(), 0 , activity);
             epsonPrinter.setReceiveEventListener(this);
         } catch (Exception e) {
             Log.e("EMSEpson", e.toString());
@@ -272,6 +294,8 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 logoData = null;
 
                 epsonPrinter.addCut(Printer.CUT_FEED);
+
+                epsonPrinter.sendData(Printer.PARAM_DEFAULT);
             } catch (Epos2Exception e) {
                 e.printStackTrace();
             }

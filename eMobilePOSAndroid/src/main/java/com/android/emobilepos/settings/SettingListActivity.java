@@ -44,6 +44,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,6 +74,7 @@ import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
+import com.epson.epos2.printer.Printer;
 import com.microsoft.azure.storage.StorageException;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
@@ -93,6 +96,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import drivers.EMSDeviceDriver;
+import drivers.EMSEpson;
+import drivers.epson.SpnModelsItem;
 import io.realm.Realm;
 import main.EMSDeviceManager;
 
@@ -361,6 +367,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         prefManager.findPreference("pref_multiple_devices_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_epson_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_bixolon_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_configure_ingenico_settings").setOnPreferenceClickListener(this);
@@ -637,6 +644,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_star_info:
                     promptStarPrinter();
+                    break;
+                case R.string.config_epson_model:
+                    promptEpsonSetup();
                     break;
                 case R.string.config_snbc_setup:
                     promptSNBCSetup();
@@ -1172,6 +1182,80 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 }
             });
             dlog.show();
+        }
+
+        private void promptEpsonSetup(){
+            EMSEpson epson = new EMSEpson();
+            epson.FindPrinter(getActivity());
+            SimpleAdapter mPrinterListAdapter = null;
+
+            promptDialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+            promptDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            promptDialog.setCancelable(true);
+            promptDialog.setContentView(R.layout.config_epson_setup_layout);
+
+            final Button btnEpsonConnect = promptDialog.findViewById(R.id.btnConnectEpson);
+            final Spinner epsonDevices = promptDialog.findViewById(R.id.spinnerEpsonDevices);
+            final Spinner printerModels = promptDialog.findViewById(R.id.spinnerEpsonModels);
+
+            mPrinterListAdapter = new SimpleAdapter(getActivity(),
+                    Global.epson_device_list,
+                    R.layout.config_epson_setup_device_selection_item,
+                    new String[] { "PrinterName", "Target" },
+                    new int[] { R.id.PrinterName, R.id.Target });
+            epsonDevices.setAdapter(mPrinterListAdapter);
+
+            ArrayAdapter<SpnModelsItem> seriesAdapter = new ArrayAdapter<SpnModelsItem>(getActivity(), android.R.layout.simple_spinner_item);
+            seriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            seriesAdapter.add(new SpnModelsItem("TM-m10", Printer.TM_M10));
+            seriesAdapter.add(new SpnModelsItem("TM-m30", Printer.TM_M30));
+            seriesAdapter.add(new SpnModelsItem("TM-P20", Printer.TM_P20));
+            seriesAdapter.add(new SpnModelsItem("TM-P60", Printer.TM_P60));
+            seriesAdapter.add(new SpnModelsItem("TM-P60II", Printer.TM_P60II));
+            seriesAdapter.add(new SpnModelsItem("TM-P80", Printer.TM_P80));
+            seriesAdapter.add(new SpnModelsItem("TM-T20", Printer.TM_T20));
+            seriesAdapter.add(new SpnModelsItem("TM-T60", Printer.TM_T60));
+            seriesAdapter.add(new SpnModelsItem("TM-T70", Printer.TM_T70));
+            seriesAdapter.add(new SpnModelsItem("TM-T81", Printer.TM_T81));
+            seriesAdapter.add(new SpnModelsItem("TM-T82", Printer.TM_T82));
+            seriesAdapter.add(new SpnModelsItem("TM-T83", Printer.TM_T83));
+            seriesAdapter.add(new SpnModelsItem("TM-T83III", Printer.TM_T83III));
+            seriesAdapter.add(new SpnModelsItem("TM-T88", Printer.TM_T88));
+            seriesAdapter.add(new SpnModelsItem("TM-T90", Printer.TM_T90));
+            seriesAdapter.add(new SpnModelsItem("TM-T90KP", Printer.TM_T90KP));
+            seriesAdapter.add(new SpnModelsItem("TM-T100", Printer.TM_T100));
+            seriesAdapter.add(new SpnModelsItem("TM-U220", Printer.TM_U220));
+            seriesAdapter.add(new SpnModelsItem("TM-U330", Printer.TM_U330));
+            seriesAdapter.add(new SpnModelsItem("TM-L90", Printer.TM_L90));
+            seriesAdapter.add(new SpnModelsItem("TM-H6000", Printer.TM_H6000));
+            printerModels.setAdapter(seriesAdapter);
+
+            btnEpsonConnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    myPref.setPrinterType(Global.EPSON);
+                    myPref.setEpsonModel(((SpnModelsItem)printerModels.getSelectedItem()).getModelConstant());
+//                    myPref.setEpsonTarget(tvTarget.getText.toString());
+                    EMSDeviceManager edm = new EMSDeviceManager();
+                    Global.mainPrinterManager = edm.getManager();
+                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
+                    List<Device> list = new ArrayList<>();
+                    Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.EPSON));
+                    if (device == null) {
+                        device = new Device();
+                    }
+                    device.setId(String.format("USB:%s", Global.EPSON));
+                    device.setName(Global.getPeripheralName(Global.EPSON));
+                    device.setType(String.valueOf(Global.EPSON));
+                    device.setRemoteDevice(false);
+                    device.setEmsDeviceManager(Global.mainPrinterManager);
+                    list.add(device);
+                    DeviceTableDAO.insert(list);
+                    Global.printerDevices.add(device);
+                    promptDialog.dismiss();
+                }
+            });
+            promptDialog.show();
         }
 
         private void ipAddressFilter(EditText et) {
