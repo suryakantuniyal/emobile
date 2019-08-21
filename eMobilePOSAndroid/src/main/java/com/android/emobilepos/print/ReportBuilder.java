@@ -36,6 +36,9 @@ import static com.android.support.DateUtils.getEpochTime;
 
 /**
  * Created by Luis Camayd on 8/19/2019.
+ * All text generation logic were copied from EMSDeviceDriver class. This builder allows to
+ * generate all the text to store it in an object that can be manipulated before being sent
+ * to the printer.
  */
 public class ReportBuilder {
     private Context context;
@@ -856,11 +859,9 @@ public class ReportBuilder {
         String eNablerWebsite = null;
 
         if (myPref.isPrintWebSiteFooterEnabled()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(emsPlainTextHelper.centeredString(
-                    context.getString(R.string.enabler_website), lineWidth));
-            stringBuilder.append(emsPlainTextHelper.newLines(2));
-            eNablerWebsite = stringBuilder.toString();
+            eNablerWebsite = emsPlainTextHelper.centeredString(
+                    context.getString(R.string.enabler_website), lineWidth) +
+                    emsPlainTextHelper.newLines(2);
         }
 
         return eNablerWebsite;

@@ -63,6 +63,9 @@ import util.StringUtil;
 
 /**
  * Created by Luis Camayd on 8/2/2019.
+ * All text generation logic were copied from EMSDeviceDriver class. This builder allows to
+ * generate all the text to store it in an object that can be manipulated before being sent
+ * to the printer.
  */
 public class ReceiptBuilder {
     private Context context;
@@ -1959,11 +1962,9 @@ public class ReceiptBuilder {
         String eNablerWebsite = null;
 
         if (myPref.isPrintWebSiteFooterEnabled()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(emsPlainTextHelper.centeredString(
-                    context.getString(R.string.enabler_website), lineWidth));
-            stringBuilder.append(emsPlainTextHelper.newLines(2));
-            eNablerWebsite = stringBuilder.toString();
+            eNablerWebsite = emsPlainTextHelper.centeredString(
+                    context.getString(R.string.enabler_website), lineWidth) +
+                    emsPlainTextHelper.newLines(2);
         }
 
         return eNablerWebsite;
