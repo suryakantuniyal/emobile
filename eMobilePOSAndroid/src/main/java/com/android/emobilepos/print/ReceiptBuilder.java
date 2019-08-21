@@ -15,6 +15,8 @@ import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.dao.TermsNConditionsDAO;
 import com.android.database.CustomersHandler;
+import com.android.database.InvProdHandler;
+import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
@@ -1647,6 +1649,110 @@ public class ReceiptBuilder {
                 receipt.setSignature(sb.toString());
                 sb.setLength(0);
             }
+
+            receipt.setTermsAndConditions(textHandler.oneColumnLineWithLeftAlignedText(
+                    getTermsAndConditions(textHandler), lineWidth + 2, 0));
+
+            receipt.setEnablerWebsite(getEnablerWebsite(textHandler));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+
+        return receipt;
+    }
+
+    public Receipt getOpenInvoice(String invId) {
+
+        Receipt receipt = new Receipt();
+
+        try {
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+            StringBuilder sb = new StringBuilder();
+            String[] rightInfo;
+            List<String[]> productInfo;
+            InvoicesHandler invHandler = new InvoicesHandler(context);
+            rightInfo = invHandler.getSpecificInvoice(invId);
+            InvProdHandler invProdHandler = new InvProdHandler(context);
+            productInfo = invProdHandler.getInvProd(invId);
+
+            receipt.setMerchantLogo(getMerchantLogo());
+
+            fillMerchantHeaderAndFooter(receipt, textHandler);
+
+            sb.append(textHandler.centeredString("Open Invoice Summary", lineWidth));
+            sb.append(textHandler.newLines(1));
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_invoice), rightInfo[1],
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_invoice_ref),
+                    rightInfo[2], lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_customer), rightInfo[0],
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_PO), rightInfo[10],
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_terms), rightInfo[9],
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_created), rightInfo[5],
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_ship), rightInfo[7],
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_due), rightInfo[6],
+                    lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_paid), rightInfo[8],
+                    lineWidth, 0));
+
+            receipt.setHeader(sb.toString());
+            sb.setLength(0);
+
+            int size = productInfo.size();
+            for (int i = 0; i < size; i++) {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                        productInfo.get(i)[2] + "x " + productInfo.get(i)[0],
+                        lineWidth, 1));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_price),
+                        Global.getCurrencyFormat(productInfo.get(i)[3]),
+                        lineWidth, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_total),
+                        Global.getCurrencyFormat(productInfo.get(i)[5]),
+                        lineWidth, 3));
+
+                if (printPref.contains(MyPreferences.print_descriptions)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_description), "",
+                            lineWidth, 3));
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                            productInfo.get(i)[1], lineWidth, 5));
+                }
+                sb.append(textHandler.newLines(1));
+
+                receipt.getItems().add((sb.toString()));
+                sb.setLength(0);
+            }
+
+            if (size > 0) {
+                sb.append(textHandler.lines(lineWidth));
+                sb.append(textHandler.newLines(2));
+                receipt.setSeparator(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(textHandler.lines(lineWidth));
+                sb.append(textHandler.newLines(2));
+                receipt.setTotals(sb.toString());
+                sb.setLength(0);
+            }
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_invoice_total),
+                    Global.getCurrencyFormat(rightInfo[11]), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_amount_collected),
+                    Global.getCurrencyFormat(rightInfo[13]), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_balance_due),
+                    Global.getCurrencyFormat(rightInfo[12]), lineWidth, 0));
+            sb.append(textHandler.newLines(1));
+
+            receipt.setTotalItems(sb.toString());
+            sb.setLength(0);
 
             receipt.setTermsAndConditions(textHandler.oneColumnLineWithLeftAlignedText(
                     getTermsAndConditions(textHandler), lineWidth + 2, 0));

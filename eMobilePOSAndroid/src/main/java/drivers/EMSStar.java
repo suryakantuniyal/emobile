@@ -915,16 +915,23 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public boolean printOpenInvoices(String invID) {
+        boolean printed = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
-            printOpenInvoicesReceipt(invID, LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getOpenInvoice(invID);
+            printReceipt(receipt);
+            printed = true;
+//            printOpenInvoicesReceipt(invID, LINE_WIDTH);
+
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            Crashlytics.logException(e);
         }
-        return true;
+        return printed;
     }
 
     @Override
