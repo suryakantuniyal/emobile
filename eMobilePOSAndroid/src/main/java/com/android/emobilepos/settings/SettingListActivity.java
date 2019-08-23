@@ -92,6 +92,7 @@ import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -1204,6 +1205,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     new String[] { "PrinterName", "Target" },
                     new int[] { R.id.PrinterName, R.id.Target });
             epsonDevices.setAdapter(mPrinterListAdapter);
+            epsonDevices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    HashMap<String, String> hashmap = Global.epson_device_list.get(position);
+                    String target = hashmap.get("Target");
+                    myPref.setEpsonTarget(target);
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            });
+
 
             ArrayAdapter<SpnModelsItem> seriesAdapter = new ArrayAdapter<SpnModelsItem>(getActivity(), android.R.layout.simple_spinner_item);
             seriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1235,23 +1247,26 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 public void onClick(View v) {
                     myPref.setPrinterType(Global.EPSON);
                     myPref.setEpsonModel(((SpnModelsItem)printerModels.getSelectedItem()).getModelConstant());
-//                    myPref.setEpsonTarget(tvTarget.getText.toString());
-                    EMSDeviceManager edm = new EMSDeviceManager();
-                    Global.mainPrinterManager = edm.getManager();
-                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
-                    List<Device> list = new ArrayList<>();
-                    Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.EPSON));
-                    if (device == null) {
-                        device = new Device();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                        Global.mainPrinterManager.loadDrivers(getActivity(), Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
+                    }else {
+                        EMSDeviceManager edm = new EMSDeviceManager();
+                        Global.mainPrinterManager = edm.getManager();
+                        Global.mainPrinterManager.loadDrivers(getActivity(), Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
+                        List<Device> list = new ArrayList<>();
+                        Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.EPSON));
+                        if (device == null) {
+                            device = new Device();
+                        }
+                        device.setId(String.format("USB:%s", Global.EPSON));
+                        device.setName(Global.getPeripheralName(Global.EPSON));
+                        device.setType(String.valueOf(Global.EPSON));
+                        device.setRemoteDevice(false);
+                        device.setEmsDeviceManager(Global.mainPrinterManager);
+                        list.add(device);
+                        DeviceTableDAO.insert(list);
+                        Global.printerDevices.add(device);
                     }
-                    device.setId(String.format("USB:%s", Global.EPSON));
-                    device.setName(Global.getPeripheralName(Global.EPSON));
-                    device.setType(String.valueOf(Global.EPSON));
-                    device.setRemoteDevice(false);
-                    device.setEmsDeviceManager(Global.mainPrinterManager);
-                    list.add(device);
-                    DeviceTableDAO.insert(list);
-                    Global.printerDevices.add(device);
                     promptDialog.dismiss();
                 }
             });

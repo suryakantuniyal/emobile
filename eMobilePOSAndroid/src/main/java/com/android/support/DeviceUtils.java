@@ -277,7 +277,8 @@ public class DeviceUtils {
             }
         }else if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
             connectHPEngageOnePrimePrinter(activity,usbDevice);
-        }else if (myPref.isEpson() && usbDevice instanceof EMSEpson){
+        }
+        if (myPref.isEpson() && usbDevice instanceof EMSEpson){
             connectEpsonPrinter(activity);
         }
         ArrayList<Device> connected = new ArrayList(Global.printerDevices);
@@ -579,7 +580,9 @@ public class DeviceUtils {
 
     public static void connectEpsonPrinter(Context context) {
         try {
-//            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.loadDrivers(context, Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
+            }else{
                 MyPreferences preferences = new MyPreferences(context);
                 preferences.setPrinterType(Global.EPSON);
                 preferences.posPrinter(false, true);
@@ -593,6 +596,7 @@ public class DeviceUtils {
                     device = new Device();
                 }
                 device.setTextAreaSize(58);
+                device.setEmsDeviceManager(Global.mainPrinterManager);
                 device.setName("Epson");
                 device.setId("EPSON");
                 device.setType(String.valueOf(Global.EPSON));
@@ -600,7 +604,7 @@ public class DeviceUtils {
                 devices.add(device);
                 DeviceTableDAO.insert(devices);
                 Global.printerDevices.add(device);
-//            }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

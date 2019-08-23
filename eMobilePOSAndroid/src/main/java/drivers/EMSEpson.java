@@ -12,7 +12,6 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
-import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.print.ReceiptBuilder;
@@ -30,26 +29,29 @@ import com.epson.epos2.discovery.FilterOption;
 import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
 import com.epson.epos2.printer.ReceiveListener;
+import com.epson.eposprint.Print;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import drivers.epson.ShowMsg;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
 
 public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, ReceiveListener {
 
-    private int LINE_WIDTH = 30;
+    private int LINE_WIDTH = 38;
     private EMSDeviceManager edm;
     private EMSDeviceDriver thisInstance;
     private Context activity;
     private Boolean isPOSPrinter;
+    boolean isEpsonConnected;
     private FilterOption mFilterOption = null;
+    PrinterStatusInfo statusInfo;
 
 
-    public boolean FindPrinter(Context activity){
+    public boolean FindPrinter(Context activity) {
         mFilterOption = new FilterOption();
         mFilterOption.setPortType(Discovery.PORTTYPE_USB);
         mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
@@ -86,8 +88,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.isPOSPrinter = isPOSPrinter;
         this.edm = edm;
         thisInstance = this;
-        LINE_WIDTH = paperSize;
-        //initialize printer here instead od setupPrinter()
+
         setupPrinter();
     }
 
@@ -99,65 +100,80 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.isPOSPrinter = isPOSPrinter;
         this.edm = edm;
         thisInstance = this;
-        LINE_WIDTH = paperSize;
 
-        //initialize printer here instead od setupPrinter()
         return setupPrinter();
     }
 
     private boolean setupPrinter() {
         //FOR NOW, ONLY USB CONNECTIONS ARE PERMITED TO EPSON PRINTERS
-        if(mFilterOption == null) {
-            mFilterOption = new FilterOption();
-            mFilterOption.setPortType(Discovery.PORTTYPE_USB);
-            mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
-            mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
-        }
-        try {
-            Discovery.start(activity, mFilterOption, mDiscoveryListener);
-            return true;
-        } catch (Exception e) {
-            Log.e("EMSEpson", e.toString());
-        }
-//        if (!initPrinter())
-//            Log.e("EMSEpson", "***Could not Initialize to Epson Printer***");
-//        else if (!connectPrinter(deviceInfo.getTarget())) {
-//            Log.e("EMSEpson", "***Could not Connect to Epson Printer***");
+//        if(mFilterOption == null) {
+//            mFilterOption = new FilterOption();
+//            mFilterOption.setPortType(Discovery.PORTTYPE_USB);
+//            mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
+//            mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
 //        }
-        return false;
+//        try {
+//            Discovery.start(activity, mFilterOption, mDiscoveryListener);
+//            return true;
+//        } catch (Exception e) {
+//            Log.e("EMSEpson", e.toString());
+//        }
+        if (edm.getCurrentDevice() == null || (statusInfo != null && statusInfo.getConnection() == Printer.FALSE)) {
+            if (!initPrinter()) {
+                Log.e("EMSEpson", "***Could not Initialize to Epson Printer***");
+                isEpsonConnected = false;
+                return false;
+            } else if (!connectPrinter()) {
+                Log.e("EMSEpson", "***Could not Connect to Epson Printer***");
+                isEpsonConnected = false;
+                return false;
+            }
+            isEpsonConnected = true;
+        }
+
+        if(isEpsonConnected){
+            statusInfo = epsonPrinter.getStatus();
+        }
+        return true;
+
     }
 
-    private boolean connectPrinter(String target) {
+    private boolean connectPrinter() {
         boolean isBeginTransaction = false;
 
         if (epsonPrinter == null) {
             return false;
         }
 
-        try {
-            epsonPrinter.connect(target, Printer.PARAM_DEFAULT);
-        } catch (Exception e) {
-            Log.e("EMSEpson", e.toString());
-            return false;
-        }
-
-        try {
-            epsonPrinter.beginTransaction();
-            isBeginTransaction = true;
-        } catch (Exception e) {
-            Log.e("EMSEpson", e.toString());
-        }
-
-        if (isBeginTransaction == false) {
+        if (!myPref.getEpsonTarget().isEmpty()) {
             try {
-                epsonPrinter.disconnect();
-            } catch (Epos2Exception e) {
-                // Do nothing
+                epsonPrinter.connect(myPref.getEpsonTarget(), Printer.PARAM_DEFAULT);
+                edm.driverDidConnectToDevice(thisInstance, false, activity);
+            } catch (Exception e) {
+                edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
+                ShowMsg.showException(e, "connect", activity);
                 return false;
             }
+
+            try {
+                epsonPrinter.beginTransaction();
+                isBeginTransaction = true;
+            } catch (Exception e) {
+                ShowMsg.showException(e, "beginTransaction", activity);
+            }
+
+            if (isBeginTransaction == false) {
+                try {
+                    epsonPrinter.disconnect();
+                } catch (Epos2Exception e) {
+                    // Do nothing
+                    return false;
+                }
+            }
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     private void disconnectPrinter() {
@@ -187,11 +203,11 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     private boolean initPrinter() {
         try {
-            //MUST EDIT THIS LINE TO SUPPORT OTHER PRINTERS
-            epsonPrinter = new Printer(myPref.getEpsonModel(), 0 , activity);
+            epsonPrinter = new Printer(myPref.getEpsonModel(), 0, activity);
             epsonPrinter.setReceiveEventListener(this);
         } catch (Exception e) {
             Log.e("EMSEpson", e.toString());
+            ShowMsg.showException(e, "Printer", activity);
             return false;
         }
 
@@ -199,6 +215,9 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     private void printReceipt(Receipt receipt) {
+        Receipt receip = new Receipt();
+        receip.setHeader("HELLO WORLD!!!");
+        printNormalReceipt(receip);
         if (!myPref.isRasterModePrint()) {
             printNormalReceipt(receipt);
         } else {
@@ -214,19 +233,17 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             final int barcodeHeight = 100;
 
             try {
-                epsonPrinter.addTextAlign(Printer.ALIGN_CENTER);
-
-                if (receipt.getMerchantLogo() != null)
-                    logoData = receipt.getMerchantLogo();
-                    epsonPrinter.addImage(logoData, 0, 0,
-                            logoData.getWidth(),
-                            logoData.getHeight(),
-                            Printer.COLOR_1,
-                            Printer.MODE_MONO,
-                            Printer.HALFTONE_DITHER,
-                            Printer.PARAM_DEFAULT,
-                            Printer.COMPRESS_AUTO);
-
+//                if (receipt.getMerchantLogo() != null) {
+//                    logoData = receipt.getMerchantLogo();
+//                    epsonPrinter.addImage(logoData, 0, 0,
+//                            logoData.getWidth(),
+//                            logoData.getHeight(),
+//                            Printer.COLOR_1,
+//                            Printer.MODE_MONO,
+//                            Printer.HALFTONE_DITHER,
+//                            Printer.PARAM_DEFAULT,
+//                            Printer.COMPRESS_AUTO);
+//                }
                 if (receipt.getMerchantHeader() != null)
                     textData.append(receipt.getMerchantHeader());
                 if (receipt.getSpecialHeader() != null)
@@ -262,18 +279,18 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 if (receipt.getRewardsDetails() != null)
                     textData.append(receipt.getRewardsDetails());
                 epsonPrinter.addText(textData.toString());
-                textData.delete(0,textData.length());
-
-                if (receipt.getSignatureImage() != null)
-                    logoData = receipt.getSignatureImage();
-                epsonPrinter.addImage(logoData, 0, 0,
-                        logoData.getWidth(),
-                        logoData.getHeight(),
-                        Printer.COLOR_1,
-                        Printer.MODE_MONO,
-                        Printer.HALFTONE_DITHER,
-                        Printer.PARAM_DEFAULT,
-                        Printer.COMPRESS_AUTO);
+                textData.delete(0, textData.length());
+//
+//                if (receipt.getSignatureImage() != null)
+//                    logoData = receipt.getSignatureImage();
+//                    epsonPrinter.addImage(logoData, 0, 0,
+//                        logoData.getWidth(),
+//                        logoData.getHeight(),
+//                        Printer.COLOR_1,
+//                        Printer.MODE_MONO,
+//                        Printer.HALFTONE_DITHER,
+//                        Printer.PARAM_DEFAULT,
+//                        Printer.COMPRESS_AUTO);
 
                 if (receipt.getSignature() != null)
                     textData.append(receipt.getSignature());
@@ -290,13 +307,13 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 if (receipt.getEnablerWebsite() != null)
                     textData.append(receipt.getEnablerWebsite());
                 epsonPrinter.addText(textData.toString());
-                textData.delete(0,textData.length());
-                logoData = null;
+                textData.delete(0, textData.length());
+//                logoData = null;
 
                 epsonPrinter.addCut(Printer.CUT_FEED);
 
                 epsonPrinter.sendData(Printer.PARAM_DEFAULT);
-            } catch (Epos2Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -611,12 +628,17 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void registerPrinter() {
-
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
+        edm.setCurrentDevice(null);
+    }
 
+    @Override
+    public void registerAll() {
+        this.registerPrinter();
     }
 
     @Override
