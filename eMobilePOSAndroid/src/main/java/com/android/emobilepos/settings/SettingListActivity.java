@@ -1422,15 +1422,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.MAGTEK, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
-                            } else if (strUpperDeviceName.contains("MIURA")) {
-                                myPref.setPrinterType(Global.MIURA);
-                                myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
-                                myPref.setPrinterName(strDeviceName);
-
-                                EMSDeviceManager edm = new EMSDeviceManager();
-                                Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MIURA, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
-
                             } else if (strUpperDeviceName.contains("STAR")) {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
@@ -1660,12 +1651,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 e.printStackTrace();
             }
 
-            if (myPref.isAsura(true, false)) {
-                myPref.setPrinterType(Global.ASURA);
-                Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ASURA, EMSDeviceManager.PrinterInterfase.USB);
-
-            } else if (myPref.isPAT215()) {
+            if (myPref.isPAT215()) {
                 edm = new EMSDeviceManager();
                 myPref.setPrinterType(Global.PAT215);
                 Global.embededMSR = edm.getManager();

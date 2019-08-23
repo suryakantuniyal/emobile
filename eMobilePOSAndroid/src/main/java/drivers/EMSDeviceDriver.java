@@ -22,7 +22,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
@@ -65,8 +64,6 @@ import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
 import com.elo.device.peripherals.Printer;
-import com.miurasystems.miuralibrary.api.executor.MiuraManager;
-import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.pax.poslink.peripheries.POSLinkPrinter;
 import com.pax.poslink.peripheries.ProcessResult;
@@ -125,6 +122,7 @@ import jpos.POSPrinter;
 import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
+import util.BitmapUtils;
 import util.StringUtil;
 import wangpos.sdk4.libbasebinder.Core;
 
@@ -226,7 +224,7 @@ public class EMSDeviceDriver {
     }
 
     public void setPaperWidth(int lineWidth) {
-        if (this instanceof EMSBluetoothStarPrinter) {
+        if (this instanceof EMSStar) {
             switch (lineWidth) {
                 case 32:
                     PAPER_WIDTH = 408;
@@ -333,7 +331,7 @@ public class EMSDeviceDriver {
     }
 
     public void releasePrinter() {
-        if (this instanceof EMSBluetoothStarPrinter) {
+        if (this instanceof EMSStar) {
             if (port != null) {
                 try {
                     StarIOPort.releasePort(port);
@@ -384,30 +382,9 @@ public class EMSDeviceDriver {
                 eloPrinterRefresh.print(str);
             } else
                 eloPrinterApi.print(str);
-        } else if (this instanceof EMSMiura) {
-            String[] split = str.split(("\n"));
-            for (String line : split) {
-                String format = String.format("\u0002reset\u0003%s\u0002regular\u0003", line);
-                MiuraManager.getInstance().spoolText(format, new MiuraDefaultListener() {
-                    @Override
-                    public void onSuccess() {
-                    }
-
-                    @Override
-                    public void onError() {
-                        Toast.makeText(activity, "Miura printing error.", Toast.LENGTH_LONG).show();
-                    }
-                });
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
         } else if (this instanceof EMSmePOS) {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(str, MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
-        } else if (this instanceof EMSBluetoothStarPrinter) {
+        } else if (this instanceof EMSStar) {
             try {
                 printStar(str, 0, PrinterFunctions.Alignment.Left);
 //                port.writePort(str.getBytes(), 0, str.length());
@@ -502,11 +479,9 @@ public class EMSDeviceDriver {
             } else {
                 eloPrinterApi.print(new String(byteArray));
             }
-        } else if (this instanceof EMSMiura) {
-            print(new String(byteArray));
         } else if (this instanceof EMSmePOS) {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(new String(byteArray), MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
-        } else if (this instanceof EMSBluetoothStarPrinter) {
+        } else if (this instanceof EMSStar) {
             try {
                 printStar(new String(byteArray), 0, PrinterFunctions.Alignment.Left);
             } catch (StarIOPortException e) {
@@ -754,7 +729,7 @@ public class EMSDeviceDriver {
     }
 
     private void apt50RasterPrint(String stringToPrint) {
-        Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
+        Bitmap bitmapFromString = BitmapUtils.createBitmapFromText(
                 stringToPrint, 20, 450, typeface);
         if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
             try {
@@ -777,7 +752,7 @@ public class EMSDeviceDriver {
     }
 
     private void posLinkRasterPrint(String stringToPrint) {
-        Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
+        Bitmap bitmapFromString = BitmapUtils.createBitmapFromText(
                 stringToPrint, 26, 450, typeface);
         if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
             POSLinkPrinter.getInstance(activity).print(bitmapFromString,
@@ -844,7 +819,7 @@ public class EMSDeviceDriver {
             port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
         } else {
             if (myPref.isRasterModePrint()) {
-                Bitmap bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(str, 20
+                Bitmap bitmapFromText = BitmapUtils.createBitmapFromText(str, 20
                         , PAPER_WIDTH, typeface);
                 ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
                 builder.beginDocument();
@@ -891,11 +866,9 @@ public class EMSDeviceDriver {
                 eloPrinterRefresh.print(str);
             } else
                 eloPrinterApi.print(str);
-        } else if (this instanceof EMSMiura) {
-            print(str);
         } else if (this instanceof EMSmePOS) {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(str, MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
-        } else if (this instanceof EMSBluetoothStarPrinter) {
+        } else if (this instanceof EMSStar) {
             try {
                 printStar(str, size, alignment);
             } catch (StarIOPortException e) {
@@ -1046,7 +1019,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    public void printReceiptPreview(Bitmap bitmap, int lineWidth) throws JAException, StarIOPortException {
+    public void printReceiptPreview(Bitmap bitmap, int lineWidth) {
         startReceipt();
         setPaperWidth(lineWidth);
         printPref = myPref.getPrintingPreferences();
@@ -1054,7 +1027,7 @@ public class EMSDeviceDriver {
         cutPaper();
     }
 
-    public void printReceiptPreview(SplittedOrder splitedOrder, int lineWidth) throws JAException, StarIOPortException {
+    public void printReceiptPreview(SplittedOrder splitedOrder, int lineWidth) {
         AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         startReceipt();
         setPaperWidth(lineWidth);
@@ -1358,7 +1331,7 @@ public class EMSDeviceDriver {
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
 
-                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    if (this instanceof EMSStar && !isPOSPrinter && size > SIZE_LIMIT) {
                         // wait to fix printing incomplete issues on SM-T300i models.
                         Thread.sleep(SLEEP_TIME);
                     }
@@ -1388,7 +1361,7 @@ public class EMSDeviceDriver {
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
 
-                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    if (this instanceof EMSStar && !isPOSPrinter && size > SIZE_LIMIT) {
                         // wait to fix printing incomplete issues on SM-T300i models.
                         Thread.sleep(SLEEP_TIME);
                     }
@@ -1572,9 +1545,6 @@ public class EMSDeviceDriver {
             printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (JAException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
         } catch (Exception e) {
             e.printStackTrace();
             Crashlytics.logException(e);
@@ -1675,20 +1645,6 @@ public class EMSDeviceDriver {
             // *****************************************************************************************
             // clear buffer in page mode
             pos_sdk.pageModeClearBuffer();
-        } else if (this instanceof EMSMiura) {
-            print(textHandler.newLines(4));
-            MiuraManager.getInstance().setConnectionDelegate((EMSMiura) this);
-            MiuraManager.getInstance().spoolPrint(new MiuraDefaultListener() {
-                @Override
-                public void onSuccess() {
-                    Log.d("Print Receipt", "Printed");
-                }
-
-                @Override
-                public void onError() {
-                    Log.d("Print Receipt", "Fail");
-                }
-            });
         } else if (isPOSPrinter) {
             ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
             builder.beginDocument();
@@ -1946,7 +1902,7 @@ public class EMSDeviceDriver {
      */
 
 
-    protected void printImage(int type) throws JAException {
+    protected void printImage(int type) {
         String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets";
 
         if (PRINT_TO_LOG) {
@@ -1993,7 +1949,7 @@ public class EMSDeviceDriver {
         }
 
         if (myBitmap != null) {
-            if (this instanceof EMSBluetoothStarPrinter) {
+            if (this instanceof EMSStar) {
                 byte[] data;
                 StarIoExt.Emulation emu = emulation;
                 if (!isPOSPrinter) {
@@ -2166,7 +2122,7 @@ public class EMSDeviceDriver {
         }
         if (bitmap != null) {
 
-            if (this instanceof EMSBluetoothStarPrinter) {
+            if (this instanceof EMSStar) {
                 PrinterSetting setting = new PrinterSetting(activity);
                 StarIoExt.Emulation emulation = setting.getEmulation();
                 byte[] data;
@@ -2461,7 +2417,7 @@ public class EMSDeviceDriver {
             sb.setLength(0);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (JAException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
@@ -2652,7 +2608,7 @@ public class EMSDeviceDriver {
             printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (JAException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2810,7 +2766,7 @@ public class EMSDeviceDriver {
                 } else
                     sb.append(textHandler.newLines(1));
 
-                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                if (this instanceof EMSStar && !isPOSPrinter && size > SIZE_LIMIT) {
                     // wait to fix printing incomplete issues on SM-T300i models.
                     Thread.sleep(SLEEP_TIME);
                 }
@@ -2830,10 +2786,8 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(1), FORMAT);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (JAException e) {
-            Crashlytics.logException(e);
-            e.printStackTrace();
         } catch (Exception e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
         }
     }
@@ -2908,7 +2862,7 @@ public class EMSDeviceDriver {
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
 
-                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                    if (this instanceof EMSStar && !isPOSPrinter && size > SIZE_LIMIT) {
                         // wait to fix printing incomplete issues on SM-T300i models.
                         Thread.sleep(SLEEP_TIME);
                     }
@@ -2932,14 +2886,12 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
             try {
                 printImage(1);
-            } catch (JAException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             printEnablerWebSite(lineWidth);
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
-        } catch (JAException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -3022,7 +2974,7 @@ public class EMSDeviceDriver {
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
 
-                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                if (this instanceof EMSStar && !isPOSPrinter && size > SIZE_LIMIT) {
                     // wait to fix printing incomplete issues on SM-T300i models.
                     Thread.sleep(SLEEP_TIME);
                 }
@@ -3048,8 +3000,6 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(3), FORMAT);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (JAException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -3097,7 +3047,7 @@ public class EMSDeviceDriver {
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
 
-                if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > SIZE_LIMIT) {
+                if (this instanceof EMSStar && !isPOSPrinter && size > SIZE_LIMIT) {
                     // wait to fix printing incomplete issues on SM-T300i models.
                     Thread.sleep(SLEEP_TIME);
                 }
@@ -3116,8 +3066,6 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (JAException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

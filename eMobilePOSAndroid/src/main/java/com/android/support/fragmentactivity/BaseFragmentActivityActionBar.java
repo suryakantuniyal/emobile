@@ -182,8 +182,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         @Override
         protected void onPreExecute() {
             setRequestedOrientation(Global.getScreenOrientation(BaseFragmentActivityActionBar.this));
-            loadMultiPrinter = (Global.multiPrinterManager == null
-                    || Global.multiPrinterManager.size() == 0)
+            loadMultiPrinter = (Global.remoteStationsPrinters == null
+                    || Global.remoteStationsPrinters.size() == 0)
                     && (Global.mainPrinterManager == null
                     || Global.mainPrinterManager.getCurrentDevice() == null)
                     && (Global.btSwiper == null || Global.btSwiper.getCurrentDevice() == null);
@@ -217,8 +217,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             if (!isUSB && result.toString().length() > 0)
                 Toast.makeText(BaseFragmentActivityActionBar.this, result.toString(), Toast.LENGTH_LONG).show();
             else if (isUSB && (Global.mainPrinterManager == null ||
-                    Global.mainPrinterManager.getCurrentDevice() == null)
-                    || myPref.getPrinterType() == Global.MIURA) {
+                    Global.mainPrinterManager.getCurrentDevice() == null)) {
 //                if (global.getGlobalDlog() != null)
 //                    global.getGlobalDlog().dismiss();
                 EMSDeviceManager edm = new EMSDeviceManager();

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import com.StarMicronics.jasura.JAException;
+
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -17,9 +17,10 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.hp.android.possdk.IJPOSInitCompleteCallBack;
-import com.starmicronics.stario.StarIOPortException;
+
 import java.util.HashMap;
 import java.util.List;
+
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import jpos.JPOSApp;
@@ -119,9 +120,10 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
         hpPrinter = new POSPrinter();
-        return printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+//        return printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+        return false;
     }
 
     @Override
@@ -236,9 +238,7 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
         try {
             setPaperWidth(LINE_WIDTH);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

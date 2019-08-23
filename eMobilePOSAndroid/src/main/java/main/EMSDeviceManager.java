@@ -13,26 +13,27 @@ import android.widget.ListView;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.realms.Device;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import drivers.EMSAPT50;
-import drivers.EMSAsura;
 import drivers.EMSBixolon;
 import drivers.EMSBixolonRD;
 import drivers.EMSBlueBambooP25;
-import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSELO;
 import drivers.EMSEM100;
 import drivers.EMSEM70;
 import drivers.EMSEpson;
 import drivers.EMSGPrinterPT380;
+import drivers.EMSHPEngageOnePrimePrinter;
 import drivers.EMSHandpoint;
 import drivers.EMSIngenico;
 import drivers.EMSIngenicoEVO;
@@ -40,15 +41,13 @@ import drivers.EMSIngenicoMoby85;
 import drivers.EMSKDC425;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSMagtekSwiper;
-import drivers.EMSMiura;
 import drivers.EMSNomad;
 import drivers.EMSOT310;
 import drivers.EMSOneil4te;
-import drivers.EMSHPEngageOnePrimePrinter;
-
 import drivers.EMSPAT215;
 import drivers.EMSPaxA920;
 import drivers.EMSPowaPOS;
+import drivers.EMSStar;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSmePOS;
 import drivers.EMSsnbc;
@@ -62,6 +61,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     private AlertDialog.Builder dialogBuilder;
     private EMSDeviceDriver aDevice = null;
     private EMSDeviceManagerPrinterDelegate currentDevice;
+
+    // String = product category assigned to the printer.
+    // List<Orders> = items to be printed.
+    private HashMap<String, List<Orders>> remoteStationQueue = new HashMap<>();
 
     public EMSDeviceManager getManager() {
         return this;
@@ -83,7 +86,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice.connect(activity, -1, false, this);
                 break;
             case Global.STAR:
-                aDevice = new EMSBluetoothStarPrinter();
+                aDevice = new EMSStar();
                 if (interfase == PrinterInterfase.BLUETOOTH)
                     promptTypeOfStarPrinter(activity);
                 else
@@ -105,10 +108,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSBixolon();
                 aDevice.connect(activity, -1, false, this);
                 break;
-            case Global.MIURA:
-                aDevice = new EMSMiura();
-                aDevice.connect(activity, -1, false, this);
-                break;
             case Global.ZEBRA:
                 aDevice = new EMSZebraEM220ii();
                 aDevice.connect(activity, -1, false, this);
@@ -127,10 +126,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.POWA:
                 aDevice = new EMSPowaPOS();
-                aDevice.connect(activity, -1, true, this);
-                break;
-            case Global.ASURA:
-                aDevice = new EMSAsura();
                 aDevice.connect(activity, -1, true, this);
                 break;
             case Global.PAT215:
@@ -230,9 +225,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.EM100:
                 aDevice = new EMSEM100();
                 break;
-            case Global.ASURA:
-                aDevice = new EMSAsura();
-                break;
             case Global.PAT215:
                 aDevice = new EMSPAT215();
                 break;
@@ -240,7 +232,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSIngenico();
                 break;
             case Global.STAR:
-                aDevice = new EMSBluetoothStarPrinter();
+                aDevice = new EMSStar();
                 break;
             case Global.GPRINTER:
                 aDevice = new EMSGPrinterPT380();
@@ -271,9 +263,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.ICMPEVO:
                 aDevice = new EMSIngenicoEVO();
-                break;
-            case Global.MIURA:
-                aDevice = new EMSMiura();
                 break;
             case Global.PAX_A920:
                 aDevice = new EMSPaxA920();
@@ -316,7 +305,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         promptDialog.show();
     }
 
-    public void promptStarPrinterSize(final boolean isPOSPrinter, final Context activity) {
+    private void promptStarPrinterSize(final boolean isPOSPrinter, final Context activity) {
         ListView listViewPaperSizes = new ListView(activity);
         ArrayAdapter<String> bondedAdapter;
         dialogBuilder = new AlertDialog.Builder(activity);
@@ -429,6 +418,14 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 alert.show();
             }
         }
+    }
+
+    public HashMap<String, List<Orders>> getRemoteStationQueue() {
+        return remoteStationQueue;
+    }
+
+    public void setRemoteStationQueue(HashMap<String, List<Orders>> remoteStationQueue) {
+        this.remoteStationQueue = remoteStationQueue;
     }
 
     public enum PrinterInterfase {

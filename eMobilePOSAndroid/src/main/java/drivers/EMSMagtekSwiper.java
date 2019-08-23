@@ -120,8 +120,8 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
-        return "";
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+        return false;
     }
 
     @Override

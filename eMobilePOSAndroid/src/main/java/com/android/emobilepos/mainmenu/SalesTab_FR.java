@@ -1101,9 +1101,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             return true;
         } else if (model.equals("JE971")) {
             return true;
-        } else if (model.equals("Asura")) {
-            myPref.isAsura(false, true);
-            return true;
         } else if (model.equals("Dolphin Black 70e")) {
             myPref.isDolphin(false, true);
             return false;

@@ -934,18 +934,6 @@ public class MyPreferences {
         return false;
     }
 
-    public boolean isAsura(boolean isGet, boolean value) {
-        String device_asura = "device_asura";
-        if (isGet)
-            return prefs.getBoolean(device_asura, false);
-        else {
-            prefEditor.putBoolean(device_asura, value);
-            prefEditor.commit();
-        }
-        return false;
-    }
-
-
     public boolean isPAT215() {
         String device_pat215 = "device_pat215";
         return prefs.getBoolean(device_pat215, false);
