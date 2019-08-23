@@ -843,7 +843,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         if (ptr.Code == ProcessTransResultCode.OK) {
             ManageResponse response = poslink.ManageResponse;
             Global.isEncryptSwipe = false;
-            fieldHidden.setText(response.Track2Data);
+            if (response.Track2Data != null) {
+                fieldHidden.setText(response.Track2Data);
+            }
         }
     }
 
