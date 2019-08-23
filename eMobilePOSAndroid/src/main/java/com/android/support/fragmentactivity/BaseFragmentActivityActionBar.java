@@ -182,8 +182,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         @Override
         protected void onPreExecute() {
             setRequestedOrientation(Global.getScreenOrientation(BaseFragmentActivityActionBar.this));
-            loadMultiPrinter = (Global.multiPrinterManager == null
-                    || Global.multiPrinterManager.size() == 0)
+            loadMultiPrinter = (Global.remoteStationsPrinters == null
+                    || Global.remoteStationsPrinters.size() == 0)
                     && (Global.mainPrinterManager == null
                     || Global.mainPrinterManager.getCurrentDevice() == null)
                     && (Global.btSwiper == null || Global.btSwiper.getCurrentDevice() == null);
