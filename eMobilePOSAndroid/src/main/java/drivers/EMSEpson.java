@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.util.Log;
 
 import com.android.emobilepos.models.ClockInOut;
@@ -199,7 +200,6 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
 
-
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory,
                                     boolean fromOnHold, EMVContainer emvContainer) {
@@ -337,6 +337,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -560,7 +561,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         }
     }
 
-    //    private void printRasterReceipt(Receipt receipt) {
+//    private void printRasterReceipt(Receipt receipt) {
 //        Bitmap bitmapFromText;
 //        ICommandBuilder textData = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarGraphic);
 //        textData.beginDocument();
@@ -751,6 +752,8 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             StringBuilder textData = new StringBuilder();
 
             try {
+                epsonPrinter.clearCommandBuffer();
+
                 if (report.getSpecialHeader() != null)
                     textData.append(report.getSpecialHeader());
                 if (report.getHeader() != null)
