@@ -358,11 +358,11 @@ public class ReportBuilder {
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice",
                                 payment.getJob_id(), lineWidth, 4));
                         sb.append(textHandler.newLines(1));
-
-                        report.setPayments(sb.toString());
-                        sb.setLength(0);
                     }
                 }
+                report.setPayments(sb.toString());
+                sb.setLength(0);
+
                 listPayments.clear();
             }
 
