@@ -316,12 +316,39 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printReport(String curDate) {
-        return false;
+        boolean printed = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
+            Report report = reportBuilder.getDaySummary(curDate);
+            printReport(report);
+            printed = true;
+//            printReportReceipt(curDate, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return printed;
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
+        try {
+            setPaperWidth(LINE_WIDTH);
 
+            ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
+            Report report = reportBuilder.getShift(shiftID);
+            printReport(report);
+//            printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
     }
 
     @Override
@@ -453,7 +480,19 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void printExpenseReceipt(ShiftExpense expense) {
+        try {
+            setPaperWidth(LINE_WIDTH);
 
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getExpense(expense);
+            printReceipt(receipt);
+//            printExpenseReceipt(LINE_WIDTH, expense);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
     }
 
     @Override
