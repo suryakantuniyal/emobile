@@ -637,11 +637,8 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private void printNormalReceipt(Receipt receipt) {
         if (epsonPrinter != null) {
             StringBuilder textData = new StringBuilder();
-            Bitmap logoData = null;
-            final int barcodeWidth = 2;
-            final int barcodeHeight = 100;
-
             try {
+                epsonPrinter.clearCommandBuffer();
                 if (receipt.getMerchantLogo() != null) {
                     epsonPrinter.addImage(receipt.getMerchantLogo(), 0, 0,
                             receipt.getMerchantLogo().getWidth(),
