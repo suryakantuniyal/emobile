@@ -10,11 +10,13 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Receipt;
+import com.android.emobilepos.models.Report;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.print.ReceiptBuilder;
+import com.android.emobilepos.print.ReportBuilder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
@@ -41,7 +43,7 @@ import main.EMSDeviceManager;
 
 public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, ReceiveListener {
 
-    private int LINE_WIDTH = 38;
+    private int LINE_WIDTH = 42;
     private EMSDeviceManager edm;
     private EMSDeviceDriver thisInstance;
     private Context activity;
@@ -73,11 +75,6 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             item.put("PrinterName", deviceInfo.getDeviceName());
             item.put("Target", deviceInfo.getTarget());
             Global.epson_device_list.add(item);
-//            if (!initPrinter())
-//                Log.e("EMSEpson", "***Could not Initialize to Epson Printer***");
-//            else if (!connectPrinter(deviceInfo.getTarget())) {
-//                Log.e("EMSEpson", "***Could not Connect to Epson Printer***");
-//            }
         }
     };
 
@@ -105,19 +102,6 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     private boolean setupPrinter() {
-        //FOR NOW, ONLY USB CONNECTIONS ARE PERMITED TO EPSON PRINTERS
-//        if(mFilterOption == null) {
-//            mFilterOption = new FilterOption();
-//            mFilterOption.setPortType(Discovery.PORTTYPE_USB);
-//            mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
-//            mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
-//        }
-//        try {
-//            Discovery.start(activity, mFilterOption, mDiscoveryListener);
-//            return true;
-//        } catch (Exception e) {
-//            Log.e("EMSEpson", e.toString());
-//        }
         if (edm.getCurrentDevice() == null || (statusInfo != null && statusInfo.getConnection() == Printer.FALSE)) {
             if (!initPrinter()) {
                 Log.e("EMSEpson", "***Could not Initialize to Epson Printer***");
@@ -131,7 +115,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             isEpsonConnected = true;
         }
 
-        if(isEpsonConnected){
+        if (isEpsonConnected) {
             statusInfo = epsonPrinter.getStatus();
         }
         return true;
@@ -214,288 +198,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         return true;
     }
 
-    private void printReceipt(Receipt receipt) {
-        Receipt receip = new Receipt();
-        receip.setHeader("HELLO WORLD!!!");
-        printNormalReceipt(receip);
-        if (!myPref.isRasterModePrint()) {
-            printNormalReceipt(receipt);
-        } else {
-//            printRasterReceipt(receipt);
-        }
-    }
 
-    private void printNormalReceipt(Receipt receipt) {
-        if (epsonPrinter != null) {
-            StringBuilder textData = new StringBuilder();
-            Bitmap logoData = null;
-            final int barcodeWidth = 2;
-            final int barcodeHeight = 100;
-
-            try {
-//                if (receipt.getMerchantLogo() != null) {
-//                    logoData = receipt.getMerchantLogo();
-//                    epsonPrinter.addImage(logoData, 0, 0,
-//                            logoData.getWidth(),
-//                            logoData.getHeight(),
-//                            Printer.COLOR_1,
-//                            Printer.MODE_MONO,
-//                            Printer.HALFTONE_DITHER,
-//                            Printer.PARAM_DEFAULT,
-//                            Printer.COMPRESS_AUTO);
-//                }
-                if (receipt.getMerchantHeader() != null)
-                    textData.append(receipt.getMerchantHeader());
-                if (receipt.getSpecialHeader() != null)
-                    textData.append(receipt.getSpecialHeader());
-                if (receipt.getHeader() != null)
-                    textData.append(receipt.getHeader());
-                if (receipt.getEmvDetails() != null)
-                    textData.append(receipt.getEmvDetails());
-                if (receipt.getSeparator() != null)
-                    textData.append(receipt.getSeparator());
-                for (String s : receipt.getItems()) {
-                    if (s != null)
-                        textData.append(s);
-                }
-                if (receipt.getSeparator() != null)
-                    textData.append(receipt.getSeparator());
-                if (receipt.getTotals() != null)
-                    textData.append(receipt.getTotals());
-                if (receipt.getTaxes() != null)
-                    textData.append(receipt.getTaxes());
-                if (receipt.getTotalItems() != null)
-                    textData.append(receipt.getTotalItems());
-                if (receipt.getGrandTotal() != null)
-                    textData.append(receipt.getGrandTotal());
-                if (receipt.getPaymentsDetails() != null)
-                    textData.append(receipt.getPaymentsDetails());
-                if (receipt.getYouSave() != null)
-                    textData.append(receipt.getYouSave());
-                if (receipt.getIvuLoto() != null)
-                    textData.append(receipt.getIvuLoto());
-                if (receipt.getLoyaltyDetails() != null)
-                    textData.append(receipt.getLoyaltyDetails());
-                if (receipt.getRewardsDetails() != null)
-                    textData.append(receipt.getRewardsDetails());
-                epsonPrinter.addText(textData.toString());
-                textData.delete(0, textData.length());
-//
-//                if (receipt.getSignatureImage() != null)
-//                    logoData = receipt.getSignatureImage();
-//                    epsonPrinter.addImage(logoData, 0, 0,
-//                        logoData.getWidth(),
-//                        logoData.getHeight(),
-//                        Printer.COLOR_1,
-//                        Printer.MODE_MONO,
-//                        Printer.HALFTONE_DITHER,
-//                        Printer.PARAM_DEFAULT,
-//                        Printer.COMPRESS_AUTO);
-
-                if (receipt.getSignature() != null)
-                    textData.append(receipt.getSignature());
-
-                if (receipt.getMerchantFooter() != null)
-                    textData.append(receipt.getMerchantFooter());
-
-                if (receipt.getSpecialFooter() != null)
-                    textData.append(receipt.getSpecialFooter());
-
-                if (receipt.getTermsAndConditions() != null)
-                    textData.append(receipt.getTermsAndConditions());
-
-                if (receipt.getEnablerWebsite() != null)
-                    textData.append(receipt.getEnablerWebsite());
-                epsonPrinter.addText(textData.toString());
-                textData.delete(0, textData.length());
-//                logoData = null;
-
-                epsonPrinter.addCut(Printer.CUT_FEED);
-
-                epsonPrinter.sendData(Printer.PARAM_DEFAULT);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-//    private void printRasterReceipt(Receipt receipt) {
-//        Bitmap bitmapFromText;
-//        ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarGraphic);
-//        builder.beginDocument();
-//
-//        if (receipt.getMerchantLogo() != null) {
-//            int logoPosition = (PAPER_WIDTH / 3 - receipt.getMerchantLogo().getWidth()) / 2 + 30;
-//            builder.appendBitmapWithAbsolutePosition(receipt.getMerchantLogo(),
-//                    false, logoPosition);
-//        }
-//
-//        if (receipt.getMerchantHeader() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getMerchantHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getSpecialHeader() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getSpecialHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getHeader() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getEmvDetails() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getEmvDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getSeparator() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getSeparator(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        for (String s : receipt.getItems()) {
-//            if (s != null) {
-//                typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//                bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                        s, FONT_SIZE, PAPER_WIDTH, typeface);
-//                builder.appendBitmap(bitmapFromText, false);
-//            }
-//        }
-//
-//        if (receipt.getSeparator() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getSeparator(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getTotals() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getTotals(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getTaxes() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getTaxes(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getTotalItems() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getTotalItems(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getGrandTotal() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getGrandTotal(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getPaymentsDetails() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getPaymentsDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getYouSave() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getYouSave(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getIvuLoto() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getIvuLoto(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getLoyaltyDetails() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getLoyaltyDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getRewardsDetails() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getRewardsDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getSignatureImage() != null) {
-//            int logoPosition = (PAPER_WIDTH / 3 - receipt.getSignatureImage().getWidth()) / 2 + 30;
-//            builder.appendBitmapWithAbsolutePosition(receipt.getSignatureImage(),
-//                    false, logoPosition);
-//        }
-//
-//        if (receipt.getSignature() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getSignature(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getMerchantFooter() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getMerchantFooter(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getSpecialFooter() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getSpecialFooter(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getTermsAndConditions() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getTermsAndConditions(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        if (receipt.getEnablerWebsite() != null) {
-//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
-//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
-//                    receipt.getEnablerWebsite(), FONT_SIZE, PAPER_WIDTH, typeface);
-//            builder.appendBitmap(bitmapFromText, false);
-//        }
-//
-//        builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
-//        builder.endDocument();
-//        byte[] commands;
-//        commands = builder.getCommands();
-//
-//        try {
-//            port.writePort(commands, 0, commands.length);
-//        } catch (StarIOPortException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory,
@@ -543,12 +246,12 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
-        return false;
+        return printTransaction(ordID, saleTypes, isFromHistory, fromOnHold, null);
     }
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
-        return false;
+        return printTransaction(order, saleTypes, isFromHistory, fromOnHold, null);
     }
 
     @Override
@@ -577,8 +280,8 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
-        return null;
+    public boolean printRemoteStation(List<Orders> orderProducts, String ordID) {
+        return false;
     }
 
     @Override
@@ -623,7 +326,18 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
+        try {
+            setPaperWidth(LINE_WIDTH);
 
+            ReportBuilder reportBuilder = new ReportBuilder(activity, LINE_WIDTH);
+            Report report = reportBuilder.getEndOfDay(date, printDetails);
+            printReport(report);
+//            printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -745,4 +459,468 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     public void onPtrReceive(Printer printer, int i, PrinterStatusInfo printerStatusInfo, String s) {
         //warnings for running out of paper, low battery, etc. goes here...
     }
+
+
+    //////////////Printing Process Methods////////////
+    private void printReceipt(Receipt receipt) {
+        if (!myPref.isRasterModePrint()) {
+            printNormalReceipt(receipt);
+        } else {
+//            printRasterReceipt(receipt);
+        }
+    }
+
+    private void printNormalReceipt(Receipt receipt) {
+        if (epsonPrinter != null) {
+            StringBuilder textData = new StringBuilder();
+            Bitmap logoData = null;
+            final int barcodeWidth = 2;
+            final int barcodeHeight = 100;
+
+            try {
+                if (receipt.getMerchantLogo() != null) {
+                    epsonPrinter.addImage(receipt.getMerchantLogo(), 0, 0,
+                            receipt.getMerchantLogo().getWidth(),
+                            receipt.getMerchantLogo().getHeight(),
+                            Printer.COLOR_1,
+                            Printer.MODE_MONO_HIGH_DENSITY,
+                            Printer.HALFTONE_DITHER,
+                            Printer.PARAM_DEFAULT,
+                            Printer.COMPRESS_AUTO);
+                }
+                if (receipt.getMerchantHeader() != null)
+                    textData.append(receipt.getMerchantHeader());
+                if (receipt.getSpecialHeader() != null)
+                    textData.append(receipt.getSpecialHeader());
+                if (receipt.getHeader() != null)
+                    textData.append(receipt.getHeader());
+                if (receipt.getEmvDetails() != null)
+                    textData.append(receipt.getEmvDetails());
+                if (receipt.getSeparator() != null)
+                    textData.append(receipt.getSeparator());
+                for (String s : receipt.getItems()) {
+                    if (s != null)
+                        textData.append(s);
+                }
+                if (receipt.getSeparator() != null)
+                    textData.append(receipt.getSeparator());
+                if (receipt.getTotals() != null)
+                    textData.append(receipt.getTotals());
+                if (receipt.getTaxes() != null)
+                    textData.append(receipt.getTaxes());
+                if (receipt.getTotalItems() != null)
+                    textData.append(receipt.getTotalItems());
+                if (receipt.getGrandTotal() != null)
+                    textData.append(receipt.getGrandTotal());
+                if (receipt.getPaymentsDetails() != null)
+                    textData.append(receipt.getPaymentsDetails());
+                if (receipt.getYouSave() != null)
+                    textData.append(receipt.getYouSave());
+                if (receipt.getIvuLoto() != null)
+                    textData.append(receipt.getIvuLoto());
+                if (receipt.getLoyaltyDetails() != null)
+                    textData.append(receipt.getLoyaltyDetails());
+                if (receipt.getRewardsDetails() != null)
+                    textData.append(receipt.getRewardsDetails());
+                epsonPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                if (receipt.getSignatureImage() != null)
+                    epsonPrinter.addImage(receipt.getSignatureImage(), 0, 0,
+                            receipt.getSignatureImage().getWidth(),
+                            receipt.getSignatureImage().getHeight(),
+                            Printer.COLOR_1,
+                            Printer.MODE_MONO_HIGH_DENSITY,
+                            Printer.HALFTONE_DITHER,
+                            Printer.PARAM_DEFAULT,
+                            Printer.COMPRESS_AUTO);
+
+                if (receipt.getSignature() != null)
+                    textData.append(receipt.getSignature());
+
+                if (receipt.getMerchantFooter() != null)
+                    textData.append(receipt.getMerchantFooter());
+
+                if (receipt.getSpecialFooter() != null)
+                    textData.append(receipt.getSpecialFooter());
+
+                if (receipt.getTermsAndConditions() != null)
+                    textData.append(receipt.getTermsAndConditions());
+
+                if (receipt.getEnablerWebsite() != null)
+                    textData.append(receipt.getEnablerWebsite());
+                epsonPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                epsonPrinter.addCut(Printer.CUT_FEED);
+                epsonPrinter.sendData(Printer.PARAM_DEFAULT);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //    private void printRasterReceipt(Receipt receipt) {
+//        Bitmap bitmapFromText;
+//        ICommandBuilder textData = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarGraphic);
+//        textData.beginDocument();
+//
+//        if (receipt.getMerchantLogo() != null) {
+//            int logoPosition = (PAPER_WIDTH / 3 - receipt.getMerchantLogo().getWidth()) / 2 + 30;
+//            textData.appendBitmapWithAbsolutePosition(receipt.getMerchantLogo(),
+//                    false, logoPosition);
+//        }
+//
+//        if (receipt.getMerchantHeader() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getMerchantHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getSpecialHeader() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getSpecialHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getHeader() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getHeader(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getEmvDetails() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getEmvDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getSeparator() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getSeparator(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        for (String s : receipt.getItems()) {
+//            if (s != null) {
+//                typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//                bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                        s, FONT_SIZE, PAPER_WIDTH, typeface);
+//                textData.appendBitmap(bitmapFromText, false);
+//            }
+//        }
+//
+//        if (receipt.getSeparator() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getSeparator(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getTotals() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getTotals(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getTaxes() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getTaxes(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getTotalItems() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getTotalItems(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getGrandTotal() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getGrandTotal(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getPaymentsDetails() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getPaymentsDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getYouSave() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getYouSave(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getIvuLoto() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getIvuLoto(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getLoyaltyDetails() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getLoyaltyDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getRewardsDetails() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getRewardsDetails(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getSignatureImage() != null) {
+//            int logoPosition = (PAPER_WIDTH / 3 - receipt.getSignatureImage().getWidth()) / 2 + 30;
+//            textData.appendBitmapWithAbsolutePosition(receipt.getSignatureImage(),
+//                    false, logoPosition);
+//        }
+//
+//        if (receipt.getSignature() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getSignature(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getMerchantFooter() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getMerchantFooter(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getSpecialFooter() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getSpecialFooter(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getTermsAndConditions() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getTermsAndConditions(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (receipt.getEnablerWebsite() != null) {
+//            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
+//            bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(
+//                    receipt.getEnablerWebsite(), FONT_SIZE, PAPER_WIDTH, typeface);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        textData.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
+//        textData.endDocument();
+//        byte[] commands;
+//        commands = textData.getCommands();
+//
+//        try {
+//            port.writePort(commands, 0, commands.length);
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    private void printReport(Report report) {
+        if (myPref.isRasterModePrint()) {
+//            printRasterReport(report);
+        } else {
+            printTextReport(report);
+        }
+    }
+
+    private void printTextReport(Report report) {
+        if (epsonPrinter != null) {
+            StringBuilder textData = new StringBuilder();
+
+            try {
+                if (report.getSpecialHeader() != null)
+                    textData.append(report.getSpecialHeader());
+                if (report.getHeader() != null)
+                    textData.append(report.getHeader());
+                epsonPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                if (report.getSummary() != null)
+                    textData.append(report.getSummary());
+                if (report.getArTransactions() != null)
+                    textData.append(report.getArTransactions());
+                if (report.getSalesByClerk() != null)
+                    textData.append(report.getSalesByClerk());
+                if (report.getTotalsByShifts() != null)
+                    textData.append(report.getTotalsByShifts());
+                if (report.getTotalsByTypes() != null)
+                    textData.append(report.getTotalsByTypes());
+                if (report.getItemsSold() != null)
+                    textData.append(report.getItemsSold());
+                if (report.getDepartmentSales() != null)
+                    textData.append(report.getDepartmentSales());
+                if (report.getDepartmentReturns() != null)
+                    textData.append(report.getDepartmentReturns());
+                if (report.getPayments() != null)
+                    textData.append(report.getPayments());
+                if (report.getVoids() != null)
+                    textData.append(report.getVoids());
+                if (report.getRefunds() != null)
+                    textData.append(report.getRefunds());
+                if (report.getItemsReturned() != null)
+                    textData.append(report.getItemsReturned());
+                epsonPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                if (report.getFooter() != null)
+                    textData.append(report.getFooter());
+                if (report.getSpecialFooter() != null)
+                    textData.append(report.getSpecialFooter());
+                if (report.getEnablerWebsite() != null)
+                    textData.append(report.getEnablerWebsite());
+                epsonPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                epsonPrinter.addCut(Printer.CUT_FEED);
+                epsonPrinter.sendData(Printer.PARAM_DEFAULT);
+            } catch (Epos2Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+//    private void printRasterReport(Report report) {
+//        Bitmap bitmapFromText;
+//
+//        ICommandBuilder textData = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarGraphic);
+//        textData.beginDocument();
+//
+//        if (report.getSpecialHeader() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getSpecialHeader(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getHeader() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getHeader(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getSummary() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getSummary(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getArTransactions() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getArTransactions(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getSalesByClerk() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getSalesByClerk(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getTotalsByShifts() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getTotalsByShifts(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getTotalsByTypes() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getTotalsByTypes(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getItemsSold() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getItemsSold(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getDepartmentSales() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getDepartmentSales(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getDepartmentReturns() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getDepartmentReturns(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getPayments() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getPayments(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getVoids() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getVoids(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getRefunds() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getRefunds(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getItemsReturned() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getItemsReturned(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getFooter() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getFooter(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getSpecialFooter() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getSpecialFooter(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        if (report.getEnablerWebsite() != null) {
+//            bitmapFromText = BitmapUtils.createBitmapFromText(
+//                    report.getEnablerWebsite(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+//            textData.appendBitmap(bitmapFromText, false);
+//        }
+//
+//        textData.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
+//        textData.endDocument();
+//        byte[] commands;
+//        commands = textData.getCommands();
+//
+//        try {
+//            port.writePort(commands, 0, commands.length);
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//            Crashlytics.logException(e);
+//        }
+//    }
+
 }
