@@ -256,38 +256,139 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
-        return false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getPayment(
+                    payID, isFromMainMenu, isReprint, emvContainer);
+            printReceipt(receipt);
+//            printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
-        return false;
+        boolean printed = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getBalanceInquiry(values);
+            printReceipt(receipt);
+            printed = true;
+//            printed = printBalanceInquiry(values, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return printed;
     }
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return false;
+        boolean printed = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getConsignment(myConsignment, encodedSignature);
+            printReceipt(receipt);
+            printed = true;
+//            printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return printed;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return false;
+        boolean printed = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getConsignmentPickup(myConsignment, encodedSignature);
+            printReceipt(receipt);
+            printed = true;
+//            printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return printed;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        return false;
+        boolean printed = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getConsignmentHistory(map, c, isPickup);
+            printReceipt(receipt);
+            printed = true;
+//            printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return printed;
     }
 
     @Override
     public boolean printRemoteStation(List<Orders> orderProducts, String ordID) {
-        return false;
-    }
+        boolean result = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getRemoteStation(orderProducts, ordID);
+            printReceipt(receipt);
+//            printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
+
+            releasePrinter();
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return result;    }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        return false;
-    }
+        boolean printed = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getOpenInvoice(invID);
+            printReceipt(receipt);
+            printed = true;
+//            printOpenInvoicesReceipt(invID, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return printed;    }
 
     @Override
     public boolean printOnHold(Object onHold) {
@@ -425,7 +526,18 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void printReceiptPreview(SplittedOrder splitedOrder) {
+        try {
+            setPaperWidth(LINE_WIDTH);
 
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getSplitOrderPreview(splitedOrder);
+            printReceipt(receipt);
+//            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -475,7 +587,19 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
+        try {
+            setPaperWidth(LINE_WIDTH);
 
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getClockInOut(clockInOuts, clerkID);
+            printReceipt(receipt);
+//            printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+
+            releasePrinter();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
     }
 
     @Override
