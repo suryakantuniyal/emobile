@@ -131,6 +131,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private String phone;
     private List<ProcessCardResponse> cardResponses;
     private EMSPayGate_Default.EAction rewardAction = EMSPayGate_Default.EAction.ChargeRewardAction;
+    private Button paxSwipe;
 
 
     @Override
@@ -224,7 +225,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 getApplicationContext(), listener);
         bbDeviceController.startBarcodeReader();
 
-        Button paxSwipe = findViewById(R.id.paxSwipe);
+        paxSwipe = findViewById(R.id.paxSwipe);
         if (MyPreferences.isPaxA920()) {
             paxSwipe.setOnClickListener(this);
         } else {
@@ -765,6 +766,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         if (UIUtils.singleOnClick(v)) {
             switch (v.getId()) {
                 case R.id.paxSwipe:
+                    paxSwipe.setEnabled(false);
                     processPaxSwipe();
                     break;
                 case R.id.exactAmountBut:
@@ -837,10 +839,13 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void processResponse() {
+        paxSwipe.setEnabled(true);
         if (ptr.Code == ProcessTransResultCode.OK) {
             ManageResponse response = poslink.ManageResponse;
             Global.isEncryptSwipe = false;
-            fieldHidden.setText(response.Track2Data);
+            if (response.Track2Data != null) {
+                fieldHidden.setText(response.Track2Data);
+            }
         }
     }
 

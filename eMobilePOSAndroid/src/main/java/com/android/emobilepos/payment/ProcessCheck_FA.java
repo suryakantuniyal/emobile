@@ -14,6 +14,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -130,7 +131,9 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         TextView tax2Lbl = findViewById(R.id.tax2CashLbl);
         groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
-        this.amountField = findViewById(R.id.checkAmount);
+        amountField = findViewById(R.id.checkAmount);
+        amountField.addTextChangedListener(getTextWatcher(amountField));
+        amountField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         field = new EditText[]{findViewById(R.id.checkName), findViewById(R.id.checkEmail),
                 findViewById(R.id.checkPhone), findViewById(R.id.checkAmount),
@@ -752,8 +755,6 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
 
     public class processLivePaymentAsync extends AsyncTask<String, String, String> {
-
-        //private String[]returnedPost;
         private HashMap<String, String> responseMap;
         private String statusCode = "";
         private String urlToPost;
@@ -1017,13 +1018,35 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
     @Override
     public void onPause() {
         super.onPause();
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn = powerManager.isScreenOn();
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
+    private TextWatcher getTextWatcher(final EditText editText) {
+
+        return new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                switch (editText.getId()) {
+                    case R.id.subtotalGiftAmount: {
+                        ProcessCash_FA.calculateTaxes(groupTaxRate, editText, tax1, tax2);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        break;
+                    }
+                    case R.id.tax2GiftAmount:
+                    case R.id.tax1GiftAmount: {
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        break;
+                    }
+                }
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                NumberUtils.parseInputedCurrency(s, editText);
+            }
+        };
+    }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {

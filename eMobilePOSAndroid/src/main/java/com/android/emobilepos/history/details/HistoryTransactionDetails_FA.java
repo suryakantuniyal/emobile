@@ -140,9 +140,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
     private List<Payment> listVoidPayments;
     private PaymentsHandler payHandler;
     private PosLink poslink;
-    private static ProcessTransResult ptr;
-    private String paxOrigRefNum = "";
-    private int paxTenderType;
+    private static ProcessTransResult ptr = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -601,6 +599,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
 
         POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
         poslink = POSLinkCreator.createPoslink(getApplicationContext());
+        ptr = null;
 
         // as processTrans is blocked, we must run it in an async task
         new Thread(new Runnable() {
@@ -643,35 +642,39 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
 
     private void processResponse() {
         Global.dismissDialog(this, myProgressDialog);
-        btnVoid.setEnabled(true);
 
-        if (ptr.Code == ProcessTransResult.ProcessTransResultCode.OK) {
-            PaymentResponse response = poslink.PaymentResponse;
-            switch (response.ResultCode) {
-                case TRANSACTION_SUCCESS:
-                    new voidPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    btnVoid.setEnabled(false);
-                    Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
-                    break;
-                case HAS_VOIDED:
-                    showErrorDlog("Transaction already voided!");
-                    new voidPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    btnVoid.setEnabled(false);
-                    break;
-                case TRANSACTION_TIMEOUT:
-                    showErrorDlog("Transaction TimeOut!");
-                    break;
-                case TRANSACTION_CANCELED:
-                    showErrorDlog("Transaction Canceled!");
-                    break;
-                case CARD_EXPIRED:
-                    showErrorDlog("Card is invalid or expired!");
-                    break;
+        if (ptr != null) {
+            btnVoid.setEnabled(true);
+            if (ptr.Code == ProcessTransResult.ProcessTransResultCode.OK) {
+                PaymentResponse response = poslink.PaymentResponse;
+                switch (response.ResultCode) {
+                    case TRANSACTION_SUCCESS:
+                        new voidPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        btnVoid.setEnabled(false);
+                        Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
+                        break;
+                    case HAS_VOIDED:
+                        showErrorDlog("Transaction already voided!");
+                        new voidPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        btnVoid.setEnabled(false);
+                        break;
+                    case TRANSACTION_TIMEOUT:
+                        showErrorDlog("Transaction TimeOut!");
+                        break;
+                    case TRANSACTION_CANCELED:
+                        showErrorDlog("Transaction Canceled!");
+                        break;
+                    case CARD_EXPIRED:
+                        showErrorDlog("Card is invalid or expired!");
+                        break;
+                }
+            } else if (ptr.Code == ProcessTransResult.ProcessTransResultCode.TimeOut) {
+                showErrorDlog("Transaction TimeOut!\n" + ptr.Msg);
+            } else {
+                showErrorDlog("Transaction Error!\n" + ptr.Msg);
             }
-        } else if (ptr.Code == ProcessTransResult.ProcessTransResultCode.TimeOut) {
-            showErrorDlog("Transaction TimeOut!\n" + ptr.Msg);
-        } else {
-            showErrorDlog("Transaction Error!\n" + ptr.Msg);
+        } else { // non card payment
+            Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
         }
     }
 
