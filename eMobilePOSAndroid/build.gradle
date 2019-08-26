@@ -174,7 +174,7 @@ dependencies {
     api files('libs/bbdevice-android-3.4.2.jar')
     api files('libs/UniMag_SDK_v5.0.jar')
     api files('libs/GLComm_V1.02.00_20180402.jar')
-    api files('libs/PAX_POSLinkAndroid_20181119.jar')
+    api files('libs/PAX_POSLinkAndroid_20190225.jar')
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:support-v13:28.0.0'
