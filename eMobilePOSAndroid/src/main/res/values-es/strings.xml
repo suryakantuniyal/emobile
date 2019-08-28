@@ -1430,4 +1430,25 @@
     <string name="sales_product_details_Invetory_locations_dlog_header_text">En Almacén</string>
     <string name="dlog_sales_item_check_inventory_location_text">Localización</string>
     <string name="dlog_sales_item_check_inventory_quantity_text">Cantidad</string>
+
+    <!--EPSON STRING VALUES-->
+    <string name="handlingmsg_warn_receipt_near_end">El rollo de papel está casi terminado.\n</string>
+    <string name="handlingmsg_warn_battery_near_end">El nivel de batería de la impresora es bajo.\n</string>
+    <string name="handlingmsg_err_no_response">Verifique la conexión de la impresora y el terminal móvil.\n</string>
+    <string name="handlingmsg_err_cover_open">Por favor, cierre la cubierta del rollo de papel.\n</string>
+    <string name="handlingmsg_err_receipt_end">Por favor revise el rollo de papel.\n</string>
+    <string name="handlingmsg_err_paper_feed">Suelte un interruptor de alimentación de papel.\n</string>
+    <string name="handlingmsg_err_autocutter">Retire el papel atascado y cierre la cubierta del rollo de papel.\n
+        Retire cualquier papel atascado o sustancias extrañas en la impresora,
+        y luego apague la impresora y vuelva a encenderla.\n</string>
+    <string name="handlingmsg_err_need_recover">Luego, si la impresora no se recupera del error, apague y encienda el interruptor.\n</string>
+    <string name="handlingmsg_err_unrecover">Por favor, apague y encienda la impresora.\nSi se produjeron los mismos errores, incluso después de reinicio, la impresora puede estar fuera de servicio.</string>
+    <string name="handlingmsg_err_overheat">Espere hasta que se apague el LED de error de la impresora. \n</string>
+    <string name="handlingmsg_err_head">El cabezal de impresión de la impresora está caliente.\n</string>
+    <string name="handlingmsg_err_motor">El controlador de motor IC de la impresora está caliente.\n</string>
+    <string name="handlingmsg_err_battery">La batería de la impresora está caliente.\n</string>
+    <string name="handlingmsg_err_wrong_paper">Configure el rollo de papel correcto.\n</string>
+    <string name="handlingmsg_err_battery_real_end">Conecte el cargador o cambie la batería.\nLa batería de la impresora está casi agotada.\n</string>
+    <string name="handlingmsg_err_offline">La impresora está desconectado.\n</string>
+
 </resources>

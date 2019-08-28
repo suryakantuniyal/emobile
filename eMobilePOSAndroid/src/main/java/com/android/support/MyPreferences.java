@@ -902,7 +902,7 @@ public class MyPreferences {
         prefEditor.commit();
     }
     public int getEpsonModel() {
-        return prefs.getInt(epsonModel, 0);
+        return prefs.getInt(epsonModel, -1);
     }
 
     /*

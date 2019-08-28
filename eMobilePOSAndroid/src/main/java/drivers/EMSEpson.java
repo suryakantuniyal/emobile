@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -32,7 +33,6 @@ import com.epson.epos2.discovery.FilterOption;
 import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
 import com.epson.epos2.printer.ReceiveListener;
-import com.epson.eposprint.Print;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,14 +54,28 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     PrinterStatusInfo statusInfo;
 
 
-    public boolean FindPrinter(Context activity) {
+    public boolean FindPrinter(Context activity, boolean isRestart) {
         mFilterOption = new FilterOption();
         mFilterOption.setPortType(Discovery.PORTTYPE_USB);
         mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
         mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
-
         try {
-            Discovery.start(activity, mFilterOption, mDiscoveryListener);
+            if (!isRestart) {
+                Discovery.start(activity, mFilterOption, mDiscoveryListener);
+            } else {
+                while (true) {
+                    try {
+                        Discovery.stop();
+                        break;
+                    } catch (Epos2Exception e) {
+                        if (e.getErrorStatus() != Epos2Exception.ERR_PROCESSING) {
+                            ShowMsg.showException(e, "stop", activity);
+                        }
+                    }
+                }
+                Global.epson_device_list.clear();
+                Discovery.start(activity, mFilterOption, mDiscoveryListener);
+            }
             return true;
         } catch (Epos2Exception e) {
             e.printStackTrace();
@@ -133,27 +147,40 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         if (!myPref.getEpsonTarget().isEmpty()) {
             try {
                 epsonPrinter.connect(myPref.getEpsonTarget(), Printer.PARAM_DEFAULT);
-                edm.driverDidConnectToDevice(thisInstance, false, activity);
             } catch (Exception e) {
-                edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
-                ShowMsg.showException(e, "connect", activity);
-                return false;
+                e.printStackTrace();
             }
 
+            PrinterStatusInfo status = epsonPrinter.getStatus();
+
+            if (!isPrintable(status)) {
+                try {
+                    edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
+//                    Toast.makeText(activity, makeErrorMessage(status), Toast.LENGTH_SHORT).show();
+//                    ShowMsg.showMsg(makeErrorMessage(status), activity);
+                    epsonPrinter.disconnect();
+                } catch (Exception ex) {
+                }
+                return false;
+            } else {
+                edm.driverDidConnectToDevice(thisInstance, false, activity);
+//                Toast.makeText(activity, dispPrinterWarnings(status), Toast.LENGTH_SHORT).show();
+//                ShowMsg.showMsg(dispPrinterWarnings(status),activity);
+            }
             try {
                 epsonPrinter.beginTransaction();
                 isBeginTransaction = true;
             } catch (Exception e) {
-                ShowMsg.showException(e, "beginTransaction", activity);
+                e.printStackTrace();
             }
 
-            if (isBeginTransaction == false) {
+            if (!isBeginTransaction) {
                 try {
                     epsonPrinter.disconnect();
                 } catch (Epos2Exception e) {
                     // Do nothing
-                    return false;
                 }
+                return false;
             }
             return true;
         }
@@ -187,18 +214,100 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     private boolean initPrinter() {
-        try {
-            epsonPrinter = new Printer(myPref.getEpsonModel(), 0, activity);
+        if (myPref.getEpsonModel() != -1) {
+            try {
+                epsonPrinter = new Printer(myPref.getEpsonModel(), 0, activity);
+
+            } catch (Exception e) {
+                Log.e("EMSEpson", e.toString());
+                e.printStackTrace();
+                return false;
+            }
             epsonPrinter.setReceiveEventListener(this);
-        } catch (Exception e) {
-            Log.e("EMSEpson", e.toString());
-            ShowMsg.showException(e, "Printer", activity);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isPrintable(PrinterStatusInfo status) {
+        if (status == null) {
+            return false;
+        }
+
+        if (status.getConnection() == Printer.FALSE) {
+            return false;
+        } else if (status.getOnline() == Printer.FALSE) {
             return false;
         }
 
         return true;
     }
 
+    private String makeErrorMessage(PrinterStatusInfo status) {
+        String msg = "";
+
+        if (status.getOnline() == Printer.FALSE) {
+            msg += getString(R.string.handlingmsg_err_offline);
+        }
+        if (status.getConnection() == Printer.FALSE) {
+            msg += getString(R.string.handlingmsg_err_no_response);
+        }
+        if (status.getCoverOpen() == Printer.TRUE) {
+            msg += getString(R.string.handlingmsg_err_cover_open);
+        }
+        if (status.getPaper() == Printer.PAPER_EMPTY) {
+            msg += getString(R.string.handlingmsg_err_receipt_end);
+        }
+        if (status.getPaperFeed() == Printer.TRUE || status.getPanelSwitch() == Printer.SWITCH_ON) {
+            msg += getString(R.string.handlingmsg_err_paper_feed);
+        }
+        if (status.getErrorStatus() == Printer.MECHANICAL_ERR || status.getErrorStatus() == Printer.AUTOCUTTER_ERR) {
+            msg += getString(R.string.handlingmsg_err_autocutter);
+            msg += getString(R.string.handlingmsg_err_need_recover);
+        }
+        if (status.getErrorStatus() == Printer.UNRECOVER_ERR) {
+            msg += getString(R.string.handlingmsg_err_unrecover);
+        }
+        if (status.getErrorStatus() == Printer.AUTORECOVER_ERR) {
+            if (status.getAutoRecoverError() == Printer.HEAD_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_head);
+            }
+            if (status.getAutoRecoverError() == Printer.MOTOR_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_motor);
+            }
+            if (status.getAutoRecoverError() == Printer.BATTERY_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_battery);
+            }
+            if (status.getAutoRecoverError() == Printer.WRONG_PAPER) {
+                msg += getString(R.string.handlingmsg_err_wrong_paper);
+            }
+        }
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_0) {
+            msg += getString(R.string.handlingmsg_err_battery_real_end);
+        }
+
+        return msg;
+    }
+
+    private String dispPrinterWarnings(PrinterStatusInfo status) {
+        String warningsMsg = "";
+
+        if (status == null) {
+            return null;
+        }
+
+        if (status.getPaper() == Printer.PAPER_NEAR_END) {
+            warningsMsg += getString(R.string.handlingmsg_warn_receipt_near_end);
+        }
+
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_1) {
+            warningsMsg += getString(R.string.handlingmsg_warn_battery_near_end);
+        }
+        return warningsMsg;
+    }
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory,
@@ -369,7 +478,8 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             e.printStackTrace();
             Crashlytics.logException(e);
         }
-        return result;    }
+        return result;
+    }
 
     @Override
     public boolean printOpenInvoices(String invID) {
@@ -388,7 +498,8 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             e.printStackTrace();
             Crashlytics.logException(e);
         }
-        return printed;    }
+        return printed;
+    }
 
     @Override
     public boolean printOnHold(Object onHold) {
@@ -640,6 +751,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             try {
                 epsonPrinter.clearCommandBuffer();
                 if (receipt.getMerchantLogo() != null) {
+                    epsonPrinter.addTextAlign(Printer.ALIGN_CENTER);
                     epsonPrinter.addImage(receipt.getMerchantLogo(), 0, 0,
                             receipt.getMerchantLogo().getWidth(),
                             receipt.getMerchantLogo().getHeight(),
@@ -648,6 +760,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                             Printer.HALFTONE_DITHER,
                             Printer.PARAM_DEFAULT,
                             Printer.COMPRESS_AUTO);
+                    epsonPrinter.addTextAlign(Printer.PARAM_DEFAULT);
                 }
                 if (receipt.getMerchantHeader() != null)
                     textData.append(receipt.getMerchantHeader());
