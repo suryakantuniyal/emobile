@@ -99,6 +99,7 @@ import java.util.Set;
 
 import drivers.EMSDeviceDriver;
 import drivers.EMSEpson;
+import drivers.epson.EpsonDevices;
 import drivers.epson.SpnModelsItem;
 import io.realm.Realm;
 import main.EMSDeviceManager;
@@ -1192,6 +1193,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
         public void loadEpsonDlogSetup(Activity activity){
             SimpleAdapter mPrinterListAdapter = null;
+            EpsonDevices epsonDeviceList = new EpsonDevices();
 
             promptDialog = new Dialog(activity, R.style.Theme_TransparentTest);
             promptDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1199,7 +1201,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             promptDialog.setContentView(R.layout.config_epson_setup_layout);
 
             final Button btnEpsonConnect = promptDialog.findViewById(R.id.btnConnectEpson);
-            final Spinner epsonDevices = promptDialog.findViewById(R.id.spinnerEpsonDevices);
+            final Spinner epsonDevicesDropDown = promptDialog.findViewById(R.id.spinnerEpsonDevices);
             final Spinner printerModels = promptDialog.findViewById(R.id.spinnerEpsonModels);
 
             mPrinterListAdapter = new SimpleAdapter(activity,
@@ -1207,8 +1209,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     R.layout.config_epson_setup_device_selection_item,
                     new String[] { "PrinterName", "Target" },
                     new int[] { R.id.PrinterName, R.id.Target });
-            epsonDevices.setAdapter(mPrinterListAdapter);
-            epsonDevices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            epsonDevicesDropDown.setAdapter(mPrinterListAdapter);
+            epsonDevicesDropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     HashMap<String, String> hashmap = Global.epson_device_list.get(position);
@@ -1220,29 +1222,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             });
 
 
-            ArrayAdapter<SpnModelsItem> seriesAdapter = new ArrayAdapter<SpnModelsItem>(activity, android.R.layout.simple_spinner_item);
+            ArrayAdapter<SpnModelsItem> seriesAdapter = new ArrayAdapter<SpnModelsItem>(activity, android.R.layout.simple_spinner_item,epsonDeviceList.getDeviceList());
             seriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            seriesAdapter.add(new SpnModelsItem("TM-m10", Printer.TM_M10));
-            seriesAdapter.add(new SpnModelsItem("TM-m30", Printer.TM_M30));
-            seriesAdapter.add(new SpnModelsItem("TM-P20", Printer.TM_P20));
-            seriesAdapter.add(new SpnModelsItem("TM-P60", Printer.TM_P60));
-            seriesAdapter.add(new SpnModelsItem("TM-P60II", Printer.TM_P60II));
-            seriesAdapter.add(new SpnModelsItem("TM-P80", Printer.TM_P80));
-            seriesAdapter.add(new SpnModelsItem("TM-T20", Printer.TM_T20));
-            seriesAdapter.add(new SpnModelsItem("TM-T60", Printer.TM_T60));
-            seriesAdapter.add(new SpnModelsItem("TM-T70", Printer.TM_T70));
-            seriesAdapter.add(new SpnModelsItem("TM-T81", Printer.TM_T81));
-            seriesAdapter.add(new SpnModelsItem("TM-T82", Printer.TM_T82));
-            seriesAdapter.add(new SpnModelsItem("TM-T83", Printer.TM_T83));
-            seriesAdapter.add(new SpnModelsItem("TM-T83III", Printer.TM_T83III));
-            seriesAdapter.add(new SpnModelsItem("TM-T88", Printer.TM_T88));
-            seriesAdapter.add(new SpnModelsItem("TM-T90", Printer.TM_T90));
-            seriesAdapter.add(new SpnModelsItem("TM-T90KP", Printer.TM_T90KP));
-            seriesAdapter.add(new SpnModelsItem("TM-T100", Printer.TM_T100));
-            seriesAdapter.add(new SpnModelsItem("TM-U220", Printer.TM_U220));
-            seriesAdapter.add(new SpnModelsItem("TM-U330", Printer.TM_U330));
-            seriesAdapter.add(new SpnModelsItem("TM-L90", Printer.TM_L90));
-            seriesAdapter.add(new SpnModelsItem("TM-H6000", Printer.TM_H6000));
             printerModels.setAdapter(seriesAdapter);
 
             btnEpsonConnect.setOnClickListener(new View.OnClickListener() {
@@ -1799,7 +1780,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             @Override
             protected Void doInBackground(Object... objects) {
                 try {
-                    //MUST ADD A RESTART DISCOVERY WHEN OPTION ES SELECTED AGAIN
                     isRestart = epson.FindPrinter(activity, isRestart);
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
