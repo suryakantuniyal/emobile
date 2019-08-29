@@ -279,11 +279,11 @@ public class DeviceUtils {
                 }
             }
         }else if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
-            connectHPEngageOnePrimePrinter(activity,usbDevice);
+            connectHPEngageOnePrimePrinter(activity, usbDevice);
         }
-        if (myPref.isEpson() && usbDevice instanceof EMSEpson){
-            connectEpsonPrinter(activity);
-        }
+//        }else if (myPref.isEpson() && usbDevice instanceof EMSEpson){
+//            connectEpsonPrinter(activity);
+//        }
         ArrayList<Device> connected = new ArrayList(Global.printerDevices);
 
         for (Device device : devices) {
@@ -571,38 +571,6 @@ public class DeviceUtils {
                 device.setName("HP Engage One Prime Printer");
                 device.setId("HP_E1PP");
                 device.setType(String.valueOf(Global.HP_EONEPRIME));
-                device.setRemoteDevice(false);
-                devices.add(device);
-                DeviceTableDAO.insert(devices);
-                Global.printerDevices.add(device);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void connectEpsonPrinter(Context context) {
-        try {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                Global.mainPrinterManager.loadDrivers(context, Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
-            }else{
-                MyPreferences preferences = new MyPreferences(context);
-                preferences.setPrinterType(Global.EPSON);
-                preferences.posPrinter(false, true);
-                preferences.printerAreaSize(false, 58);
-                EMSDeviceManager edm = new EMSDeviceManager();
-                Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(context, Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
-                List<Device> devices = new ArrayList<>();
-                Device device = DeviceTableDAO.getByName("Epson");
-                if (device == null) {
-                    device = new Device();
-                }
-                device.setTextAreaSize(58);
-                device.setEmsDeviceManager(Global.mainPrinterManager);
-                device.setName("Epson");
-                device.setId("EPSON");
-                device.setType(String.valueOf(Global.EPSON));
                 device.setRemoteDevice(false);
                 devices.add(device);
                 DeviceTableDAO.insert(devices);
