@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
+import com.android.emobilepos.holders.Recoveries_Holder;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
@@ -391,9 +392,10 @@ public class OrdersHandler {
         }
     }
 
-    public Order getOrderForRecovery() {
+    public List<Recoveries_Holder> getRecoveriesOrders() {
         Cursor cursor = null;
-        Order order = null;
+        List<Recoveries_Holder> recoveries = new ArrayList<>();
+        List<Order> orders;
 
         try {
             String sb = "SELECT * FROM " + table_name + " o " +
@@ -403,10 +405,15 @@ public class OrdersHandler {
                     "AND ord_type = '5'";
             cursor = DBManager.getDatabase().rawQuery(sb, null);
 
-            if (cursor.moveToFirst()) {
-                order = getOrder(cursor, activity);
+            orders = getOrders(cursor);
+
+            for (Order order : orders) {
+                Recoveries_Holder recovery = new Recoveries_Holder();
+                recovery.setRec_id(order.ord_id);
+                recovery.setRec_name(String.format("%s: %s ", order.ord_id, Global.formatToDisplayDate(order.ord_timecreated, 3)));
+                recoveries.add(recovery);
             }
-            return order;
+            return recoveries;
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();

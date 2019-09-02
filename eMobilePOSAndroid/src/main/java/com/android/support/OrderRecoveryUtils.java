@@ -26,7 +26,7 @@ public class OrderRecoveryUtils {
     public Intent getRecoveryIntent() {
         Intent intent = null;
         OrdersHandler ordersHandler = new OrdersHandler(context);
-        Order order = ordersHandler.getOrderForRecovery();
+        Order order = null;//ordersHandler.getOrderForRecovery();
         if (order != null) {
             Global.lastOrdID = order.ord_id;
             Global.taxID = order.tax_id;

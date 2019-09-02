@@ -122,6 +122,7 @@
     <string name="dlog_title_select_origin_location">Select Origin Location</string>
     <string name="dlog_title_select_destination_location">Select Destination Location</string>
     <string name="dlog_title_customer_display">Customer Display</string>
+    <string name="dlog_title_recovered_orders">Recovered Orders</string>
     <string name="dlog_msg_enter_data">Enter data for each line</string>
 
     <string name="dlog_star_congifure">Configure STAR Printer</string>

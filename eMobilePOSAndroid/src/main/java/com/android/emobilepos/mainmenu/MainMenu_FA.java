@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -29,12 +30,14 @@ import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
 import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
+import com.android.emobilepos.holders.Recoveries_Holder;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.recovery.RecoveriesPickerDlog_FR;
+import com.android.emobilepos.recovery.RecoveriesPicker_Listener;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.OrderRecoveryUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
@@ -205,12 +208,25 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         hasBeenCreated = true;
 
-        OrderRecoveryUtils orderRecoveryUtils = new OrderRecoveryUtils(this);
-        Intent intent = orderRecoveryUtils.getRecoveryIntent();
-        if (intent != null) {
-            // there is an order that needs recovery
-            startActivity(intent);
+//        OrderRecoveryUtils orderRecoveryUtils = new OrderRecoveryUtils(this);
+//        Intent intent = orderRecoveryUtils.getRecoveryIntent();
+//        if (intent != null) {
+//            // there is an order that needs recovery
+//            startActivity(intent);
+//        }
+        RecoveriesPickerDlog_FR picker = new RecoveriesPickerDlog_FR();
+        if (picker.fillAllRecoveries(this)) {
+            final DialogFragment newFrag = picker;
+            picker.setListener(new RecoveriesPicker_Listener() {
+                @Override
+                public void onSelected(Recoveries_Holder recovery) {
+                    newFrag.dismiss();
+                    Recoveries_Holder temp = recovery;
+                }
+            });
+            newFrag.show(this.getSupportFragmentManager(), "dialog");
         }
+
     }
 
     public void registerWithNotificationHubs() {

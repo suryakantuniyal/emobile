@@ -117,6 +117,7 @@
     <string name="dlog_title_select_origin_location">"Seleccione Origen Localización"</string>
     <string name="dlog_title_select_destination_location">"Seleccione la ubicación de destino"</string>
     <string name="dlog_title_customer_display">"Pantalla del cliente"</string>
+    <string name="dlog_title_recovered_orders">"Ordenes Recuperadas"</string>
     <string name="dlog_msg_enter_data">"Introducir datos para cada línea"</string>
 
     <string name="dlog_star_congifure">"Configurar la impresora STAR"</string>
