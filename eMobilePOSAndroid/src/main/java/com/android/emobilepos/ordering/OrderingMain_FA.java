@@ -134,6 +134,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public EMSCallBack callBackMSR;
     public boolean isToGo = true;
     public boolean openFromHold;
+    public boolean openFromRecovery;
     public boolean buildOrderStarted = false;
     public Global global;
     OrderingAction orderingAction = OrderingAction.NONE;
@@ -316,7 +317,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (customField != null) {
             if (customField.getCustFieldId().equalsIgnoreCase("EMS_CARD_ID_NUM") &&
                     (attribute.getAttributeId().equalsIgnoreCase("EMS_CARD_ID_NUM") ||
-                    attribute.getAttributeId().equalsIgnoreCase("membership_id"))) {
+                            attribute.getAttributeId().equalsIgnoreCase("membership_id"))) {
                 attribute.setValue(customField.getCustValue());
                 product.getRequiredProductAttributes().add(attribute);
                 return true;
@@ -403,9 +404,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         setAssociateId(extras.getString("associateId", ""));
 
         openFromHold = extras.getBoolean("openFromHold", false);
+        openFromRecovery = extras.getBoolean("openFromRecovery", false);
         Global.isFromOnHold = openFromHold;
         String onHoldOrderJson = extras.getString("onHoldOrderJson");
         Order onHoldOrder = null;
+        Order recoveryOrder = null;
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
             Gson gson = JsonUtils.getInstance();
             onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
@@ -414,6 +417,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             onHoldOrder.setProductRequiredAttributeCompleted();
             Global.lastOrdID = onHoldOrder.ord_id;
             Global.taxID = onHoldOrder.tax_id;
+        } else if (openFromRecovery) {
+            OrdersHandler ordersHandler = new OrdersHandler(this);
+            String recoveryOrderId = extras.getString("recoveryOrderId");
+            recoveryOrder = ordersHandler.getOrder(recoveryOrderId);
+            recoveryOrder.setProductRequiredAttributeCompleted();
+            Global.lastOrdID = recoveryOrder.ord_id;
+            Global.taxID = recoveryOrder.tax_id;
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
@@ -425,10 +435,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             orientation = getResources().getConfiguration().orientation;
             setCatalogFr(new Catalog_FR());
-            if (onHoldOrder == null) {
-                leftFragment = new Receipt_FR();
+            if (recoveryOrder != null) {
+                leftFragment = Receipt_FR.getInstance(recoveryOrder);
             } else {
-                leftFragment = Receipt_FR.getInstance(onHoldOrder);
+                if (onHoldOrder == null) {
+                    leftFragment = new Receipt_FR();
+                } else {
+                    leftFragment = Receipt_FR.getInstance(onHoldOrder);
+                }
             }
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

@@ -38,6 +38,7 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.OrderRecoveryUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
@@ -208,12 +209,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         hasBeenCreated = true;
 
-//        OrderRecoveryUtils orderRecoveryUtils = new OrderRecoveryUtils(this);
-//        Intent intent = orderRecoveryUtils.getRecoveryIntent();
-//        if (intent != null) {
-//            // there is an order that needs recovery
-//            startActivity(intent);
-//        }
         RecoveriesPickerDlog_FR picker = new RecoveriesPickerDlog_FR();
         if (picker.fillAllRecoveries(this)) {
             final DialogFragment newFrag = picker;
@@ -221,12 +216,17 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 @Override
                 public void onSelected(Recoveries_Holder recovery) {
                     newFrag.dismiss();
-                    Recoveries_Holder temp = recovery;
+                    OrderRecoveryUtils orderRecoveryUtils =
+                            new OrderRecoveryUtils(MainMenu_FA.this);
+                    Intent intent = orderRecoveryUtils.getRecoveryIntent(recovery.getRec_id());
+                    if (intent != null) {
+                        // open order for recovery
+                        startActivity(intent);
+                    }
                 }
             });
             newFrag.show(this.getSupportFragmentManager(), "dialog");
         }
-
     }
 
     public void registerWithNotificationHubs() {
