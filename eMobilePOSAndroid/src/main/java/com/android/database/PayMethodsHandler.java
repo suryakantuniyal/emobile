@@ -47,6 +47,7 @@ public class PayMethodsHandler {
         //SQLiteDatabase db = dbManager.openReadableDB();
         Cursor cursor = null;
         try {
+            String data = "";
             String[] fields = new String[]{paymethod_id};
 
             cursor = DBManager.getDatabase().query(
@@ -56,14 +57,26 @@ public class PayMethodsHandler {
                     "paymentmethod_type= '" + methodType + "' COLLATE NOCASE",
                     null, null, null,
                     null, null);
-            String data = "";
             if (cursor.moveToFirst()) {
                 do {
                     data = cursor.getString(cursor.getColumnIndex(paymethod_id));
                 } while (cursor.moveToNext());
             }
-
             cursor.close();
+
+            if (data.isEmpty()) { // Visa defaulting
+                cursor = DBManager.getDatabase().query(
+                        true,
+                        table_name,
+                        fields,
+                        "paymentmethod_type= 'Visa' COLLATE NOCASE",
+                        null, null, null,
+                        null, null);
+                if (cursor.moveToFirst()) {
+                    data = cursor.getString(cursor.getColumnIndex(paymethod_id));
+                }
+                cursor.close();
+            }
 
             return data;
         } finally {
