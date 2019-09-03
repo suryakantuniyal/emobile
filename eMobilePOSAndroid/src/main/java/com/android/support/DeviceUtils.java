@@ -25,6 +25,7 @@ import com.android.emobilepos.models.realms.RealmString;
 import com.crashlytics.android.Crashlytics;
 import com.elo.device.DeviceManager;
 import com.elo.device.enums.EloPlatform;
+import com.google.common.escape.Escaper;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
@@ -65,6 +66,7 @@ public class DeviceUtils {
             Global.remoteStationsPrinters = new ArrayList<>();
             HashMap<String, Integer> loadedPrinters = new HashMap<>();
             int i = 0;
+            int printer = -1;
             for (Device device : devices) {
                 if (device.isRemoteDevice()) {
                     // these are the remote station printers (aka kitchen printers)
@@ -78,13 +80,26 @@ public class DeviceUtils {
                         edm.getRemoteStationQueue().put(device.getCategoryId(), new ArrayList<Orders>());
                         Global.remoteStationsPrinters.add(edm);
 
-                        if (Global.remoteStationsPrinters.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
-                                "TCP:" + device.getIpAddress(), device.getTcpPort()))
-                            sb.append(device.getIpAddress()).append(": ").append("Connected (Remote Station)\n\r");
-                        else
-                            sb.append(device.getIpAddress()).append(": ").append("Failed to connect (Remote Station)\n\r");
+                        try {
+                            if (device.getType().equalsIgnoreCase("epson")) {
+                                printer = Global.EPSON;
+                            } else if (device.getType().equalsIgnoreCase("star")) {
+                                printer = Global.STAR;
+                            }
+                        }catch(Exception e ){
+                            e.printStackTrace();
+                        }
+                        finally {
+                            if(printer != -1) {
+                                if (Global.remoteStationsPrinters.get(i).loadMultiDriver(activity, printer, 48, true,
+                                        "TCP:" + device.getIpAddress(), device.getTcpPort()))
+                                    sb.append(device.getIpAddress()).append(": ").append("Connected (Remote Station)\n\r");
+                                else
+                                    sb.append(device.getIpAddress()).append(": ").append("Failed to connect (Remote Station)\n\r");
 
-                        i++;
+                            }
+                            i++;
+                        }
                     }
                 }
             }

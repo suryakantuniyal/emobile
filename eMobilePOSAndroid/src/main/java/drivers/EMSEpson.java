@@ -62,7 +62,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private Typeface typefaceBold = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
     private Typeface typefaceBoldItalic = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
     private int FONT_SIZE_NORMAL = 20;
-    private int FONT_SIZE_LARGE = 44;
+    private int FONT_SIZE_LARGE = 30;
 
 
     public boolean FindPrinter(Context activity, boolean isRestart) {
@@ -112,7 +112,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.edm = edm;
         thisInstance = this;
 
-        setupPrinter();
+        setupPrinter(null);
     }
 
     @Override
@@ -124,16 +124,16 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.edm = edm;
         thisInstance = this;
 
-        return setupPrinter();
+        return setupPrinter(_portName);
     }
 
-    private boolean setupPrinter() {
+    private boolean setupPrinter(String kitchenPrinterIP) {
         if (edm.getCurrentDevice() == null || (statusInfo != null && statusInfo.getConnection() == Printer.FALSE)) {
-            if (!initPrinter()) {
+            if (!initPrinter(kitchenPrinterIP)) {
                 Log.e("EMSEpson", "***Could not Initialize to Epson Printer***");
                 isEpsonConnected = false;
                 return false;
-            } else if (!connectPrinter()) {
+            } else if (!connectPrinter(kitchenPrinterIP)) {
                 Log.e("EMSEpson", "***Could not Connect to Epson Printer***");
                 isEpsonConnected = false;
                 return false;
@@ -148,22 +148,24 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
-    private boolean connectPrinter() {
+    private boolean connectPrinter(String kitchenPrinterIP) {
         boolean isBeginTransaction = false;
+        String target = null;
 
         if (epsonPrinter == null) {
             return false;
         }
 
-        if (!myPref.getEpsonTarget().isEmpty()) {
+        target = (kitchenPrinterIP != null) ? kitchenPrinterIP : myPref.getEpsonTarget();
+        if (!target.isEmpty()) {
             try {
-                epsonPrinter.connect(myPref.getEpsonTarget(), Printer.PARAM_DEFAULT);
+                epsonPrinter.connect(target, Printer.PARAM_DEFAULT);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+//            if (!target.equals(kitchenPrinterIP)) {
             PrinterStatusInfo status = epsonPrinter.getStatus();
-
             if (!isPrintable(status)) {
                 try {
                     edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
@@ -180,6 +182,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 //                Toast.makeText(activity, dispPrinterWarnings(status), Toast.LENGTH_SHORT).show();
 //                ShowMsg.showMsg(dispPrinterWarnings(status),activity);
             }
+//            }
             try {
                 epsonPrinter.beginTransaction();
                 isBeginTransaction = true;
@@ -226,8 +229,19 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         epsonPrinter = null;
     }
 
-    private boolean initPrinter() {
-        if (myPref.getEpsonModel() != -1) {
+    private boolean initPrinter(String kitchenPrinterIP) {
+        if (kitchenPrinterIP != null) {
+            try {
+                //THIS DRIVER ONLY SUPPORTS REMOTE STATION PRINTER SERIES TM-U220 FOR NOW...
+                epsonPrinter = new Printer(Printer.TM_U220, 0, activity);
+            } catch (Exception e) {
+                Log.e("EMSEpson", e.toString());
+                e.printStackTrace();
+                return false;
+            }
+            epsonPrinter.setReceiveEventListener(this);
+            return true;
+        } else if (myPref.getEpsonModel() != -1) {
             try {
                 epsonPrinter = new Printer(myPref.getEpsonModel(), 0, activity);
 
@@ -781,6 +795,14 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                     textData.append(receipt.getSpecialHeader());
                 if (receipt.getHeader() != null)
                     textData.append(receipt.getHeader());
+                epsonPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                if (receipt.getRemoteStationHeader() != null) {
+                    epsonPrinter.addTextSize(8, 8);
+                    textData.append(receipt.getRemoteStationHeader());
+                    epsonPrinter.addTextSize(Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT);
+                }
                 if (receipt.getEmvDetails() != null)
                     textData.append(receipt.getEmvDetails());
                 if (receipt.getSeparator() != null)
@@ -788,6 +810,13 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 for (String s : receipt.getItems()) {
                     if (s != null)
                         textData.append(s);
+                }
+                for (String s : receipt.getRemoteStationItems()) {
+                    if (s != null) {
+                        epsonPrinter.addTextSize(8, 8);
+                        textData.append(s);
+                        epsonPrinter.addTextSize(Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT);
+                    }
                 }
                 if (receipt.getSeparator() != null)
                     textData.append(receipt.getSeparator());
@@ -1022,7 +1051,20 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                         receipt.getEnablerWebsite(), FONT_SIZE_NORMAL, PAPER_WIDTH, typeface);
                 rasterImages.add(bitmapFromText);
             }
-
+            if (receipt.getRemoteStationHeader() != null) {
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
+                bitmapFromText = BitmapUtils.createBitmapFromText(
+                        receipt.getRemoteStationHeader(), FONT_SIZE_LARGE, PAPER_WIDTH, typefaceNormal);
+                rasterImages.add(bitmapFromText);
+            }
+            for (String s : receipt.getRemoteStationItems()) {
+                if (s != null) {
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
+                    bitmapFromText = BitmapUtils.createBitmapFromText(
+                            s, FONT_SIZE_LARGE, PAPER_WIDTH, typefaceNormal);
+                    rasterImages.add(bitmapFromText);
+                }
+            }
             for (Bitmap img : rasterImages) {
                 epsonPrinter.addImage(img, 0, 0,
                         img.getWidth(),
@@ -1036,7 +1078,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
             epsonPrinter.addCut(Printer.CUT_FEED);
             epsonPrinter.sendData(Printer.PARAM_DEFAULT);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -1117,7 +1159,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             if (report.getSpecialHeader() != null) {
                 bitmapFromText = BitmapUtils.createBitmapFromText(
                         report.getSpecialHeader(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
-               rasterImages.add(bitmapFromText);
+                rasterImages.add(bitmapFromText);
             }
 
             if (report.getHeader() != null) {
@@ -1216,7 +1258,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 rasterImages.add(bitmapFromText);
             }
 
-            for(Bitmap img : rasterImages){
+            for (Bitmap img : rasterImages) {
                 epsonPrinter.addImage(img, 0, 0,
                         img.getWidth(),
                         img.getHeight(),
@@ -1229,7 +1271,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
             epsonPrinter.addCut(Printer.CUT_FEED);
             epsonPrinter.sendData(Printer.PARAM_DEFAULT);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
