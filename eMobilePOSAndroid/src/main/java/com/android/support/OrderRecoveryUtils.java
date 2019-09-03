@@ -23,47 +23,28 @@ public class OrderRecoveryUtils {
         myPref = new MyPreferences(context);
     }
 
-    public Intent getRecoveryIntent() {
+    public Intent getRecoveryIntent(String orderId) {
         Intent intent = null;
-        OrdersHandler ordersHandler = new OrdersHandler(context);
-        Order order = ordersHandler.getOrderForRecovery();
-        if (order != null) {
-            Global.lastOrdID = order.ord_id;
-            Global.taxID = order.tax_id;
-            Global.OrderType orderType = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
-            selectCustomer(order.cust_id);
-            intent = new Intent(context, OrderingMain_FA.class);
-            String assignedTable = order.assignedTable;
-            intent.putExtra("selectedDinningTableNumber", assignedTable);
-            intent.putExtra("onHoldOrderJson", order.toJson());
-            intent.putExtra("openFromHold", true);
-            if (assignedTable != null && !assignedTable.isEmpty()) {
-                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
-            } else {
-                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+        if (orderId != null) {
+            OrdersHandler ordersHandler = new OrdersHandler(context);
+            Order order = ordersHandler.getOrder(orderId);
+            if (order != null) {
+                selectCustomer(order.cust_id);
+                intent = new Intent(context, OrderingMain_FA.class);
+                String assignedTable = order.assignedTable;
+                intent.putExtra("selectedDinningTableNumber", assignedTable);
+                intent.putExtra("recoveryOrderJson", order.toJson());
+                intent.putExtra("openFromRecovery", true);
+                intent.putExtra("recoveryOrderId", orderId);
+                if (assignedTable != null && !assignedTable.isEmpty()) {
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+                } else {
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                }
+                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                intent.putExtra("associateId", order.associateID);
+                Global.isFromOnHold = true;
             }
-            switch (orderType) {
-                case SALES_RECEIPT:
-                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                    break;
-                case RETURN:
-                    intent.putExtra("option_number", Global.TransactionType.RETURN);
-                    break;
-                case ORDER:
-                    intent.putExtra("option_number", Global.TransactionType.ORDERS);
-                    break;
-                case INVOICE:
-                    intent.putExtra("option_number", Global.TransactionType.INVOICE);
-                    break;
-                case ESTIMATE:
-                    intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
-                    break;
-            }
-            String ord_HoldName = String.format("%s (Order Recovered: %s)",
-                    order.ord_HoldName, order.ord_id);
-            intent.putExtra("ord_HoldName", ord_HoldName);
-            intent.putExtra("associateId", order.associateID);
-            Global.isFromOnHold = true;
         }
 
         return intent;
