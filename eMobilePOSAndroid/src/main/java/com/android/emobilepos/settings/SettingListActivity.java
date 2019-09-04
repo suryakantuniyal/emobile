@@ -34,6 +34,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -376,6 +377,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case ACCOUNT:
                     prefManager.findPreference("pref_change_password").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_backup_settings_global").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_backup_settings").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_restore_settings_global").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_restore_settings").setOnPreferenceClickListener(this);
                     break;
                 case CASH_DRAWER:
                     prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
@@ -607,6 +612,18 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_change_password:
                     changePassword(false, null);
                     break;
+                case R.string.config_backup_settings_global:
+                    backupSettings(true);
+                    break;
+                case R.string.config_backup_settings_local:
+                    backupSettings(false);
+                    break;
+                case R.string.config_restore_settings_global:
+                    restoreSettings(true);
+                    break;
+                case R.string.config_restore_settings_lcoal:
+                    restoreSettings(false);
+                    break;
                 case R.string.config_open_cash_drawer:
                     new Thread(new Runnable() {
                         @Override
@@ -742,6 +759,20 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
             }
             return false;
+        }
+
+        private void restoreSettings(boolean isFromGlobal) {
+            if(isFromGlobal)
+                Log.e("RESTORE","Restore Settings..." + "true");
+            else
+                Log.e("RESTORE","Restore Settings..." + "false");
+        }
+
+        private void backupSettings(boolean isToGlobal){
+            if(isToGlobal)
+                Log.e("BACKUP","Backup Settings..." + "true");
+            else
+                Log.e("BACKUP","Backup Settings..." + "false");
         }
 
         private void openBixolonSetting() {
