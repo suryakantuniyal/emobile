@@ -1052,16 +1052,16 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 rasterImages.add(bitmapFromText);
             }
             if (receipt.getRemoteStationHeader() != null) {
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
                 bitmapFromText = BitmapUtils.createBitmapFromText(
-                        removeNewLine(receipt.getRemoteStationHeader()), FONT_SIZE_LARGE, PAPER_WIDTH, typefaceNormal);
+                        removeNewLine(receipt.getRemoteStationHeader()), FONT_SIZE_LARGE, PAPER_WIDTH, typeface);
                 rasterImages.add(bitmapFromText);
             }
             for (String s : receipt.getRemoteStationItems()) {
                 if (s != null) {
-                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
                     bitmapFromText = BitmapUtils.createBitmapFromText(
-                            s, FONT_SIZE_LARGE, PAPER_WIDTH, typefaceNormal);
+                            s, FONT_SIZE_LARGE, PAPER_WIDTH, typeface);
                     rasterImages.add(bitmapFromText);
                 }
             }
