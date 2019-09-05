@@ -762,17 +762,19 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         }
 
         private void restoreSettings(boolean isFromGlobal) {
-            if(isFromGlobal)
-                Log.e("RESTORE","Restore Settings..." + "true");
-            else
-                Log.e("RESTORE","Restore Settings..." + "false");
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+            if(isFromGlobal){
+                sm.restoreSettings(getActivity(),"");
+            }else{
+                sm.restoreSettings(getActivity(),String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()));
+            }
         }
 
         private void backupSettings(boolean isToGlobal){
-            if(isToGlobal)
-                Log.e("BACKUP","Backup Settings..." + "true");
-            else
-                Log.e("BACKUP","Backup Settings..." + "false");
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+
         }
 
         private void openBixolonSetting() {

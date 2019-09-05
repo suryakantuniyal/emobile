@@ -99,9 +99,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -219,6 +221,19 @@ public class SynchMethods {
         OAuthClient authClient = OAuthManager.getOAuthClient(context);
 
         new AsyncRequestInventoryLocations(context, authClient, listener, url.toString()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void restoreSettings(Context context, String empID) {
+        String requestString;
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        empID = (empID.isEmpty()) ? "0" : empID;
+        requestString = context.getString(R.string.account_settings_restore);
+        StringBuilder url = new StringBuilder(String.format(requestString, empID));
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+
+        new AsyncRestoreSettings(context, authClient, url.toString(), empID).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
@@ -580,14 +595,14 @@ public class SynchMethods {
      ************************************/
 
     private void sendReverse(Object task) {
-        Cursor c=null;
+        Cursor c = null;
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             HashMap<String, String> parsedMap;
 
             PaymentsXML_DB _paymentsXML_DB = new PaymentsXML_DB(context);
-             c = _paymentsXML_DB.getReversePayments();
+            c = _paymentsXML_DB.getReversePayments();
             int size = c.getCount();
             if (size > 0) {
                 if (Global.isForceUpload)
@@ -636,10 +651,8 @@ public class SynchMethods {
             c.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if(c!=null && !c.isClosed())
-            {
+        } finally {
+            if (c != null && !c.isClosed()) {
                 c.close();
             }
         }
@@ -1937,12 +1950,12 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            Cursor c=null;
+            Cursor c = null;
             try {
                 updateProgress(context.getString(R.string.sync_dload_ordersonhold));
 //                synchOrdersOnHoldDetails(context, params[0]);
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(context);
-                 c = orderProdHandler.getOrderProductsOnHold(params[0]);
+                c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
 //                    if (type == 0)
@@ -1954,10 +1967,8 @@ public class SynchMethods {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-            finally {
-                if(c!=null && !c.isClosed())
-                {
+            } finally {
+                if (c != null && !c.isClosed()) {
                     c.close();
                 }
             }
@@ -2130,7 +2141,7 @@ public class SynchMethods {
         private ProgressDialog progressDialog;
         private List<InventoryItem> mList = new ArrayList<>();
 
-        public  AsyncRequestInventoryLocations(Context context,OAuthClient oAuthClient, InventoryLocationSyncCallback listener, String url) {
+        public AsyncRequestInventoryLocations(Context context, OAuthClient oAuthClient, InventoryLocationSyncCallback listener, String url) {
             this.oauth = oAuthClient;
             this.listener = listener;
             this.context = context;
@@ -2189,4 +2200,74 @@ public class SynchMethods {
             listener.inventoryLocationsSynched(mList);
         }
     }
+
+    public class AsyncRestoreSettings extends AsyncTask<Void, Void, Void> {
+
+        private Context context;
+        private String url;
+        private String empID;
+        private OAuthClient oauth;
+        private ProgressDialog progressDialog;
+        private String path;
+
+        public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, String empID) {
+            this.oauth = oAuthClient;
+            this.context = context;
+            this.url = url;
+            this.empID = empID;
+            progressDialog = new ProgressDialog(context);
+            path = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/rset.json";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Restoring Your Settings...");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                try {
+                    String response = oauthclient.HttpClient.getString(url, oauth, true);
+                    saveJSONfile(response);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (KeyManagementException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            return null;
+        }
+
+        private void saveJSONfile(String jsonData) {
+            FileWriter fileWriter;
+            BufferedWriter bufferedWriter;
+            File file = new File(path);
+            try {
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                fileWriter = new FileWriter(file.getAbsoluteFile());
+                bufferedWriter = new BufferedWriter(fileWriter);
+                bufferedWriter.write(jsonData);
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressDialog.dismiss();
+        }
+    }
+
 }
