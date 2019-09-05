@@ -787,6 +787,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     showPrintDlg(false, false, emvContainer);
                 } else if (overAllRemainingBalance <= 0) {
                     boolean addBalance = openGiftCardAddBalance();
+                    Global.overallPaidAmount = 0;
                     finish();
                     if (splitPaymentsCount == 1) {
                         SalesTab_FR.checkAutoLogout(this);
