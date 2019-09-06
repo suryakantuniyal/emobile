@@ -375,45 +375,23 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onBackPressed() {
         if (Global.overallPaidAmount == 0) {
+            if (orderType == Global.OrderType.INVOICE &&
+                    !myPref.isInvoiceRequirePayment() &&
+                    !myPref.isRequireFullPayment()) {
+                setResult(-1);
+                finish();
+                return;
+            }
+            if (orderType == Global.OrderType.INVOICE &&
+                    myPref.isInvoiceRequirePayment()) {
+                showVoidDialog();
+                return;
+            }
             setResult(SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode());
             finish();
         } else {
             if (orderType == Global.OrderType.SALES_RECEIPT || (orderType == Global.OrderType.INVOICE && myPref.isRequireFullPayment())) {
-                final Dialog dialog = new Dialog(this, R.style.Theme_TransparentTest);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setCancelable(true);
-                dialog.setContentView(R.layout.void_dialog_layout);
-                TextView msg1 = dialog.findViewById(R.id.message1textView);
-                TextView msg2 = dialog.findViewById(R.id.message2textView2);
-                String to = orderType.toTitleCase();
-                msg1.setText(String.format(getString(R.string.void_confirmation_message1), to));
-                msg2.setText(String.format(getString(R.string.void_confirmation_message2), to));
-
-                Button voidBut = dialog.findViewById(R.id.voidBut);
-                Button notVoid = dialog.findViewById(R.id.notVoidBut);
-
-                voidBut.setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-
-                        if (myPref.getPreferences(MyPreferences.pref_require_manager_pass_to_void_trans)) {
-                            dialog.dismiss();
-                            promptManagerPassword();
-                        } else {
-                            dialog.dismiss();
-                            voidTransaction(SelectPayMethod_FA.this, job_id, orderType.name());
-                        }
-                    }
-                });
-                notVoid.setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
+                showVoidDialog();
             } else {
 
                 if (job_id != null) {
@@ -439,6 +417,44 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 }
             }
         }
+    }
+
+    private void showVoidDialog() {
+        final Dialog dialog = new Dialog(this, R.style.Theme_TransparentTest);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.void_dialog_layout);
+        TextView msg1 = dialog.findViewById(R.id.message1textView);
+        TextView msg2 = dialog.findViewById(R.id.message2textView2);
+        String to = orderType.toTitleCase();
+        msg1.setText(String.format(getString(R.string.void_confirmation_message1), to));
+        msg2.setText(String.format(getString(R.string.void_confirmation_message2), to));
+
+        Button voidBut = dialog.findViewById(R.id.voidBut);
+        Button notVoid = dialog.findViewById(R.id.notVoidBut);
+
+        voidBut.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if (myPref.getPreferences(MyPreferences.pref_require_manager_pass_to_void_trans)) {
+                    dialog.dismiss();
+                    promptManagerPassword();
+                } else {
+                    dialog.dismiss();
+                    voidTransaction(SelectPayMethod_FA.this, job_id, orderType.name());
+                }
+            }
+        });
+        notVoid.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     private void initIntents(Bundle extras, final Intent intent) {
@@ -787,6 +803,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     showPrintDlg(false, false, emvContainer);
                 } else if (overAllRemainingBalance <= 0) {
                     boolean addBalance = openGiftCardAddBalance();
+                    Global.overallPaidAmount = 0;
                     finish();
                     if (splitPaymentsCount == 1) {
                         SalesTab_FR.checkAutoLogout(this);

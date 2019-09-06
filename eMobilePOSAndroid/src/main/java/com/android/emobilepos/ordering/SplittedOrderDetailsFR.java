@@ -450,12 +450,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         } else if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
             removeCheckoutOrder(summaryFa);
             if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 0) {
-//                DBManager dbManager = new DBManager(getActivity());
-//                SynchMethods sm = new SynchMethods(dbManager);
-//                sm.synchSendOnHold(false, true, getActivity(), restaurantSplitedOrder.ord_id);
+                OrdersHandler ordersHandler = new OrdersHandler(getActivity());
+                ordersHandler.updateIsProcessed(restaurantSplitedOrder.ord_id, "1");
                 new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
-//                getActivity().setResult(-1);
-//                getActivity().finish();
             } else {
                 summaryFa.getOrderDetailsFR().setReceiptOrder((SplittedOrder) summaryFa.getOrderSummaryFR().getGridView().getAdapter().getItem(0));
             }

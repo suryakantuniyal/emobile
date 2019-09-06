@@ -88,7 +88,7 @@
     <dimen name="sync_adapter_1">300dp</dimen>
     <dimen name="sync_connection_text_size">17sp</dimen>
     <dimen name="sync_pending_text_size">17sp</dimen>
-    <dimen name="sync_pending_content_text_size">16sp</dimen>
+    <dimen name="sync_pending_content_text_size">14sp</dimen>
     <dimen name="sync_date_text_size">15sp</dimen>
 
     <dimen name="about_main_text_size">14sp</dimen>
