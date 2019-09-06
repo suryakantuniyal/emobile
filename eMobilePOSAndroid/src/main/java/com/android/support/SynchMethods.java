@@ -2209,6 +2209,7 @@ public class SynchMethods {
         private OAuthClient oauth;
         private ProgressDialog progressDialog;
         private String path;
+        private JsonUtils jsonUtils = new JsonUtils();
 
         public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, String empID) {
             this.oauth = oAuthClient;
@@ -2233,7 +2234,7 @@ public class SynchMethods {
             try {
                 try {
                     String response = oauthclient.HttpClient.getString(url, oauth, true);
-                    saveJSONfile(response);
+                    jsonUtils.saveJSONfileInPath(response,path);
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 } catch (KeyManagementException e) {
@@ -2246,25 +2247,43 @@ public class SynchMethods {
             return null;
         }
 
-        private void saveJSONfile(String jsonData) {
-            FileWriter fileWriter;
-            BufferedWriter bufferedWriter;
-            File file = new File(path);
-            try {
-                if (!file.exists()) {
-                    file.createNewFile();
-                }
-                fileWriter = new FileWriter(file.getAbsoluteFile());
-                bufferedWriter = new BufferedWriter(fileWriter);
-                bufferedWriter.write(jsonData);
-                bufferedWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressDialog.dismiss();
+            new ApplySettings(context,path).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    private class ApplySettings extends AsyncTask<Void, Void, String> {
+
+        private Context context;
+        private ProgressDialog progressDialog;
+        private String path;
+        private JsonUtils jsonUtils = new JsonUtils();
+
+        public ApplySettings(Context context,String path) {
+            this.context = context;
+            this.path = path;
+            progressDialog = new ProgressDialog(context);
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Applying Your Settings...");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return jsonUtils.readJSONfileFromPath(path);
+        }
+
+        @Override
+        protected void onPostExecute(String aVoid) {
             super.onPostExecute(aVoid);
             progressDialog.dismiss();
         }
