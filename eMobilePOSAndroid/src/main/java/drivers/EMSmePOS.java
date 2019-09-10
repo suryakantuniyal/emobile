@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.widget.Toast;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -182,8 +181,9 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
-        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+//        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
+        return false;
     }
 
     @Override
@@ -315,9 +315,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

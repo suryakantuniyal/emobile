@@ -122,9 +122,9 @@ public class EMSPaxA920 extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID,
-                                      boolean cutPaper, boolean printHeader) {
-        return printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+//        return printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+        return false;
     }
 
     @Override

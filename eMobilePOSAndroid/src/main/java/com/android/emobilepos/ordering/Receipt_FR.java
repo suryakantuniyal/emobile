@@ -102,9 +102,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import drivers.EMSBluetoothStarPrinter;
-import drivers.star.utils.PrinterFunctions;
 import interfaces.PayWithLoyalty;
 import main.EMSDeviceManager;
 import util.StringUtil;
@@ -881,7 +880,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             }
         });
         dialog.show();
-        if(myPref.isAPT120()){
+        if (myPref.isAPT120()) {
             Window window = dialog.getWindow();
             window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         }
@@ -2207,32 +2206,43 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             } else {
                 OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
                         getActivity());
-                HashMap<String, List<Orders>> temp = orderProductsHandler
+                HashMap<String, List<Orders>> orderProductsByCategories = orderProductsHandler
                         .getStationPrinterProducts(orderId);
 
-                String[] sArr = temp.keySet().toArray(
-                        new String[temp.keySet().size()]);
-                int printMap;
-                boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
-                EMSBluetoothStarPrinter currentDevice = null;
-                boolean printHeader = true;
-                StringBuffer receipt = new StringBuffer();
-                for (String aSArr : sArr) {
-                    if (Global.multiPrinterMap.containsKey(aSArr)) {
-                        printMap = Global.multiPrinterMap.get(aSArr);
-                        if (Global.multiPrinterManager.get(printMap) != null
-                                && Global.multiPrinterManager.get(printMap).getCurrentDevice() != null) {
-
-                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).getCurrentDevice();
-                            if (currentDevice != null) {
-                                receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
-                                        orderId, splitByCat, printHeader));
-                                currentDevice.printRemote(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
-                                receipt.setLength(0);
-                            }
+                // fill items to be printed on remote stations
+                for (EMSDeviceManager emsDeviceManager : Global.remoteStationsPrinters) {
+                    for (Map.Entry opBycat : orderProductsByCategories.entrySet()) {
+                        if (emsDeviceManager.getRemoteStationQueue().containsKey(opBycat.getKey())) {
+                            emsDeviceManager.getRemoteStationQueue().get(opBycat.getKey())
+                                    .addAll((List<Orders>) opBycat.getValue());
                         }
                     }
                 }
+
+                boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
+                List<Orders> queueAccum = new ArrayList<>();
+
+                // print on remote stations
+                for (EMSDeviceManager emsDeviceManager : Global.remoteStationsPrinters) {
+                    for (Map.Entry queue : emsDeviceManager.getRemoteStationQueue().entrySet()) {
+                        List<Orders> ordersList = (List<Orders>) queue.getValue();
+                        if (ordersList.size() > 0) {
+                            if (!splitByCat) {
+                                queueAccum.addAll(ordersList);
+                            } else {
+                                emsDeviceManager.getCurrentDevice().printRemoteStation(
+                                        ordersList, orderId);
+                            }
+                        }
+                        ordersList.clear(); // empty queue
+                    }
+                    if (!splitByCat && queueAccum.size() > 0) {
+                        emsDeviceManager.getCurrentDevice().printRemoteStation(
+                                queueAccum, orderId);
+                        queueAccum.clear(); // empty accum queue
+                    }
+                }
+
                 // mark all as printed (todo: improve this loop)
                 for (OrderProduct op : getOrderingMainFa().global.order.getOrderProducts()) {
                     op.setPrinted(true);

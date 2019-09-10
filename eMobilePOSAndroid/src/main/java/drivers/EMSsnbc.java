@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
@@ -331,10 +330,10 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
         openUsbInterface();
-        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
-
+//        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
+        return false;
     }
 
     @Override
@@ -406,9 +405,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(splittedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

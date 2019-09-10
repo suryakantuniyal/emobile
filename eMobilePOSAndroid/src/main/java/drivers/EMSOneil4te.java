@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
@@ -30,7 +29,6 @@ import com.android.support.CreditCardInfo;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.starmicronics.stario.StarIOPortException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -252,9 +250,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JAException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
@@ -495,95 +490,8 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 */
 
     @Override
-    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
-//        try {
-//
-//            if (!device.getIsOpen())
-//                device.open();
-//
-//            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-//            printPref = myPref.getPrintingPreferences();
-//            OrdersHandler orderHandler = new OrdersHandler(activity);
-//            OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
-//            DBManager dbManager = new DBManager(activity);
-//            // SQLiteDatabase db = dbManager.openWritableDB();
-//            Order anOrder = orderHandler.getPrintedOrder(ordID);
-//
-//            StringBuilder sb = new StringBuilder();
-//            int size = orders.size();
-//
-//            if (!anOrder.ord_HoldName.isEmpty())
-//                sb.append(getString(R.string.receipt_name)).append(anOrder.ord_HoldName).append("\n");
-//
-//            sb.append(getString(R.string.order)).append(": ").append(ordID).append("\n");
-//            sb.append(getString(R.string.receipt_started)).append(" ")
-//                    .append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 4)).append("\n");
-//
-//            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-//            sdf1.setTimeZone(Calendar.getInstance().getTimeZone());
-//            Date startedDate = sdf1.parse(anOrder.ord_timecreated);
-//            Date sentDate = new Date();
-//
-//            sb.append(getString(R.string.receipt_sent_by)).append(" ").append(myPref.getEmpName()).append(" (");
-//
-//            if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60)
-//                sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), activity, 4)).append(")\n\n");
-//            else
-//                sb.append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 4)).append(")\n\n");
-//
-//            device.write(sb.toString().getBytes(FORMAT));
-//
-//            sb.setLength(0);
-//
-//            int m = 0;
-//            for (int i = 0; i < size; i++) {
-//
-//                if (orders.get(i).getHasAddon().equals("1")) {
-//                    m = i;
-//                    ordProdHandler.updateIsPrinted(orders.get(m).getOrdprodID());
-//                    sb.append(orders.get(m).getQty()).append("x ").append(orders.get(m).getName()).append("\n");
-//                    if (!orders.get(m).getAttrDesc().isEmpty())
-//                        sb.append("  [").append(orders.get(m).getAttrDesc()).append("]\n");
-//                    for (int j = i + 1; j < size; j++) {
-//                        ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
-//                        if (orders.get(j).getIsAdded().equals("1"))
-//                            sb.append("  ").append(orders.get(j).getName()).append("\n");
-//                        else
-//                            sb.append("  NO ").append(orders.get(j).getName()).append("\n");
-//
-//                        if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
-//                            i = j;
-//                            break;
-//                        }
-//                    }
-//
-//                    device.write(sb.toString().getBytes(FORMAT));
-//                    sb.setLength(0);
-//
-//                } else {
-//                    ordProdHandler.updateIsPrinted(orders.get(i).getOrdprodID());
-//                    sb.append(orders.get(i).getQty()).append("x ").append(orders.get(i).getName()).append("\n");
-//
-//                    device.write(sb.toString().getBytes(FORMAT));
-//                    sb.setLength(0);
-//                }
-//            }
-//            sb.append(textHandler.newLines(3));
-//            device.write(sb.toString().getBytes(FORMAT));
-//
-//            // db.close();
-//
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//
-//        } finally {
-//            if (device != null && device.getIsOpen())
-//                device.close();
-//        }
-        return "";
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+        return false;
     }
 
     @Override
@@ -663,9 +571,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             // TODO Auto-generated catch block
             // e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JAException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
@@ -981,9 +886,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

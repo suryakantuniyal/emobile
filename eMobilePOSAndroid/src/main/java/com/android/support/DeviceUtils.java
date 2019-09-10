@@ -19,6 +19,7 @@ import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.RealmString;
 import com.crashlytics.android.Crashlytics;
@@ -34,10 +35,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSHPEngageOnePrimePrinter;
 import drivers.EMSPowaPOS;
+import drivers.EMSStar;
 import drivers.EMSmePOS;
 import drivers.EMSsnbc;
 import io.realm.RealmList;
@@ -56,34 +57,38 @@ public class DeviceUtils {
         final MyPreferences myPref = new MyPreferences(activity);
         final StringBuilder sb = new StringBuilder();
         List<Device> devices = DeviceTableDAO.getAll();
-        HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
         connectStarTS650BT(activity);
-        if (forceReload || Global.multiPrinterMap.size() != devices.size()) {
-            Global.multiPrinterMap = new HashMap<>();
+
+        if (forceReload) {
+            Global.remoteStationsPrinters = new ArrayList<>();
+            HashMap<String, Integer> loadedPrinters = new HashMap<>();
             int i = 0;
             for (Device device : devices) {
                 if (device.isRemoteDevice()) {
-                    if (tempMap.containsKey(device.getIpAddress())) {
-                        Global.multiPrinterMap.put(device.getCategoryId(), tempMap.get(device.getIpAddress()));
+                    // these are the remote station printers (aka kitchen printers)
+                    if (loadedPrinters.containsKey(device.getIpAddress())) {
+                        (Global.remoteStationsPrinters.get(loadedPrinters.get(device.getIpAddress())))
+                                .getRemoteStationQueue().put(device.getCategoryId(), new ArrayList<Orders>());
                     } else {
-                        tempMap.put(device.getIpAddress(), i);
-                        Global.multiPrinterMap.put(device.getCategoryId(), i);
+                        loadedPrinters.put(device.getIpAddress(), i);
 
                         edm = new EMSDeviceManager();
-                        Global.multiPrinterManager.add(edm);
+                        edm.getRemoteStationQueue().put(device.getCategoryId(), new ArrayList<Orders>());
+                        Global.remoteStationsPrinters.add(edm);
 
-                        if (Global.multiPrinterManager.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
+                        if (Global.remoteStationsPrinters.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
                                 "TCP:" + device.getIpAddress(), device.getTcpPort()))
-                            sb.append(device.getIpAddress()).append(": ").append("Connected\n\r");
+                            sb.append(device.getIpAddress()).append(": ").append("Connected (Remote Station)\n\r");
                         else
-                            sb.append(device.getIpAddress()).append(": ").append("Failed to connect\n\r");
+                            sb.append(device.getIpAddress()).append(": ").append("Failed to connect (Remote Station)\n\r");
 
                         i++;
                     }
                 }
             }
         }
+
         EMSDeviceDriver usbDevice = getUSBDeviceDriver(activity);
         if (usbDevice instanceof EMSPowaPOS) {
             myPref.setIsMEPOS(false);
@@ -248,8 +253,6 @@ public class DeviceUtils {
             int txtAreaSize = myPref.printerAreaSize(true, -1);
             if (myPref.getPrinterType() != Global.POWA
                     && myPref.getPrinterType() != Global.MEPOS
-                    && myPref.getPrinterType() != Global.MIURA
-//                    && myPref.getPrinterType() != Global.ELOPAYPOINT
                     && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                     if (!Global.mainPrinterManager.getCurrentDevice().isConnected()) {
@@ -470,7 +473,7 @@ public class DeviceUtils {
                 preferences.setPrinterMACAddress(portName);
                 preferences.posPrinter(false, true);
                 preferences.printerAreaSize(false, 48);
-                EMSBluetoothStarPrinter aDevice = new EMSBluetoothStarPrinter();
+                EMSStar aDevice = new EMSStar();
                 Global.mainPrinterManager = edm.getManager();
                 aDevice.autoConnect((Activity) context, edm, 48, true, preferences.getPrinterMACAddress(), "");
                 List<Device> devices = new ArrayList<>();

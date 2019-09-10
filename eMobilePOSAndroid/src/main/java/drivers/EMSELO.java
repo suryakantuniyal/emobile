@@ -11,7 +11,6 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
@@ -39,7 +38,6 @@ import com.magtek.mobile.android.mtlib.MTConnectionType;
 import com.magtek.mobile.android.mtlib.MTEMVEvent;
 import com.magtek.mobile.android.mtlib.MTSCRA;
 import com.magtek.mobile.android.mtlib.MTSCRAEvent;
-import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
 import java.io.IOException;
@@ -299,25 +297,25 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
-        try {
-            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
-                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
-                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
-                return receipt;
-            } else {
-                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-                eloPrinterApi = new PrinterAPI(eloPrinterPort);
-                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
-                eloPrinterPort.getInputStream().close();
-                eloPrinterPort.getOutputStream().close();
-                eloPrinterPort.close();
-                return receipt;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+//        try {
+//            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+//                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+//                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+//                return receipt;
+//            } else {
+//                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+//                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+//                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+//                eloPrinterPort.getInputStream().close();
+//                eloPrinterPort.getOutputStream().close();
+//                eloPrinterPort.close();
+//                return receipt;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        return false;
     }
 
     @Override
@@ -520,14 +518,12 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 eloPrinterPort.getOutputStream().close();
                 eloPrinterPort.close();
             }
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

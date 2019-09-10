@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.widget.Toast;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
@@ -31,7 +30,6 @@ import com.printer.command.PrinterCom;
 import com.printer.io.PortParameters;
 import com.printer.io.PrinterDevice;
 import com.printer.service.PrinterPrintService;
-import com.starmicronics.stario.StarIOPortException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -253,8 +251,9 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
-        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
+    public boolean printRemoteStation(List<Orders> orders, String ordID) {
+//        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
+        return false;
     }
 
     @Override
@@ -368,9 +367,7 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
         try {
             setPaperWidth(LINE_WIDTH);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
