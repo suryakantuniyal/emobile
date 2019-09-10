@@ -1,6 +1,7 @@
 package com.android.emobilepos.models.response;
 
 import com.android.emobilepos.models.response.restoresettings.*;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

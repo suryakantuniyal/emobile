@@ -6,14 +6,14 @@ import java.util.List;
 
 public class kioskSettings {
     @SerializedName("customerDisplayTerminal")
-    private List<customerDisplayTerminal> customerDisplayTerminal;
+    private customerDisplayTerminal customerDisplayTerminal;
 
 
-    public List<customerDisplayTerminal> getCustomerDisplayTerminal() {
+    public customerDisplayTerminal getCustomerDisplayTerminal() {
         return customerDisplayTerminal;
     }
 
-    public void setCustomerDisplayTerminal(List<customerDisplayTerminal> customerDisplayTerminal) {
+    public void setCustomerDisplayTerminal(customerDisplayTerminal customerDisplayTerminal) {
         this.customerDisplayTerminal = customerDisplayTerminal;
     }
 }

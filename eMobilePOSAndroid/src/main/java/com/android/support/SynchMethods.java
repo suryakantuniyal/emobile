@@ -68,7 +68,6 @@ import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.response.BackupSettings;
-import com.android.emobilepos.models.response.BuildSettingsResponse;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.models.xml.EMSPayment;
@@ -90,7 +89,6 @@ import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonReader;
 
 import org.json.JSONArray;
@@ -117,8 +115,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2205,7 +2201,7 @@ public class SynchMethods {
         }
     }
 
-    public class AsyncRestoreSettings extends AsyncTask<Void, Void, JsonArray> {
+    public class AsyncRestoreSettings extends AsyncTask<Void, Void, BuildSettings[]> {
 
         private Context context;
         private String url;
@@ -2213,7 +2209,7 @@ public class SynchMethods {
         private OAuthClient oauth;
         private ProgressDialog progressDialog;
         private String path;
-        private JsonArray mSettings;
+        private BuildSettings[] mSettings;
 
         public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, String empID) {
             this.oauth = oAuthClient;
@@ -2234,13 +2230,11 @@ public class SynchMethods {
         }
 
         @Override
-        protected JsonArray doInBackground(Void... params) {
+        protected BuildSettings[] doInBackground(Void... params) {
             try {
                 String response = oauthclient.HttpClient.getString(url, oauth, true);
                 Gson gson = JsonUtils.getInstance();
-//                Type listType = new com.google.gson.reflect.TypeToken<JsonArray>(){}.getType();
-//                mSettings = gson.fromJson(response, listType);
-                BuildSettingsResponse buildSettingsResponse = gson.fromJson(response, BuildSettingsResponse.class);
+                mSettings = gson.fromJson(response, BuildSettings[].class);
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
                 return null;
@@ -2256,7 +2250,7 @@ public class SynchMethods {
         }
 
         @Override
-        protected void onPostExecute(JsonArray mSettings) {
+        protected void onPostExecute(BuildSettings[] mSettings) {
             progressDialog.dismiss();
             new ApplySettings(context, mSettings).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -2266,10 +2260,10 @@ public class SynchMethods {
 
         private Context context;
         private ProgressDialog progressDialog;
-        private JsonArray mSettings;
+        private BuildSettings[] mSettings;
         private BackupSettings backupSettings = new BackupSettings();
 
-        public ApplySettings(Context context,JsonArray mSettings) {
+        public ApplySettings(Context context,BuildSettings[] mSettings) {
             this.context = context;
             this.mSettings = mSettings;
 //            this.path = path;

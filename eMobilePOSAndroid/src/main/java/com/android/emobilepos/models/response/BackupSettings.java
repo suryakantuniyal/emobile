@@ -14,8 +14,14 @@ public class BackupSettings {
 
     Gson gson = new Gson();
 
-    public void restoreMySettings(JsonArray mSettings) {
+    public void restoreMySettings(BuildSettings[] mSettings) {
 //        preferences.setPreferences("pref_fast_scanning_mode",false);
+
+        for(BuildSettings build : mSettings){
+        }
+
+
+
 //        for (JsonElement element : mSettings) {
 //            if(element.isJsonObject()){
 //                JsonObject object = element.getAsJsonObject();
@@ -24,12 +30,7 @@ public class BackupSettings {
 //                }
 //            }
 //        }
-        for (JsonElement element : mSettings){
-            JsonObject object = element.getAsJsonObject();
-//            Type listType = new com.google.gson.reflect.TypeToken<BuildSettings>(){}.getType();
-            BuildSettings settings = gson.fromJson(mSettings,BuildSettings.class);
-        }
-//                settings.getGeneralSettings();
+
     }
 
     public void backupMySettings(List<BuildSettings> mSettings) {
