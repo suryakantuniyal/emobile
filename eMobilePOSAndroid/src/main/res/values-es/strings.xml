@@ -1064,9 +1064,11 @@
     <string name="paymentmethod_subtotal_amount">"Total parcial"</string>
     <string name="privu_state">"PR IVU 10.5"</string>
     <string name="privu_city">"PR IVU 1"</string>
+    <string name="privu_reducido">"PR IVU REDUCIDO"</string>
     <string name="paymethod_subtotal_amount_label">"Total parcial"</string>
     <string name="paymethod_tax1_amount_label">"Tax1"</string>
     <string name="paymethod_tax2_amount_label">"Tax2"</string>
+    <string name="paymethod_tax3_amount_label">"Tax3"</string>
     <string name="processing_payment_msg">"Procesando el pago…"</string>
     <string name="error_status_code">"Código: %s\n%s"</string>
     <string name="changeLbl">"Cambio:"</string>

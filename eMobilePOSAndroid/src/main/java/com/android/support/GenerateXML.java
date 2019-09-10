@@ -1541,6 +1541,9 @@ public class GenerateXML {
                     serializer.startTag(empstr, "Tax2");
                     serializer.text(p.getTax2_amount());
                     serializer.endTag(empstr, "Tax2");
+                    serializer.startTag(empstr, "Tax3");
+                    serializer.text(p.getTax3_amount());
+                    serializer.endTag(empstr, "Tax3");
                     serializer.endTag(empstr, "ivuLotto");
                 }
                 buildInvoicePayment(serializer, payID);
@@ -2727,6 +2730,9 @@ public class GenerateXML {
                         serializer.startTag(empstr, "Tax2");
                         serializer.text(c.getString(c.getColumnIndex("Tax2_amount")));
                         serializer.endTag(empstr, "Tax2");
+                        serializer.startTag(empstr, "Tax3");
+                        serializer.text(c.getString(c.getColumnIndex("Tax3_amount")));
+                        serializer.endTag(empstr, "Tax3");
 
                         serializer.endTag(empstr, "ivuLotto");
                     }

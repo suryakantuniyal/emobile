@@ -11,11 +11,13 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
  */
 public abstract class AbstractPaymentFA extends BaseFragmentActivityActionBar {
 
-    public static void calculateAmountDue(EditText subtotal, EditText tax1, EditText tax2, EditText amount) {
+    public static void calculateAmountDue(EditText subtotal, EditText tax1, EditText tax2,
+                                          EditText tax3, EditText amount) {
         double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         double tax1Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1));
         double tax2Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2));
-        double amountDueDbl = subtotalDbl + tax1Dbl + tax2Dbl;
+        double tax3Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax3));
+        double amountDueDbl = subtotalDbl + tax1Dbl + tax2Dbl + tax3Dbl;
 
         amount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(amountDueDbl)));
     }

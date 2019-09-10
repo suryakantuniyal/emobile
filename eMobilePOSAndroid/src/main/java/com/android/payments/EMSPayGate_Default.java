@@ -951,6 +951,10 @@ public class EMSPayGate_Default {
         serializer.text(TextUtils.isEmpty(payment.getTax2_amount()) ? "0" : payment.getTax2_amount());
         serializer.endTag(empstr, "Tax2");
 
+        serializer.startTag(empstr, "Tax3"); // Reducido
+        serializer.text(TextUtils.isEmpty(payment.getTax3_amount()) ? "0" : payment.getTax3_amount());
+        serializer.endTag(empstr, "Tax3");
+
         serializer.endTag(empstr, "EvertecTaxes");
     }
 

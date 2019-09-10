@@ -25,8 +25,10 @@ public class PaymentDetails {
     private String job_id;
     private String Tax1_amount;
     private String Tax2_amount;
+    private String Tax3_amount;
     private String Tax1_name;
     private String Tax2_name;
+    private String Tax3_name;
     private String pay_tip;
     private String pay_comment;
     private String group_pay_id;
@@ -202,6 +204,14 @@ public class PaymentDetails {
         Tax2_amount = tax2_amount;
     }
 
+    public String getTax3_amount() {
+        return Tax3_amount;
+    }
+
+    public void setTax3_amount(String tax3_amount) {
+        Tax3_amount = tax3_amount;
+    }
+
     public String getTax1_name() {
         return Tax1_name;
     }
@@ -216,6 +226,14 @@ public class PaymentDetails {
 
     public void setTax2_name(String tax2_name) {
         Tax2_name = tax2_name;
+    }
+
+    public String getTax3_name() {
+        return Tax3_name;
+    }
+
+    public void setTax3_name(String tax3_name) {
+        Tax3_name = tax3_name;
     }
 
     public String getPay_tip() {

@@ -103,6 +103,8 @@ public class PaymentsHandler {
     private final String Tax1_name = "Tax1_name";
     private final String Tax2_amount = "Tax2_amount";
     private final String Tax2_name = "Tax2_name";
+    private final String Tax3_amount = "Tax3_amount";
+    private final String Tax3_name = "Tax3_name";
     private final String EMVJson = "EMV_JSON";
     public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
             inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
@@ -111,7 +113,7 @@ public class PaymentsHandler {
             pay_expmonth, pay_expyear, pay_expdate, pay_result, pay_date, recordnumber, pay_signature, authcode, status,
             job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
             tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
-            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, EMVJson, amount_tender);
+            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, Tax3_amount, Tax3_name, custidkey, original_pay_id, EMVJson, amount_tender);
 
 
     private StringBuilder sb1, sb2;
@@ -267,6 +269,8 @@ public class PaymentsHandler {
             dbUtils.bindString(index(Tax1_name), payment.getTax1_name() == null ? "" : payment.getTax1_name());
             dbUtils.bindString(index(Tax2_amount), TextUtils.isEmpty(payment.getTax2_amount()) ? "0" : payment.getTax2_amount());
             dbUtils.bindString(index(Tax2_name), payment.getTax2_name() == null ? "" : payment.getTax2_name());
+            dbUtils.bindString(index(Tax3_amount), TextUtils.isEmpty(payment.getTax3_amount()) ? "0" : payment.getTax3_amount());
+            dbUtils.bindString(index(Tax3_name), payment.getTax3_name() == null ? "" : payment.getTax3_name());
             dbUtils.bindString(index(EMVJson), payment.getEmvContainer() == null ? "" : new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
 
 
@@ -729,6 +733,8 @@ public class PaymentsHandler {
         payment.setTax1_name(c.getString(c.getColumnIndex(Tax1_name)));
         payment.setTax2_amount(c.getString(c.getColumnIndex(Tax2_amount)));
         payment.setTax2_name(c.getString(c.getColumnIndex(Tax2_name)));
+        payment.setTax3_amount(c.getString(c.getColumnIndex(Tax3_amount)));
+        payment.setTax3_name(c.getString(c.getColumnIndex(Tax3_name)));
         payment.setCard_type(c.getString(c.getColumnIndex(card_type)));
         payment.setCustidkey(c.getString(c.getColumnIndex(custidkey)));
         payment.setOriginal_pay_id(c.getString(c.getColumnIndex(original_pay_id)));
@@ -999,7 +1005,7 @@ public class PaymentsHandler {
                                     + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                     "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON "
+                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax3_amount as Tax3_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.Tax3_name as Tax3_name, p.EMV_JSON as EMV_JSON "
                                     + "FROM Payments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
                                     + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND job_id ='" + payID + "' " +
                                     " UNION " +
@@ -1009,7 +1015,7 @@ public class PaymentsHandler {
                                     + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                     "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON "
+                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax3_amount as Tax3_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.Tax3_name as Tax3_name, p.EMV_JSON as EMV_JSON "
                                     + "FROM PaymentsDeclined p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
                                     + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id  AND job_id ='" + payID + "')" +
                                     " WHERE job_id ='" + payID + "' "
@@ -1026,7 +1032,7 @@ public class PaymentsHandler {
                                     + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                     "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
+                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax3_amount as Tax3_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.Tax3_name as Tax3_name, p.EMV_JSON as EMV_JSON  "
                                     + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                                     + "PayMethods m ON p.paymethod_id = m.paymethod_id  " +
                                     "  WHERE pay_id = '" + payID + "'" +
@@ -1037,7 +1043,7 @@ public class PaymentsHandler {
                                     + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                     "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
+                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax3_amount as Tax3_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.Tax3_name as Tax3_name, p.EMV_JSON as EMV_JSON  "
                                     + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                                     + "PayMethods m ON p.paymethod_id = m.paymethod_id" +
                                     "  WHERE pay_id = '" + payID + "'" +
@@ -1054,7 +1060,7 @@ public class PaymentsHandler {
                                     + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
                                     "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
+                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax3_amount as Tax3_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.Tax3_name as Tax3_name, p.EMV_JSON as EMV_JSON  "
                                     + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                                     + "PayMethods m ON p.paymethod_id = m.paymethod_id " +
                                     "  WHERE pay_id = '" + payID + "'" +
@@ -1065,7 +1071,7 @@ public class PaymentsHandler {
                                     + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature, p.authcode as authcode, "
                                     + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
                                     "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
+                                    + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax3_amount as Tax3_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.Tax3_name as Tax3_name, p.EMV_JSON as EMV_JSON  "
                                     + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                                     + "PayMethods m ON p.paymethod_id = m.paymethod_id " +
                                     "  WHERE pay_id = '" + payID + "'" +
@@ -1110,8 +1116,10 @@ public class PaymentsHandler {
 
                     payDetail.setTax1_name(cursor.getString(cursor.getColumnIndex(Tax1_name)));
                     payDetail.setTax2_name(cursor.getString(cursor.getColumnIndex(Tax2_name)));
+                    payDetail.setTax3_name(cursor.getString(cursor.getColumnIndex(Tax3_name)));
                     payDetail.setTax1_amount(cursor.getString(cursor.getColumnIndex(Tax1_amount)));
                     payDetail.setTax2_amount(cursor.getString(cursor.getColumnIndex(Tax2_amount)));
+                    payDetail.setTax3_amount(cursor.getString(cursor.getColumnIndex(Tax3_amount)));
                     payDetail.setEmvContainer(new Gson().fromJson(cursor.getString(cursor.getColumnIndex(EMVJson)), EMVContainer.class));
 
                 } while (cursor.moveToNext());
@@ -1529,6 +1537,8 @@ public class PaymentsHandler {
             insert.bindString(index(Tax1_name), payment.getTax1_name() == null ? "" : payment.getTax1_name());
             insert.bindString(index(Tax2_amount), TextUtils.isEmpty(payment.getTax2_amount()) ? "0" : payment.getTax2_amount());
             insert.bindString(index(Tax2_name), payment.getTax2_name() == null ? "" : payment.getTax2_name());
+            insert.bindString(index(Tax3_amount), TextUtils.isEmpty(payment.getTax3_amount()) ? "0" : payment.getTax3_amount());
+            insert.bindString(index(Tax3_name), payment.getTax3_name() == null ? "" : payment.getTax3_name());
             insert.bindString(index(EMVJson), payment.getEmvContainer() == null ? "" : new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
 
             insert.execute();

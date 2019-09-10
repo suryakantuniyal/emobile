@@ -235,6 +235,38 @@
                     </TableRow>
 
                     <TableRow
+                        android:id="@+id/row4Gift"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/tax3GiftCardLbl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|start"
+                            android:text="@string/paymethod_tax3_amount_label"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size" />
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/tax3GiftAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:digits="0123456789"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:nextFocusDown="@+id/fieldPaidAmount"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size" />
+                    </TableRow>
+
+                    <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
