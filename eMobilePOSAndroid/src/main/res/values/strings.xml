@@ -959,6 +959,7 @@
     <string name="config_enable_printing">Enable Printing</string>
     <string name="config_printek_info">Printek Info</string>
     <string name="config_star_info">Star Info</string>
+    <string name="config_epson_model">Epson Setup</string>
     <string name="config_snbc_setup">SNBC Setup</string>
     <string name="config_set_printing_preferences">Set Printing Preferences</string>
     <string name="config_automatic_printing">Automatic Printing</string>
@@ -1471,4 +1472,21 @@
     <string name="dlog_sales_item_check_inventory_location_text">Location</string>
     <string name="dlog_sales_item_check_inventory_quantity_text">Quantity</string>
 
+    <!--EPSON STRING VALUES-->
+    <string name="handlingmsg_warn_receipt_near_end">Roll paper is nearly end.\n</string>
+    <string name="handlingmsg_warn_battery_near_end">Battery level of printer is low.\n</string>
+    <string name="handlingmsg_err_no_response">Please check the connection of the printer and the mobile terminal.\nConnection get lost.\n</string>
+    <string name="handlingmsg_err_cover_open">Please close roll paper cover.\n</string>
+    <string name="handlingmsg_err_receipt_end">Please check roll paper.\n</string>
+    <string name="handlingmsg_err_paper_feed">Please release a paper feed switch.\n</string>
+    <string name="handlingmsg_err_autocutter">Please remove jammed paper and close roll paper cover.\nRemove any jammed paper or foreign substances in the printer, and then turn the printer off and turn the printer on again.\n</string>
+    <string name="handlingmsg_err_need_recover">Then, If the printer doesn\'t recover from error, please cycle the power switch.\n</string>
+    <string name="handlingmsg_err_unrecover">Please cycle the power switch of the printer.\nIf same errors occurred even power cycled, the printer may out of order.</string>
+    <string name="handlingmsg_err_overheat">Please wait until error LED of the printer turns off. \n</string>
+    <string name="handlingmsg_err_head">Print head of printer is hot.\n</string>
+    <string name="handlingmsg_err_motor">Motor Driver IC of printer is hot.\n</string>
+    <string name="handlingmsg_err_battery">Battery of printer is hot.\n</string>
+    <string name="handlingmsg_err_wrong_paper">Please set correct roll paper.\n</string>
+    <string name="handlingmsg_err_battery_real_end">Please connect AC adapter or change the battery.\nBattery of printer is almost empty.\n</string>
+    <string name="handlingmsg_err_offline">Printer is offline.\n</string>
 </resources>

@@ -191,6 +191,8 @@ public class MyPreferences {
     private final String rsa_pub_key = "rsa_pub_key";
     private final String aes_key = "aes_key";
     private final String aes_iv = "aes_iv";
+    private final String epsonModel = "Epson_Model";
+    private final String epsonTarget = "Epson_Target";
     public Context context;
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
@@ -888,6 +890,21 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public void setEpsonTarget(String value) {
+        prefEditor.putString(epsonTarget, value);
+        prefEditor.commit();
+    }
+    public String getEpsonTarget() {
+        return prefs.getString(epsonTarget,"");
+    }
+    public void setEpsonModel(int value) {
+        prefEditor.putInt(epsonModel, value);
+        prefEditor.commit();
+    }
+    public int getEpsonModel() {
+        return prefs.getInt(epsonModel, -1);
+    }
+
     /*
      * public void setIsMagtekReader(boolean val) {
      * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
@@ -1011,6 +1028,18 @@ public class MyPreferences {
 
     public boolean setHPEOnePrime(boolean value) {
         String device_hp = "device_HP_EOnePrime";
+        prefEditor.putBoolean(device_hp, value);
+        prefEditor.commit();
+        return false;
+    }
+
+    public boolean isEpson() {
+        String device_hp = "device_Epson";
+        return prefs.getBoolean(device_hp, false);
+    }
+
+    public boolean setEpson(boolean value) {
+        String device_hp = "device_Epson";
         prefEditor.putBoolean(device_hp, value);
         prefEditor.commit();
         return false;

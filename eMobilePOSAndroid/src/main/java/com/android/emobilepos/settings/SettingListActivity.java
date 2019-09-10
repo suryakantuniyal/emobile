@@ -44,6 +44,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,6 +74,7 @@ import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
+import com.epson.epos2.printer.Printer;
 import com.microsoft.azure.storage.StorageException;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
@@ -89,10 +92,15 @@ import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import drivers.EMSDeviceDriver;
+import drivers.EMSEpson;
+import drivers.epson.EpsonDevices;
+import drivers.epson.SpnModelsItem;
 import io.realm.Realm;
 import main.EMSDeviceManager;
 
@@ -255,6 +263,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private List<String> macAddressList = new ArrayList<>();
         private CheckBoxPreference storeForwardFlag;
         private Preference defaultCountry, storeForwardTransactions;
+        boolean isRestart = false;
 
         private int getLayoutId(SettingListActivity.SettingSection settingSection) {
             switch (settingSection) {
@@ -361,6 +370,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         prefManager.findPreference("pref_multiple_devices_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_epson_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_bixolon_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_configure_ingenico_settings").setOnPreferenceClickListener(this);
@@ -637,6 +647,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_star_info:
                     promptStarPrinter();
+                    break;
+                case R.string.config_epson_model:
+                    promptEpsonSetup(getActivity());
                     break;
                 case R.string.config_snbc_setup:
                     promptSNBCSetup();
@@ -1174,6 +1187,76 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             dlog.show();
         }
 
+        private void promptEpsonSetup(Activity activity) {
+            new FindEpsonDevices(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
+        public void loadEpsonDlogSetup(Activity activity){
+            SimpleAdapter mPrinterListAdapter = null;
+            EpsonDevices epsonDeviceList = new EpsonDevices();
+
+            promptDialog = new Dialog(activity, R.style.Theme_TransparentTest);
+            promptDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            promptDialog.setCancelable(true);
+            promptDialog.setContentView(R.layout.config_epson_setup_layout);
+
+            final Button btnEpsonConnect = promptDialog.findViewById(R.id.btnConnectEpson);
+            final Spinner epsonDevicesDropDown = promptDialog.findViewById(R.id.spinnerEpsonDevices);
+            final Spinner printerModels = promptDialog.findViewById(R.id.spinnerEpsonModels);
+
+            mPrinterListAdapter = new SimpleAdapter(activity,
+                    Global.epson_device_list,
+                    R.layout.config_epson_setup_device_selection_item,
+                    new String[] { "PrinterName", "Target" },
+                    new int[] { R.id.PrinterName, R.id.Target });
+            epsonDevicesDropDown.setAdapter(mPrinterListAdapter);
+            epsonDevicesDropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    HashMap<String, String> hashmap = Global.epson_device_list.get(position);
+                    String target = hashmap.get("Target");
+                    myPref.setEpsonTarget(target);
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            });
+
+
+            ArrayAdapter<SpnModelsItem> seriesAdapter = new ArrayAdapter<SpnModelsItem>(activity, android.R.layout.simple_spinner_item,epsonDeviceList.getDeviceList());
+            seriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            printerModels.setAdapter(seriesAdapter);
+
+            btnEpsonConnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    myPref.setPrinterType(Global.EPSON);
+                    myPref.setEpsonModel(((SpnModelsItem)printerModels.getSelectedItem()).getModelConstant());
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                        Global.mainPrinterManager.loadDrivers(getActivity(), Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
+                    }else {
+                        EMSDeviceManager edm = new EMSDeviceManager();
+                        Global.mainPrinterManager = edm.getManager();
+                        Global.mainPrinterManager.loadDrivers(getActivity(), Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
+                        List<Device> list = new ArrayList<>();
+                        Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.EPSON));
+                        if (device == null) {
+                            device = new Device();
+                        }
+                        device.setId(String.format("USB:%s", Global.EPSON));
+                        device.setName(Global.getPeripheralName(Global.EPSON));
+                        device.setType(String.valueOf(Global.EPSON));
+                        device.setRemoteDevice(false);
+                        device.setEmsDeviceManager(Global.mainPrinterManager);
+                        list.add(device);
+                        DeviceTableDAO.insert(list);
+                        Global.printerDevices.add(device);
+                    }
+                    promptDialog.dismiss();
+                }
+            });
+            promptDialog.show();
+        }
+
         private void ipAddressFilter(EditText et) {
             et.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             // et.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -1676,6 +1759,42 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 //            }
 //        }
 
+        public class FindEpsonDevices extends AsyncTask<Object,Void,Void>{
+            EMSEpson epson = new EMSEpson();
+            private ProgressDialog progressDialog;
+            private Activity activity;
+
+            public FindEpsonDevices(Activity activity) {
+                this.activity = activity;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog = new ProgressDialog(activity);
+                progressDialog.setCancelable(true);
+                progressDialog.setTitle("EPSON");
+                progressDialog.setMessage("Searching for Epson Devices...");
+                progressDialog.show();
+            }
+
+            @Override
+            protected Void doInBackground(Object... objects) {
+                try {
+                    isRestart = epson.FindPrinter(activity, isRestart);
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                progressDialog.dismiss();
+                loadEpsonDlogSetup(activity);
+            }
+        }
     }
 
     private static class Redetect extends AsyncTask<Void, Void, String> {

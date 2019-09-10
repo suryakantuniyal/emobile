@@ -141,6 +141,7 @@ public class Global extends MultiDexApplication {
     public static final int HP_EONEPRIME = 28;
 
     public static final int APT_50 = 29;
+    public static final int EPSON = 30;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -281,6 +282,7 @@ public class Global extends MultiDexApplication {
     public static List<OrderProduct> cons_issue_products = new ArrayList<OrderProduct>();
     public static Order cons_issue_order;
     public static HashMap<String, String> cons_issue_qtyCounter = new HashMap<String, String>();
+    public static ArrayList<HashMap<String, String>> epson_device_list = new ArrayList<HashMap<String, String>>();
     public static List<OrderProduct> cons_return_products = new ArrayList<OrderProduct>();
     public static Order cons_return_order;
     public static HashMap<String, String> cons_return_qtyCounter = new HashMap<String, String>();
@@ -378,6 +380,9 @@ public class Global extends MultiDexApplication {
                 break;
             case HP_EONEPRIME:
                 _name = "HPEngageOnePrimePrinter";
+                break;
+            case EPSON:
+                _name = "EPSON";
                 break;
             case MAGTEK:
                 _name = "MAGTEK";

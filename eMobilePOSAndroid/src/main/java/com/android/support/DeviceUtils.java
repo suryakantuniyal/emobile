@@ -25,6 +25,7 @@ import com.android.emobilepos.models.realms.RealmString;
 import com.crashlytics.android.Crashlytics;
 import com.elo.device.DeviceManager;
 import com.elo.device.enums.EloPlatform;
+import com.google.common.escape.Escaper;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 import drivers.EMSDeviceDriver;
+import drivers.EMSEpson;
 import drivers.EMSHPEngageOnePrimePrinter;
 import drivers.EMSPowaPOS;
 import drivers.EMSStar;
@@ -64,6 +66,7 @@ public class DeviceUtils {
             Global.remoteStationsPrinters = new ArrayList<>();
             HashMap<String, Integer> loadedPrinters = new HashMap<>();
             int i = 0;
+            int printer = -1;
             for (Device device : devices) {
                 if (device.isRemoteDevice()) {
                     // these are the remote station printers (aka kitchen printers)
@@ -77,13 +80,26 @@ public class DeviceUtils {
                         edm.getRemoteStationQueue().put(device.getCategoryId(), new ArrayList<Orders>());
                         Global.remoteStationsPrinters.add(edm);
 
-                        if (Global.remoteStationsPrinters.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
-                                "TCP:" + device.getIpAddress(), device.getTcpPort()))
-                            sb.append(device.getIpAddress()).append(": ").append("Connected (Remote Station)\n\r");
-                        else
-                            sb.append(device.getIpAddress()).append(": ").append("Failed to connect (Remote Station)\n\r");
+                        try {
+                            if (device.getType().equalsIgnoreCase("epson")) {
+                                printer = Global.EPSON;
+                            } else if (device.getType().equalsIgnoreCase("star")) {
+                                printer = Global.STAR;
+                            }
+                        }catch(Exception e ){
+                            e.printStackTrace();
+                        }
+                        finally {
+                            if(printer != -1) {
+                                if (Global.remoteStationsPrinters.get(i).loadMultiDriver(activity, printer, 48, true,
+                                        "TCP:" + device.getIpAddress(), device.getTcpPort()))
+                                    sb.append(device.getIpAddress()).append(": ").append("Connected (Remote Station)\n\r");
+                                else
+                                    sb.append(device.getIpAddress()).append(": ").append("Failed to connect (Remote Station)\n\r");
 
-                        i++;
+                            }
+                            i++;
+                        }
                     }
                 }
             }
@@ -278,8 +294,11 @@ public class DeviceUtils {
                 }
             }
         }else if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
-            connectHPEngageOnePrimePrinter(activity,usbDevice);
+            connectHPEngageOnePrimePrinter(activity, usbDevice);
         }
+//        }else if (myPref.isEpson() && usbDevice instanceof EMSEpson){
+//            connectEpsonPrinter(activity);
+//        }
         ArrayList<Device> connected = new ArrayList(Global.printerDevices);
 
         for (Device device : devices) {
@@ -322,6 +341,9 @@ public class DeviceUtils {
             Log.d("USB product ID:", String.valueOf(device.getProductId()));
             int productId = device.getProductId();
             switch (productId) {
+                case 514:
+                    preferences.setEpson(true);
+                    return new EMSEpson();
                 case 3690:
                     preferences.setHPEOnePrime(true);
                     return new EMSHPEngageOnePrimePrinter();
