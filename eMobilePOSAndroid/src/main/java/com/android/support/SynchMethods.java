@@ -67,6 +67,8 @@ import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.response.BackupSettings;
+import com.android.emobilepos.models.response.BuildSettingsResponse;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.models.xml.EMSPayment;
@@ -88,6 +90,7 @@ import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonReader;
 
 import org.json.JSONArray;
@@ -99,11 +102,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -116,6 +117,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -132,6 +135,7 @@ import interfaces.InventoryLocationSyncCallback;
 import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
+import com.android.emobilepos.models.response.BuildSettings;
 import util.XmlUtils;
 import util.json.JsonUtils;
 
@@ -2201,7 +2205,7 @@ public class SynchMethods {
         }
     }
 
-    public class AsyncRestoreSettings extends AsyncTask<Void, Void, Void> {
+    public class AsyncRestoreSettings extends AsyncTask<Void, Void, JsonArray> {
 
         private Context context;
         private String url;
@@ -2209,7 +2213,7 @@ public class SynchMethods {
         private OAuthClient oauth;
         private ProgressDialog progressDialog;
         private String path;
-        private JsonUtils jsonUtils = new JsonUtils();
+        private JsonArray mSettings;
 
         public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, String empID) {
             this.oauth = oAuthClient;
@@ -2230,41 +2234,45 @@ public class SynchMethods {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected JsonArray doInBackground(Void... params) {
             try {
-                try {
-                    String response = oauthclient.HttpClient.getString(url, oauth, true);
-                    jsonUtils.saveJSONfileInPath(response,path);
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (KeyManagementException e) {
-                    e.printStackTrace();
-                }
+                String response = oauthclient.HttpClient.getString(url, oauth, true);
+                Gson gson = JsonUtils.getInstance();
+//                Type listType = new com.google.gson.reflect.TypeToken<JsonArray>(){}.getType();
+//                mSettings = gson.fromJson(response, listType);
+                BuildSettingsResponse buildSettingsResponse = gson.fromJson(response, BuildSettingsResponse.class);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                return null;
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+                return null;
             } catch (IOException e) {
                 e.printStackTrace();
                 Crashlytics.logException(e);
+                return null;
             }
-            return null;
+            return mSettings;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(JsonArray mSettings) {
             progressDialog.dismiss();
-            new ApplySettings(context,path).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new ApplySettings(context, mSettings).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
-    private class ApplySettings extends AsyncTask<Void, Void, String> {
+    private class ApplySettings extends AsyncTask<Void, Void, Void> {
 
         private Context context;
         private ProgressDialog progressDialog;
-        private String path;
-        private JsonUtils jsonUtils = new JsonUtils();
+        private JsonArray mSettings;
+        private BackupSettings backupSettings = new BackupSettings();
 
-        public ApplySettings(Context context,String path) {
+        public ApplySettings(Context context,JsonArray mSettings) {
             this.context = context;
-            this.path = path;
+            this.mSettings = mSettings;
+//            this.path = path;
             progressDialog = new ProgressDialog(context);
         }
 
@@ -2278,12 +2286,14 @@ public class SynchMethods {
         }
 
         @Override
-        protected String doInBackground(Void... params) {
-            return jsonUtils.readJSONfileFromPath(path);
+        protected Void doInBackground(Void... params) {
+            backupSettings.restoreMySettings(mSettings);
+//            preferences.setPreferences("pref_fast_scanning_mode",false);
+            return null;
         }
 
         @Override
-        protected void onPostExecute(String aVoid) {
+        protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             progressDialog.dismiss();
         }
