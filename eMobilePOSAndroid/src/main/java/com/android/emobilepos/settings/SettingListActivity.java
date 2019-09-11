@@ -765,7 +765,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
             if(isFromGlobal){
-                sm.restoreSettings(getActivity(),"");
+                sm.restoreSettings(getActivity(),"0");
             }else{
                 sm.restoreSettings(getActivity(),String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()));
             }

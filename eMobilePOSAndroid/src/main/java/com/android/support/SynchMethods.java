@@ -233,7 +233,7 @@ public class SynchMethods {
         StringBuilder url = new StringBuilder(String.format(requestString, empID));
         OAuthClient authClient = OAuthManager.getOAuthClient(context);
 
-        new AsyncRestoreSettings(context, authClient, url.toString(), empID).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new AsyncRestoreSettings(context, authClient, url.toString(), empID, preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
@@ -2203,19 +2203,19 @@ public class SynchMethods {
 
     public class AsyncRestoreSettings extends AsyncTask<Void, Void, BuildSettings[]> {
 
-        private Context context;
         private String url;
         private String empID;
         private OAuthClient oauth;
         private ProgressDialog progressDialog;
         private String path;
         private BuildSettings[] mSettings;
+        private MyPreferences preferences;
 
-        public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, String empID) {
+        public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, String empID, MyPreferences preferences) {
             this.oauth = oAuthClient;
-            this.context = context;
             this.url = url;
             this.empID = empID;
+            this.preferences = preferences;
             progressDialog = new ProgressDialog(context);
             path = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/rset.json";
         }
@@ -2252,22 +2252,21 @@ public class SynchMethods {
         @Override
         protected void onPostExecute(BuildSettings[] mSettings) {
             progressDialog.dismiss();
-            new ApplySettings(context, mSettings).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new ApplySettings(mSettings,preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
     private class ApplySettings extends AsyncTask<Void, Void, Void> {
 
-        private Context context;
         private ProgressDialog progressDialog;
         private BuildSettings[] mSettings;
-        private BackupSettings backupSettings = new BackupSettings();
+        private BackupSettings backupSettings;
+        private MyPreferences preferences;
 
-        public ApplySettings(Context context,BuildSettings[] mSettings) {
-            this.context = context;
+        public ApplySettings(BuildSettings[] mSettings, MyPreferences preferences) {
             this.mSettings = mSettings;
-//            this.path = path;
             progressDialog = new ProgressDialog(context);
+            this.preferences = preferences;
         }
 
         @Override
@@ -2281,8 +2280,8 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
+            backupSettings = new BackupSettings(preferences);
             backupSettings.restoreMySettings(mSettings);
-//            preferences.setPreferences("pref_fast_scanning_mode",false);
             return null;
         }
 

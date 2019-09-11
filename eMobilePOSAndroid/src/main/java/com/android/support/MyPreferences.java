@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -11,6 +12,7 @@ import android.util.Base64;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.R;
 
 import java.security.AccessControlException;
 import java.security.Guard;
@@ -1158,19 +1160,15 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    // public void setMainMenuSettings(boolean[] values)
-    // {
-    // global.initSalesMenuTab(this.context);
-    // String[] mainMenuList = global.getSalesMainMenuList();
-    //
-    // int size = values.length;
-    //
-    // for(int i = 0 ; i < size ;i++)
-    // {
-    // prefEditor.putBoolean(mainMenuList[i], values[i]);
-    // }
-    // prefEditor.commit();
-    // }
+    public void setMainMenuSettings(boolean values[]) {
+//        global.initSalesMenuTab(this.context);
+//        String[] mainMenuList = global.getSalesMainMenuList();
+        String[] mainMenuList = context.getResources().getStringArray(R.array.mainMenuArray);
+        for (int i = 0; i < values.length; i++) {
+            prefEditor.putBoolean(mainMenuList[i], values[i]);
+        }
+        prefEditor.commit();
+    }
 
     public boolean[] getMainMenuPreference() {
         int NUM_OF_ITEMS = 17;
