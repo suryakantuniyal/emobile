@@ -252,16 +252,23 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
                 payment.setTax2_amount(extras.getString("Tax2_amount"));
                 payment.setTax2_name(extras.getString("Tax2_name"));
+
+                payment.setTax3_amount(extras.getString("Tax3_amount"));
+                payment.setTax3_name(extras.getString("Tax3_name"));
             } else {
                 BigDecimal tempRate;
                 double tempPayAmount = Global.formatNumFromLocale(formatedNumber);
-                tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
+                tempRate = new BigDecimal(tempPayAmount * 0.105).setScale(2, BigDecimal.ROUND_UP);
                 payment.setTax1_amount(tempRate.toPlainString());
                 payment.setTax1_name("Estatal");
 
                 tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
                 payment.setTax2_amount(tempRate.toPlainString());
                 payment.setTax2_name("Municipal");
+
+                tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
+                payment.setTax3_amount(tempRate.toPlainString());
+                payment.setTax3_name("Reducido");
             }
         }
     }

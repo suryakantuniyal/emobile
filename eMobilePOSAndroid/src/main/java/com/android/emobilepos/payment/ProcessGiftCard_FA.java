@@ -51,6 +51,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.TaxesCalculator;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.bbpos.bbdevice.BBDeviceController;
@@ -111,7 +112,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private Activity activity;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;
-    private EditText subtotal, tax1, tax2;
+    private EditText subtotal, tax1, tax2, tax3;
     private List<GroupTax> groupTaxRate;
     private ProgressDialog myProgressDialog;
     private String inv_id, custidkey;
@@ -132,7 +133,11 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private List<ProcessCardResponse> cardResponses;
     private EMSPayGate_Default.EAction rewardAction = EMSPayGate_Default.EAction.ChargeRewardAction;
     private Button paxSwipe;
-
+    String orderSubTotal;
+    String cardType;
+    private TextView tax1Lbl;
+    private TextView tax2Lbl;
+    private TextView tax3Lbl;
 
     @Override
     protected void onResumeFragments() {
@@ -153,6 +158,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         Bundle extras = getIntent().getExtras();
         boolean isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
+        orderSubTotal = extras.getString("ord_subtotal", "0");
 
         Global.isEncryptSwipe = true;
         myPref = new MyPreferences(activity);
@@ -171,20 +177,36 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         subtotal = findViewById(R.id.subtotalGiftAmount);
         tax1 = findViewById(R.id.tax1GiftAmount);
         tax2 = findViewById(R.id.tax2GiftAmount);
-        TextView tax1Lbl = findViewById(R.id.tax1GiftCardLbl);
-        TextView tax2Lbl = findViewById(R.id.tax2GiftCardLbl);
+        tax3 = findViewById(R.id.tax3GiftAmount);
+        tax1Lbl = findViewById(R.id.tax1GiftCardLbl);
+        tax2Lbl = findViewById(R.id.tax2GiftCardLbl);
+        tax3Lbl = findViewById(R.id.tax3GiftCardLbl);
         msrTextWatcher = new GiftCardTextWatcher(activity, fieldHidden, fieldCardNum, cardInfoManager, Global.isEncryptSwipe);
+
+        cardType = extras.getString("paymentmethod_type", "");
+
+        TaxesCalculator.setIvuTaxesLabels(groupTaxRate, tax1Lbl, tax2Lbl, tax3Lbl);
+        subtotal.setText(Global.formatDoubleToCurrency(0.00));
+        tax1.setText(Global.formatDoubleToCurrency(0.00));
+        tax2.setText(Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
+        tax3.setText(Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
+        if (!cardType.equalsIgnoreCase("LOYALTYCARD")) {
+            subtotal.setText(Global.getCurrencyFormat(orderSubTotal));
+            if (!isFromMainMenu && global.order != null) {
+                TaxesCalculator.setIvuTaxesFields(global.order, tax1, tax2, tax3);
+            }
+        }
+
         if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.row1Gift).setVisibility(View.GONE);
             findViewById(R.id.row2Gift).setVisibility(View.GONE);
             findViewById(R.id.row3Gift).setVisibility(View.GONE);
-
+            findViewById(R.id.row4Gift).setVisibility(View.GONE);
         } else {
             subtotal.addTextChangedListener(getTextWatcher(subtotal));
             tax1.addTextChangedListener(getTextWatcher(tax1));
             tax2.addTextChangedListener(getTextWatcher(tax2));
-            ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
-
+            tax3.addTextChangedListener(getTextWatcher(tax3));
         }
         if (myPref.isPrefillTotalAmount()) {
             this.fieldAmountTendered.setText(
@@ -202,12 +224,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         }
         email = extras.getString("ord_email", "");
         phone = extras.getString("ord_phone", "");
-        subtotal.setText(
-                Global.formatDoubleToCurrency(0.00));
-        tax1.setText(
-                Global.formatDoubleToCurrency(0.00));
-        tax2.setText(
-                Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
         fieldHidden.addTextChangedListener(msrTextWatcher);
         Button btnExact = findViewById(R.id.exactAmountBut);
         Button btnProcess = findViewById(R.id.processButton);
@@ -286,13 +302,14 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             public void afterTextChanged(Editable s) {
                 switch (editText.getId()) {
                     case R.id.subtotalGiftAmount: {
-                        ProcessCash_FA.calculateTaxes(groupTaxRate, editText, tax1, tax2);
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, fieldAmountDue);
+                        TaxesCalculator.setIvuTaxesFields(groupTaxRate, editText, tax1, tax2, tax3);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, fieldAmountDue);
                         break;
                     }
+                    case R.id.tax3GiftAmount:
                     case R.id.tax2GiftAmount:
                     case R.id.tax1GiftAmount: {
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, fieldAmountDue);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, fieldAmountDue);
                         break;
                     }
                 }
@@ -469,7 +486,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         Bundle extras = activity.getIntent().getExtras();
         payHandler = new PaymentsHandler(activity);
         payment = new Payment(activity);
-        String cardType = extras.getString("paymentmethod_type");
         payment.setPay_id(extras.getString("pay_id"));
 
         payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
@@ -525,20 +541,13 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
             payment.setIvuLottoNumber(ivuLottoNum);
             payment.setIvuLottoDrawDate(drawDate);
-            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
-                payment.setTax1_amount(extras.getString("Tax1_amount"));
-                payment.setTax1_name(extras.getString("Tax1_name"));
 
-                payment.setTax2_amount(extras.getString("Tax2_amount"));
-                payment.setTax2_name(extras.getString("Tax2_name"));
-            } else {
-                payment.setTax1_amount(Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1))));
-                if (groupTaxRate.size() > 0)
-                    payment.setTax1_name(groupTaxRate.get(0).getTaxName());
-                payment.setTax2_amount(Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2))));
-                if (groupTaxRate.size() > 1)
-                    payment.setTax2_name(groupTaxRate.get(1).getTaxName());
-            }
+            payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1));
+            payment.setTax1_name(tax1Lbl.getText().toString());
+            payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2));
+            payment.setTax2_name(tax2Lbl.getText().toString());
+            payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3));
+            payment.setTax3_name(tax3Lbl.getText().toString());
         }
 
 

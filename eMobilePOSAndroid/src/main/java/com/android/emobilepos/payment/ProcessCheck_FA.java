@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,13 +40,13 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +67,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
     private boolean timedOut = false;
     private boolean isFromSalesReceipt = false;
+    private boolean isFromMainMenu = false;
     private EditText[] field;
 
     private boolean isMultiInvoice = false, isOpenInvoice = false;
@@ -96,9 +96,13 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
     private double amountTender = 0, actualAmount = 0;
     private Button btnProcess;
     private TextView tvCheckChange;
-    private EditText subtotal, tax1, tax2, amountField;//,tipAmount,promptTipField
+    private EditText subtotal, tax1, tax2, tax3, amountField;
+    String orderSubTotal;
     private List<GroupTax> groupTaxRate;
     private AssignEmployee assignEmployee;
+    private TextView tax1Lbl;
+    private TextView tax2Lbl;
+    private TextView tax3Lbl;
 
 
     @Override
@@ -127,10 +131,12 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         subtotal = findViewById(R.id.subtotalCashEdit);
         tax1 = findViewById(R.id.tax1CashEdit);
         tax2 = findViewById(R.id.tax2CashEdit);
-        TextView tax1Lbl = findViewById(R.id.tax1CashLbl);
-        TextView tax2Lbl = findViewById(R.id.tax2CashLbl);
+        tax3 = findViewById(R.id.tax3CashEdit);
+        tax1Lbl = findViewById(R.id.tax1CashLbl);
+        tax2Lbl = findViewById(R.id.tax2CashLbl);
+        tax3Lbl = findViewById(R.id.tax3CashLbl);
         groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
-        ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
+        TaxesCalculator.setIvuTaxesLabels(groupTaxRate, tax1Lbl, tax2Lbl, tax3Lbl);
         amountField = findViewById(R.id.checkAmount);
         amountField.addTextChangedListener(getTextWatcher(amountField));
         amountField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -197,13 +203,18 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         this.field[this.CHECK_AMOUNT].setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         field[CHECK_AMOUNT_PAID].setText(Global.formatDoubleToCurrency(0));
 
+        orderSubTotal = extras.getString("ord_subtotal", "0");
+
         isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
-        boolean isFromMainMenu = extras.getBoolean("isFromMainMenu");
+        isFromMainMenu = extras.getBoolean("isFromMainMenu");
 
         if (!isFromMainMenu || Global.isIvuLoto) {
             this.field[this.CHECK_AMOUNT].setEnabled(false);
         }
 
+        if (!isFromMainMenu && global.order != null) {
+            TaxesCalculator.setIvuTaxesFields(global.order, tax1, tax2, tax3);
+        }
 
         Button exactBut = findViewById(R.id.exactAmountBut);
         btnProcess = findViewById(R.id.processCheckBut);
@@ -261,9 +272,12 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
             findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
             findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow4).setVisibility(View.GONE);
         } else {
             setIVUPOSFieldListeners();
         }
+
+        subtotal.setText(Global.getCurrencyFormat(orderSubTotal));
 
         hasBeenCreated = true;
     }
@@ -299,12 +313,22 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
             }
         });
+        tax3.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {
+                    Selection.setSelection(tax3.getText(), tax3.getText().length());
+                }
+
+            }
+        });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                NumberUtils.parseInputedCurrency(s, subtotal);
-                if (!isFromSalesReceipt) {
-                    ProcessCash_FA.calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
-                    ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+//                NumberUtils.parseInputedCurrency(s, subtotal);
+                if (isFromMainMenu) {
+                    TaxesCalculator.setIvuTaxesFields(groupTaxRate, subtotal, tax1, tax2, tax3);
+                    ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, amountField);
                 }
                 recalculateChange();
 
@@ -319,7 +343,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         });
         tax1.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, amountField);
                 recalculateChange();
             }
 
@@ -332,7 +356,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         });
         tax2.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, amountField);
                 recalculateChange();
 
             }
@@ -342,6 +366,19 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 NumberUtils.parseInputedCurrency(s, tax2);
+            }
+        });
+        tax3.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, amountField);
+                recalculateChange();
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                NumberUtils.parseInputedCurrency(s, tax3);
             }
         });
     }
@@ -474,23 +511,12 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
             payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
 
-            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
-                payment.setTax1_amount(extras.getString("Tax1_amount"));
-                payment.setTax1_name(extras.getString("Tax1_name"));
-
-                payment.setTax2_amount(extras.getString("Tax2_amount"));
-                payment.setTax2_name(extras.getString("Tax2_name"));
-            } else {
-                BigDecimal tempRate;
-                double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
-                tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                payment.setTax1_amount(tempRate.toPlainString());
-                payment.setTax1_name("Estatal");
-
-                tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                payment.setTax2_amount(tempRate.toPlainString());
-                payment.setTax2_name("Municipal");
-            }
+            payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1));
+            payment.setTax1_name(tax1Lbl.getText().toString());
+            payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2));
+            payment.setTax2_name(tax2Lbl.getText().toString());
+            payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3));
+            payment.setTax3_name(tax3Lbl.getText().toString());
         }
 
         payment.setCard_type("Check");
@@ -666,23 +692,12 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
             payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
 
-            if (!extras.getString("Tax1_amount").isEmpty()) {
-                payment.setTax1_amount(extras.getString("Tax1_amount"));
-                payment.setTax1_name(extras.getString("Tax1_name"));
-
-                payment.setTax2_amount(extras.getString("Tax2_amount"));
-                payment.setTax2_name(extras.getString("Tax2_name"));
-            } else {
-                BigDecimal tempRate;
-                double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
-                tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                payment.setTax1_amount(tempRate.toPlainString());
-                payment.setTax1_name("Estatal");
-
-                tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                payment.setTax2_amount(tempRate.toPlainString());
-                payment.setTax2_name("Municipal");
-            }
+            payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1));
+            payment.setTax1_name(tax1Lbl.getText().toString());
+            payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2));
+            payment.setTax2_name(tax2Lbl.getText().toString());
+            payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3));
+            payment.setTax3_name(tax3Lbl.getText().toString());
         }
 
 
@@ -1027,13 +1042,14 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             public void afterTextChanged(Editable s) {
                 switch (editText.getId()) {
                     case R.id.subtotalGiftAmount: {
-                        ProcessCash_FA.calculateTaxes(groupTaxRate, editText, tax1, tax2);
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        TaxesCalculator.setIvuTaxesFields(groupTaxRate, editText, tax1, tax2, tax3);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, amountField);
                         break;
                     }
+                    case R.id.tax3GiftAmount:
                     case R.id.tax2GiftAmount:
                     case R.id.tax1GiftAmount: {
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, amountField);
                         break;
                     }
                 }
