@@ -15,4 +15,5 @@ public class Constant {
     public static final String TRANSACTION_CANCELED = "100002";
     public static final String CARD_EXPIRED = "100003";
     public static final String HAS_VOIDED = "100021";
+    public static final String TRANS_NOT_FOUND = "100023";
 }

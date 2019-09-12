@@ -29,6 +29,7 @@
     <string-array name="settingsSectionsManagerArray">
         <item name="printingSettings">"Configuración de impresión"</item>
         <item name="cashDrawerSettings">"Cajón de dinero"</item>
+        <item name="batchSettings">"Batch"</item>
         <item name="othersSettings">"Otros ajustes"</item>
     </string-array>
 

@@ -21,6 +21,7 @@
     <string-array name="settingsSectionsManagerArray">
         <item name="printingSettings">Printing Settings</item>
         <item name="cashDrawerSettings">Cash Drawer</item>
+        <item name="batchSettings">Batch</item>
         <item name="othersSettings">Other Settings</item>
     </string-array>
 

@@ -76,6 +76,8 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.epson.epos2.printer.Printer;
 import com.microsoft.azure.storage.StorageException;
+import com.pax.poslink.PosLink;
+import com.pax.poslink.ProcessTransResult;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
@@ -101,6 +103,7 @@ import drivers.EMSDeviceDriver;
 import drivers.EMSEpson;
 import drivers.epson.EpsonDevices;
 import drivers.epson.SpnModelsItem;
+import drivers.pax.utils.BatchProcessing;
 import io.realm.Realm;
 import main.EMSDeviceManager;
 
@@ -207,7 +210,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     public enum SettingSection {
         GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
         ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIPPING_CALCULATION(10),
-        TRANSACTION(11), HANPOINT(12), SUPPORT(13), OTHERS(14);
+        TRANSACTION(11), HANPOINT(12), SUPPORT(13), OTHERS(14), BATCH(15);
         int code;
 
         SettingSection(int code) {
@@ -246,6 +249,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return SUPPORT;
                 case 14:
                     return OTHERS;
+                case 15:
+                    return BATCH;
                 default:
                     return GENERAL;
             }
@@ -256,7 +261,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public static class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, HttpClient.DownloadFileCallBack, SharedPreferences.OnSharedPreferenceChangeListener {
+    public static class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, HttpClient.DownloadFileCallBack, SharedPreferences.OnSharedPreferenceChangeListener, BatchProcessing.OnBatchProcessedCallback {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -264,6 +269,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private CheckBoxPreference storeForwardFlag;
         private Preference defaultCountry, storeForwardTransactions;
         boolean isRestart = false;
+        private ProgressDialog myProgressDialog;
+        private PosLink poslink;
+        private static ProcessTransResult ptr;
 
         private int getLayoutId(SettingListActivity.SettingSection settingSection) {
             switch (settingSection) {
@@ -291,6 +299,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         default:
                             return R.xml.settings_admin_cashdrawer_layout;
                     }
+                case BATCH:
+                    return R.xml.settings_manager_batch_layout;
                 case KIOSK:
                     return R.xml.settings_admin_kiosk_layout;
                 case SHIPPING_CALCULATION:
@@ -393,6 +403,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         prefManager.findPreference("pref_configure_cash_drawer").setOnPreferenceClickListener(this);
                     }
                     break;
+                case BATCH:
+                    prefManager.findPreference("pref_batch_pax").setOnPreferenceClickListener(this);
+                    break;
                 case KIOSK:
                     prefManager.findPreference("pref_customer_display").setOnPreferenceClickListener(this);
                     break;
@@ -484,6 +497,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         case 1:
                             return SettingSection.CASH_DRAWER;
                         case 2:
+                            return SettingSection.BATCH;
+                        case 3:
                             return SettingSection.OTHERS;
                     }
                     break;
@@ -629,6 +644,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_configure_cash_drawer:
                     break;
+                case R.string.config_batch_pax_close:
+                    myProgressDialog = new ProgressDialog(getActivity());
+                    myProgressDialog.setMessage(getString(R.string.processing_batch_msg));
+                    myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    myProgressDialog.setCancelable(false);
+                    myProgressDialog.show();
+
+                    BatchProcessing batchProcessing = new BatchProcessing(this, getActivity());
+                    batchProcessing.close();
+
+                    break;
                 case R.string.config_transaction_num_prefix:
                     break;
                 case R.string.config_customer_display:
@@ -755,6 +781,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
             }
             return false;
+        }
+
+        @Override
+        public void onBatchProcessedDone(String result) {
+            Global.dismissDialog(getActivity(), myProgressDialog);
+            Global.showPrompt(getActivity(), R.string.config_batch_pax, result);
         }
 
         private void openBixolonSetting() {

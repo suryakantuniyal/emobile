@@ -987,6 +987,9 @@
     <string name="config_force_upload">"Fuerza la subida de datos"</string>
     <string name="config_backup_data">"Resguardo de Datos"</string>
 
+    <string name="config_batch">"Batch"</string>
+    <string name="config_batch_pax">"PAX Batch"</string>
+    <string name="config_batch_pax_close">"Cerrar batch actual de la PAX"</string>
 
     <string name="header_scanner">"Escáner"</string>
     <string name="header_tupyx">"Tupyx"</string>
@@ -1070,6 +1073,7 @@
     <string name="paymethod_tax2_amount_label">"Tax2"</string>
     <string name="paymethod_tax3_amount_label">"Tax3"</string>
     <string name="processing_payment_msg">"Procesando el pago…"</string>
+    <string name="processing_batch_msg">"Procesando el Batch…"</string>
     <string name="error_status_code">"Código: %s\n%s"</string>
     <string name="changeLbl">"Cambio:"</string>
     <string name="cash_invoice_lbl">"Factura en efectivo"</string>
