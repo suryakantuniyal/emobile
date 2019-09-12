@@ -12,6 +12,7 @@ public class Tax implements Cloneable {
     private String taxType;
     private String taxCodeId;
     private BigDecimal taxAmount;
+    private String prTax;
 
     public Tax() {
     }
@@ -80,5 +81,13 @@ public class Tax implements Cloneable {
 
     public void setTaxAmount(BigDecimal taxAmount) {
         this.taxAmount = taxAmount;
+    }
+
+    public String getPrTax() {
+        return prTax;
+    }
+
+    public void setPrTax(String prTax) {
+        this.prTax = prTax;
     }
 }

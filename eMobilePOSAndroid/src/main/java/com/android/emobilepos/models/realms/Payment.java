@@ -95,6 +95,8 @@ public class Payment extends RealmObject {
     private String Tax1_name = "";
     private String Tax2_amount = "";
     private String Tax2_name = "";
+    private String Tax3_amount = "";
+    private String Tax3_name = "";
 
     private String track_one = "";
     private String track_two = "";
@@ -203,8 +205,10 @@ public class Payment extends RealmObject {
                    Double tipAmount,
                    String taxAmount1,
                    String taxAmount2,
+                   String taxAmount3,
                    String taxName1,
                    String taxName2,
+                   String taxName3,
                    String isRefund,
                    String paymentType,
                    String creditCardType,
@@ -273,6 +277,8 @@ public class Payment extends RealmObject {
                 setTax1_name(taxName1);
                 setTax2_amount(taxAmount2);
                 setTax2_name(taxName2);
+                setTax3_amount(taxAmount3);
+                setTax3_name(taxName3);
             }
         }
         Location currLocation = Global.getCurrLocation(activity, false);
@@ -798,6 +804,22 @@ public class Payment extends RealmObject {
 
     public void setTax2_name(String tax2_name) {
         Tax2_name = tax2_name;
+    }
+
+    public String getTax3_amount() {
+        return Tax3_amount;
+    }
+
+    public void setTax3_amount(String tax3_amount) {
+        Tax3_amount = tax3_amount;
+    }
+
+    public String getTax3_name() {
+        return Tax3_name;
+    }
+
+    public void setTax3_name(String tax3_name) {
+        Tax3_name = tax3_name;
     }
 
     public String getTrack_one() {

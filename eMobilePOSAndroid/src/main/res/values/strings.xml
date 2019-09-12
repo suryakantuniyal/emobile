@@ -1074,9 +1074,11 @@
     <string name="paymentmethod_subtotal_amount">Subtotal</string>
     <string name="privu_state">PR IVU 10.5</string>
     <string name="privu_city">PR IVU 1</string>
+    <string name="privu_reducido">PR IVU REDUCIDO</string>
     <string name="paymethod_subtotal_amount_label">Subtotal</string>
     <string name="paymethod_tax1_amount_label">Tax1</string>
     <string name="paymethod_tax2_amount_label">Tax2</string>
+    <string name="paymethod_tax3_amount_label">Tax3</string>
     <string name="processing_payment_msg">Processing Payment…</string>
     <string name="error_status_code">Code: %s\n%s</string>
     <string name="changeLbl">Change:</string>

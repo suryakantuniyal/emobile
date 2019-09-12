@@ -533,6 +533,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                                 BigDecimal.ROUND_UP);
                         intent.putExtra("Tax2_amount", tempRate.toPlainString());
                         intent.putExtra("Tax2_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
+
+                        tempRate = groupTax.size() == 3 ? new BigDecimal(0) :
+                                new BigDecimal(subtotal * Double.parseDouble(
+                                        groupTax.get(2).getTaxRate())).setScale(2,
+                                BigDecimal.ROUND_UP);
+                        intent.putExtra("Tax3_amount", tempRate.toPlainString());
+                        intent.putExtra("Tax3_name", groupTax.size() == 3 ? "" :
+                                groupTax.get(2).getTaxName());
                     } else {
                         tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
                                 BigDecimal.ROUND_UP);
@@ -543,6 +551,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                                 BigDecimal.ROUND_UP);
                         intent.putExtra("Tax1_amount", tempRate.toPlainString());
                         intent.putExtra("Tax1_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
+
+                        tempRate = groupTax.size() == 3 ? new BigDecimal(0) :
+                                new BigDecimal(subtotal * Double.parseDouble(
+                                        groupTax.get(2).getTaxRate())).setScale(2,
+                                BigDecimal.ROUND_UP);
+                        intent.putExtra("Tax3_amount", tempRate.toPlainString());
+                        intent.putExtra("Tax3_name", groupTax.size() == 3 ? "" :
+                                groupTax.get(2).getTaxName());
                     }
                 }
             }

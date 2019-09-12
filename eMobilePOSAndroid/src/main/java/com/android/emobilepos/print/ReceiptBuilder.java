@@ -955,6 +955,9 @@ public class ReceiptBuilder {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
                             Global.getCurrencyFormat(payArray.getTax2_amount()),
                             lineWidth, 2));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax3_name(),
+                            Global.getCurrencyFormat(payArray.getTax3_amount()),
+                            lineWidth, 2));
                 }
 
                 if (emvContainer != null && emvContainer.getGeniusResponse() != null &&

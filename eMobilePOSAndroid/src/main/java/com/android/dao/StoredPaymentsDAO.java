@@ -155,8 +155,10 @@ public class StoredPaymentsDAO {
                 paymentDetails.setJob_id(payment.getJob_id());
                 paymentDetails.setTax1_amount(payment.getTax1_amount());
                 paymentDetails.setTax2_amount(payment.getTax2_amount());
+                paymentDetails.setTax3_amount(payment.getTax3_amount());
                 paymentDetails.setTax1_name(payment.getTax1_name());
                 paymentDetails.setTax2_name(payment.getTax2_name());
+                paymentDetails.setTax3_name(payment.getTax3_name());
                 paymentDetails.setEmvContainer(payment.getEmvContainer());
 
             }

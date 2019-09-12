@@ -66,6 +66,7 @@ import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.StringUtils;
+import com.android.support.TaxesCalculator;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
@@ -136,6 +137,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
     private String inv_id;
     private boolean wasReadFromReader = false;
     private boolean requireTransID = false;
+    private boolean isFromSalesReceipt = false;
     private boolean isFromMainMenu = false;
     private int orientation = 0;
     private int requestCode = 0;
@@ -145,8 +147,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
     private EditText amountPaidField;
     private EditText phoneNumberField, customerEmailField, commentsField;
     private EditText authIDField, transIDField;
-    private EditText subtotal, tax1, tax2;
-    private TextView tax1Lbl, tax2Lbl;
+    private EditText subtotal, tax1, tax2, tax3;
+    private TextView tax1Lbl, tax2Lbl, tax3Lbl;
     private List<GroupTax> groupTaxRate;
     private boolean isMultiInvoice = false, isOpenInvoice = false;
     private String[] inv_id_array, txnID_array;
@@ -516,11 +518,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         subtotal = findViewById(R.id.subtotalCardAmount);
         tax1 = findViewById(R.id.tax1CardAmount);
         tax2 = findViewById(R.id.tax2CardAmount);
+        tax3 = findViewById(R.id.tax3CardAmount);
         tax1Lbl = findViewById(R.id.tax1CreditCardLbl);
         tax2Lbl = findViewById(R.id.tax2CreditCardLbl);
+        tax3Lbl = findViewById(R.id.tax3CreditCardLbl);
 
         tax1.setText(Global.getCurrencyFormat(extras.getString("Tax1_amount")));
         tax2.setText(Global.getCurrencyFormat(extras.getString("Tax2_amount")));
+        tax3.setText(Global.getCurrencyFormat(extras.getString("Tax3_amount")));
         double subtotalDbl = 0;
         if (!isFromMainMenu) {
             List<OrderProduct> orderProducts = global.order == null
@@ -542,22 +547,32 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax1.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax2.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        tax3.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         if (!isFromMainMenu || Global.isIvuLoto) {
             amountDueField.setEnabled(false);
         }
-        if (!Global.isIvuLoto || !isFromMainMenu) {
+
+        TaxesCalculator.setIvuTaxesLabels(groupTaxRate, tax1Lbl, tax2Lbl, tax3Lbl);
+
+        if (!isFromMainMenu && global.order != null) {
+            TaxesCalculator.setIvuTaxesFields(global.order, tax1, tax2, tax3);
+        }
+
+        isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
+        if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.row1Credit).setVisibility(View.GONE);
             findViewById(R.id.row2Credit).setVisibility(View.GONE);
             findViewById(R.id.row3Credit).setVisibility(View.GONE);
-
+            findViewById(R.id.row4Credit).setVisibility(View.GONE);
         } else {
             subtotal.setOnFocusChangeListener(getFocusListener(subtotal));
             tax1.setOnFocusChangeListener(getFocusListener(tax1));
             tax2.setOnFocusChangeListener(getFocusListener(tax2));
+            tax3.setOnFocusChangeListener(getFocusListener(tax3));
             subtotal.addTextChangedListener(getTextWatcher(subtotal));
             tax1.addTextChangedListener(getTextWatcher(tax1));
             tax2.addTextChangedListener(getTextWatcher(tax2));
-            ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
+            tax3.addTextChangedListener(getTextWatcher(tax3));
         }
         this.amountPaidField = findViewById(R.id.processCardAmountPaid);
         this.amountPaidField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -735,13 +750,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
             public void afterTextChanged(Editable s) {
                 switch (editText.getId()) {
                     case R.id.subtotalCardAmount: {
-                        ProcessCash_FA.calculateTaxes(groupTaxRate, editText, tax1, tax2);
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountDueField);
+                        TaxesCalculator.setIvuTaxesFields(groupTaxRate, editText, tax1, tax2, tax3);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, amountDueField);
                         break;
                     }
+                    case R.id.tax3CardAmount:
                     case R.id.tax2CardAmount:
                     case R.id.tax1CardAmount: {
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountDueField);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, tax3, amountDueField);
                         break;
                     }
                 }
@@ -895,22 +911,15 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         String taxName1 = null;
         String taxName2 = null;
         String taxAmnt2 = null;
+        String taxName3 = null;
+        String taxAmnt3 = null;
         if (Global.isIvuLoto) {
-
-            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
-                taxAmnt1 = extras.getString("Tax1_amount");
-                taxName1 = extras.getString("Tax1_name");
-
-                taxAmnt2 = extras.getString("Tax2_amount");
-                taxName2 = extras.getString("Tax2_name");
-            } else {
-                taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
-                if (groupTaxRate.size() > 0)
-                    taxName1 = groupTaxRate.get(0).getTaxName();
-                taxAmnt2 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
-                if (groupTaxRate.size() > 1)
-                    taxName2 = groupTaxRate.get(1).getTaxName();
-            }
+            taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tax1);
+            taxName1 = tax1Lbl.getText().toString();
+            taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tax2);
+            taxName2 = tax2Lbl.getText().toString();
+            taxAmnt3 = NumberUtils.cleanCurrencyFormatedNumber(tax3);
+            taxName3 = tax3Lbl.getText().toString();
         }
         double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
 
@@ -937,8 +946,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
                 amountToTip,
                 taxAmnt1,
                 taxAmnt2,
+                taxAmnt3,
                 taxName1,
                 taxName2,
+                taxName3,
                 isRef,
                 paymentType,
                 creditCardType,
@@ -1065,29 +1076,19 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
         Global.tipPaid = Double.toString(amountToTip);
-        String taxName2 = null;
-        String taxAmnt2 = null;
         String taxName1 = null;
         String taxAmnt1 = null;
+        String taxName2 = null;
+        String taxAmnt2 = null;
+        String taxName3 = null;
+        String taxAmnt3 = null;
         if (Global.isIvuLoto) {
-
-            if (!extras.getString("Tax1_amount").isEmpty()) {
-                taxAmnt1 = extras.getString("Tax1_amount");
-                taxName1 = extras.getString("Tax1_name");
-
-                taxAmnt2 = extras.getString("Tax2_amount");
-                taxName2 = extras.getString("Tax2_name");
-            } else {
-                BigDecimal tempRate;
-                double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
-                tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                taxAmnt1 = tempRate.toPlainString();
-                taxName1 = "Estatal";
-
-                tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                taxAmnt2 = tempRate.toPlainString();
-                taxName2 = "Municipal";
-            }
+            taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tax1);
+            taxName1 = tax1Lbl.getText().toString();
+            taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tax2);
+            taxName2 = tax2Lbl.getText().toString();
+            taxAmnt3 = NumberUtils.cleanCurrencyFormatedNumber(tax3);
+            taxName3 = tax3Lbl.getText().toString();
         }
 
         String isRef = null;
@@ -1114,8 +1115,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
                 amountToTip,
                 taxAmnt1,
                 taxAmnt2,
+                taxAmnt3,
                 taxName1,
                 taxName2,
+                taxName3,
                 isRef,
                 paymentType,
                 creditCardType,
@@ -2176,30 +2179,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
             payment.setIvuLottoDrawDate(drawDateInfo.getDrawDate());
             payment.setIvuLottoNumber(mersenneTwister.generateIVULoto());
 
-            String taxName1 = null;
-            String taxName2 = null;
-            String taxAmnt1 = null;
-            String taxAmnt2 = null;
-
-            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
-                taxAmnt1 = extras.getString("Tax1_amount");
-                taxName1 = extras.getString("Tax1_name");
-
-                taxAmnt2 = extras.getString("Tax2_amount");
-                taxName2 = extras.getString("Tax2_name");
-            } else {
-                taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
-                if (groupTaxRate.size() > 0)
-                    taxName1 = groupTaxRate.get(0).getTaxName();
-                taxAmnt2 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
-                if (groupTaxRate.size() > 1)
-                    taxName2 = groupTaxRate.get(1).getTaxName();
-            }
-
-            payment.setTax1_amount(taxAmnt1);
-            payment.setTax1_name(taxName1);
-            payment.setTax2_amount(taxAmnt2);
-            payment.setTax2_name(taxName2);
+            payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1));
+            payment.setTax1_name(tax1Lbl.getText().toString());
+            payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2));
+            payment.setTax2_name(tax2Lbl.getText().toString());
+            payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3));
+            payment.setTax3_name(tax3Lbl.getText().toString());
         }
 
         if (!this.extras.getBoolean("histinvoices", false))

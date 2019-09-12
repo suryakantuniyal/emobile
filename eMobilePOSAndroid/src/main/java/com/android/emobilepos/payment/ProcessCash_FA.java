@@ -39,17 +39,10 @@ import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.TaxesCalculator;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import main.EMSDeviceManager;
 import util.json.UIUtils;
@@ -66,7 +59,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     private String inv_id;
     private boolean isFromSalesReceipt = false;
     private boolean isFromMainMenu = false;
-    private EditText paid, amountDue, reference, tipAmount, promptTipField, subtotal, tax1, tax2;//,tipAmount,promptTipField
+    private EditText paid, amountDue, reference, tipAmount, promptTipField, subtotal, tax1, tax2, tax3;
     private EditText customerNameField, customerEmailField, phoneNumberField, commentsField;
     private TextView change;
     private boolean isMultiInvoice = false;
@@ -85,42 +78,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     private List<GroupTax> groupTaxRate;
     private TextView tax1Lbl;
     private TextView tax2Lbl;
+    private TextView tax3Lbl;
 
-    public static void setTaxLabels(List<GroupTax> groupTaxRate, TextView tax1Lbl, TextView tax2Lbl) {
-        Collections.sort(groupTaxRate, new Comparator<GroupTax>() {
-            @Override
-            public int compare(GroupTax o1, GroupTax o2) {
-                return o1.getPrTax().compareTo(o2.getPrTax());
-            }
-        });
-        if (groupTaxRate.size() > 0)
-            tax1Lbl.setText(groupTaxRate.get(0).getTaxName());
-        if (groupTaxRate.size() > 1)
-            tax2Lbl.setText(groupTaxRate.get(1).getTaxName());
-    }
-
-    public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
-        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
-        //set default taxes values to zero
-        BigDecimal tax1Rate = new BigDecimal(0.00);
-        BigDecimal tax2Rate = new BigDecimal(0.00);
-
-        //if we have taxes then
-        if (groupTaxRate.size() > 0) {
-            tax1Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(0).getTaxRate()));
-            if (groupTaxRate.size() > 1) {
-                tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
-            }
-        }
-
-        BigDecimal tax1Dbl = new BigDecimal(subtotalDbl).multiply(tax1Rate);
-        BigDecimal tax2Dbl = new BigDecimal(subtotalDbl).multiply(tax2Rate);
-
-        DecimalFormat df = new DecimalFormat("0.00");
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        tax1.setText(df.format(tax1Dbl.doubleValue()));
-        tax2.setText(df.format(tax2Dbl.doubleValue()));
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -165,9 +124,11 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         subtotal = findViewById(R.id.subtotalCashEdit);
         tax1 = findViewById(R.id.tax1CashEdit);
         tax2 = findViewById(R.id.tax2CashEdit);
+        tax3 = findViewById(R.id.tax3CashEdit);
         tax1Lbl = findViewById(R.id.tax1CashLbl);
         tax2Lbl = findViewById(R.id.tax2CashLbl);
-        setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
+        tax3Lbl = findViewById(R.id.tax3CashLbl);
+        TaxesCalculator.setIvuTaxesLabels(groupTaxRate, tax1Lbl, tax2Lbl, tax3Lbl);
         customerNameField = findViewById(R.id.processCashName);
         customerEmailField = findViewById(R.id.processCashEmail);
         phoneNumberField = findViewById(R.id.processCashPhone);
@@ -188,20 +149,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         amountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
 
         if (!isFromMainMenu && global.order != null) {
-            HashMap<String, String[]> orderTaxes = TaxesCalculator.getOrderTaxes(this, global.order.getListOrderTaxes(), global.order);
-            int i = 0;
-            Iterator it = orderTaxes.entrySet().iterator();
-            if (it != null) {
-                while (it.hasNext()) {
-                    Map.Entry<String, String[]> map = (Map.Entry<String, String[]>) it.next();
-                    if (i == 0) {
-                        tax1.setText(Global.getCurrencyFormat(map.getValue()[1]));
-                    } else if (i == 1) {
-                        tax2.setText(Global.getCurrencyFormat(map.getValue()[1]));
-                    }
-                    i++;
-                }
-            }
+            TaxesCalculator.setIvuTaxesFields(global.order, tax1, tax2, tax3);
         }
         custidkey = extras.getString("custidkey");
         if (custidkey == null)
@@ -350,6 +298,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
             findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
             findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow4).setVisibility(View.GONE);
         } else {
             setIVUPOSFieldListeners();
         }
@@ -423,12 +372,22 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
             }
         });
+        tax3.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {
+                    NumberUtils.parseInputedCurrency(tax3.getText().toString(), tax3);
+                }
+
+            }
+        });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
 //                NumberUtils.parseInputedCurrency(s, subtotal);
                 if (isFromMainMenu) {
-                    calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
-                    calculateAmountDue(subtotal, tax1, tax2, amountDue);
+                    TaxesCalculator.setIvuTaxesFields(groupTaxRate, subtotal, tax1, tax2, tax3);
+                    calculateAmountDue(subtotal, tax1, tax2, tax3, amountDue);
                 }
                 recalculateChange();
 
@@ -443,7 +402,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         });
         tax1.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                calculateAmountDue(subtotal, tax1, tax2, amountDue);
+                calculateAmountDue(subtotal, tax1, tax2, tax3, amountDue);
                 recalculateChange();
             }
 
@@ -456,7 +415,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         });
         tax2.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                calculateAmountDue(subtotal, tax1, tax2, amountDue);
+                calculateAmountDue(subtotal, tax1, tax2, tax3, amountDue);
                 recalculateChange();
 
             }
@@ -466,6 +425,19 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 NumberUtils.parseInputedCurrency(s, tax2);
+            }
+        });
+        tax3.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                calculateAmountDue(subtotal, tax1, tax2, tax3, amountDue);
+                recalculateChange();
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                NumberUtils.parseInputedCurrency(s, tax3);
             }
         });
     }
@@ -669,27 +641,19 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             Global.tipPaid = Double.toString(amountToTip);
         }
 
-
-        String taxName2 = null;
         String taxAmnt1 = null;
         String taxName1 = null;
         String taxAmnt2 = null;
+        String taxName2 = null;
+        String taxAmnt3 = null;
+        String taxName3 = null;
         if (Global.isIvuLoto) {
-
-            if (!tax1.getText().toString().isEmpty()) {
-                taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tax1);
-                taxName1 = tax1Lbl.getText().toString();
-
-                taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tax2);
-                taxName2 = tax2Lbl.getText().toString();
-            } else {
-                taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
-                if (groupTaxRate.size() > 0)
-                    taxName1 = groupTaxRate.get(0).getTaxName();
-                taxAmnt2 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
-                if (groupTaxRate.size() > 1)
-                    taxName2 = groupTaxRate.get(1).getTaxName();
-            }
+            taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tax1);
+            taxName1 = tax1Lbl.getText().toString();
+            taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tax2);
+            taxName2 = tax2Lbl.getText().toString();
+            taxAmnt3 = NumberUtils.cleanCurrencyFormatedNumber(tax3);
+            taxName3 = tax3Lbl.getText().toString();
         }
 
         String isRef = null;
@@ -718,8 +682,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 amountToTip,
                 taxAmnt1,
                 taxAmnt2,
+                taxAmnt3,
                 taxName1,
                 taxName2,
+                taxName3,
                 isRef,
                 paymentType,
                 "Cash",
@@ -834,6 +800,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 customerEmailField.getText().toString(),
                 commentsField.getText().toString(),
                 amountToTip,
+                null,
+                null,
                 null,
                 null,
                 null,
