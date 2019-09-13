@@ -209,23 +209,25 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         hasBeenCreated = true;
 
-        RecoveriesPickerDlog_FR picker = new RecoveriesPickerDlog_FR();
-        if (picker.fillAllRecoveries(this)) {
-            final DialogFragment newFrag = picker;
-            picker.setListener(new RecoveriesPicker_Listener() {
-                @Override
-                public void onSelected(Recoveries_Holder recovery) {
-                    newFrag.dismiss();
-                    OrderRecoveryUtils orderRecoveryUtils =
-                            new OrderRecoveryUtils(MainMenu_FA.this);
-                    Intent intent = orderRecoveryUtils.getRecoveryIntent(recovery.getRec_id());
-                    if (intent != null) {
-                        // open order for recovery
-                        startActivity(intent);
+        if (!myPref.isRestaurantMode()) {
+            RecoveriesPickerDlog_FR picker = new RecoveriesPickerDlog_FR();
+            if (picker.fillAllRecoveries(this)) {
+                final DialogFragment newFrag = picker;
+                picker.setListener(new RecoveriesPicker_Listener() {
+                    @Override
+                    public void onSelected(Recoveries_Holder recovery) {
+                        newFrag.dismiss();
+                        OrderRecoveryUtils orderRecoveryUtils =
+                                new OrderRecoveryUtils(MainMenu_FA.this);
+                        Intent intent = orderRecoveryUtils.getRecoveryIntent(recovery.getRec_id());
+                        if (intent != null) {
+                            // open order for recovery
+                            startActivity(intent);
+                        }
                     }
-                }
-            });
-            newFrag.show(this.getSupportFragmentManager(), "dialog");
+                });
+                newFrag.show(this.getSupportFragmentManager(), "dialog");
+            }
         }
     }
 
