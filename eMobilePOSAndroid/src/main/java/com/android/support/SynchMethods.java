@@ -131,7 +131,9 @@ import interfaces.InventoryLocationSyncCallback;
 import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
+
 import com.android.emobilepos.models.response.BuildSettings;
+
 import util.XmlUtils;
 import util.json.JsonUtils;
 
@@ -228,12 +230,22 @@ public class SynchMethods {
         if (OAuthManager.isExpired(context)) {
             getOAuthManager(context);
         }
-        empID = (empID.isEmpty()) ? "0" : empID;
         requestString = context.getString(R.string.account_settings_restore);
-        StringBuilder url = new StringBuilder(String.format(requestString, empID));
+        String url = String.format(requestString, empID);
         OAuthClient authClient = OAuthManager.getOAuthClient(context);
 
-        new AsyncRestoreSettings(context, authClient, url.toString(), empID, preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new AsyncRestoreSettings(context, authClient, url, preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void backupSettings(Context context, String empID, String regID) {
+        String url;
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        url = context.getString(R.string.account_settings_backup);
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+
+        new AsyncBackupSettings(context, authClient, url, empID, regID, preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
@@ -2204,20 +2216,17 @@ public class SynchMethods {
     public class AsyncRestoreSettings extends AsyncTask<Void, Void, BuildSettings[]> {
 
         private String url;
-        private String empID;
         private OAuthClient oauth;
         private ProgressDialog progressDialog;
-        private String path;
         private BuildSettings[] mSettings;
         private MyPreferences preferences;
 
-        public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, String empID, MyPreferences preferences) {
+        public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, MyPreferences preferences) {
             this.oauth = oAuthClient;
             this.url = url;
-            this.empID = empID;
             this.preferences = preferences;
             progressDialog = new ProgressDialog(context);
-            path = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/rset.json";
+//            path = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/rset.json";
         }
 
         @Override
@@ -2252,7 +2261,50 @@ public class SynchMethods {
         @Override
         protected void onPostExecute(BuildSettings[] mSettings) {
             progressDialog.dismiss();
-            new ApplySettings(mSettings,preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new ApplySettings(mSettings, preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    public class AsyncBackupSettings extends AsyncTask<Void, Void, Void> {
+
+        private String url;
+        private String empID;
+        private String regID;
+        private OAuthClient oauth;
+        private ProgressDialog progressDialog;
+        private BackupSettings backupSettings;
+        private MyPreferences preferences;
+
+        public AsyncBackupSettings(Context context, OAuthClient oAuthClient, String url, String empID, String regID, MyPreferences preferences) {
+            this.oauth = oAuthClient;
+            this.url = url;
+            this.empID = empID;
+            this.regID = regID;
+            this.preferences = preferences;
+            progressDialog = new ProgressDialog(context);
+//            path = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/rset.json";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Backing Up Your Settings");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            backupSettings = new BackupSettings(preferences);
+            String json = backupSettings.backupMySettings(empID,regID);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
         }
     }
 

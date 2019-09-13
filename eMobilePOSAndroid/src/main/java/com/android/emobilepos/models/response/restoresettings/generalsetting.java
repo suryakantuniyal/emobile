@@ -6,41 +6,41 @@ public class generalsetting {
 
     //GENERAL SETTINGS
     @SerializedName("AutoSync")
-    private boolean autosync;
+    private boolean autosync = false;
     @SerializedName("HoldsPollingService")
-    private boolean HoldsPollingService;
+    private boolean HoldsPollingService= false;
     @SerializedName("TransNumPreffix")
-    private String TransNumPreffix;
+    private String TransNumPreffix = "";
     @SerializedName("FastScanning")
-    private boolean FastScanning;
+    private boolean FastScanning= false;
     @SerializedName("SignatureRequired")
-    private boolean SignatureRequired;
+    private boolean SignatureRequired= false;
     @SerializedName("QRReadFromCam")
-    private boolean QRReadFromCam;
+    private boolean QRReadFromCam= false;
     @SerializedName("MultipleCatPerProd")
-    private boolean MultipleCatPerProd;
+    private boolean MultipleCatPerProd= false;
     @SerializedName("GroupTaxes")
-    private boolean GroupTaxes;
+    private boolean GroupTaxes= false;
     @SerializedName("RetailTaxes")
-    private boolean RetailTaxes;
+    private boolean RetailTaxes= false;
     @SerializedName("MixNMatch")
-    private boolean MixNMatch;
+    private boolean MixNMatch= false;
     @SerializedName("ConfirmationScreen")
-    private boolean ConfirmationScreen;
+    private boolean ConfirmationScreen= false;
     @SerializedName("AskForComments")
-    private boolean AskForComments;
+    private boolean AskForComments= false;
     @SerializedName("SkipContactInfoPrompt")
-    private boolean SkipContactInfoPrompt;
+    private boolean SkipContactInfoPrompt= false;
     @SerializedName("SkipAddMoreProducts")
-    private boolean SkipAddMoreProducts;
+    private boolean SkipAddMoreProducts= false;
     @SerializedName("RequireShift")
-    private boolean RequireShift;
+    private boolean RequireShift= false;
     @SerializedName("RestaurantModeShowScopeBar")
-    private boolean RestaurantModeShowScopeBar;
+    private boolean RestaurantModeShowScopeBar= false;
     @SerializedName("UseClerks")
-    private boolean UseClerks;
+    private boolean UseClerks= false;
     @SerializedName("ClerkAutoLogOut")
-    private boolean ClerkAutoLogOut;
+    private boolean ClerkAutoLogOut= false;
 
     public boolean isAutosync() {
         return autosync;

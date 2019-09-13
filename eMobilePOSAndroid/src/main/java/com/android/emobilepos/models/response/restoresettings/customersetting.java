@@ -5,17 +5,17 @@ import com.google.gson.annotations.SerializedName;
 public class customersetting {
 
     @SerializedName("Required")
-    private boolean Required;
+    private boolean Required= false;
     @SerializedName("ClearAfterTrans")
-    private boolean ClearAfterTrans;
+    private boolean ClearAfterTrans= false;
     @SerializedName("AllowCreation")
-    private boolean AllowCreation;
+    private boolean AllowCreation= false;
     @SerializedName("DirectSelection")
-    private boolean DirectSelection;
+    private boolean DirectSelection= false;
     @SerializedName("DisplayAccountNumber")
-    private boolean DisplayAccountNumber;
+    private boolean DisplayAccountNumber= false;
     @SerializedName("SelectTag")
-    private String SelectTag;
+    private String SelectTag="";
 
 
     public boolean isRequired() {

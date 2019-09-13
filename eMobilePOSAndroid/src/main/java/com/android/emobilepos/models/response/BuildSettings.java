@@ -15,59 +15,59 @@ public class BuildSettings {
 
     //GENERAL SETTINGS
     @SerializedName("generalSettings")
-    private generalsetting generalSettings;
+    private generalsetting generalSettings = new generalsetting();
 
     //CUSTOMER SETTINGS
     @SerializedName("customerSettings")
-    private customersetting customerSettings;
+    private customersetting customerSettings = new customersetting();
 
     //RESTAURANT SETTINGS
     @SerializedName("restaurantSettings")
-    private restaurantsetting restaurantSettings;
+    private restaurantsetting restaurantSettings = new restaurantsetting();
 
     //GIFTCARD SETTINGS
     @SerializedName("giftCardSettings")
-    private giftcardsetting giftCardSettings;
+    private giftcardsetting giftCardSettings = new giftcardsetting();
 
     //PAYMENT METHOD SETTINGS
     @SerializedName("paymentMethodSettings")
-    private paymentmethodsetting paymentMethodSettings;
+    private paymentmethodsetting paymentMethodSettings = new paymentmethodsetting();
 
     //PAYMENT PROCESSING SETTINGS
     @SerializedName("paymentProcessingSettings")
-    private paymentprocessingsetting paymentProcessingSettings;
+    private paymentprocessingsetting paymentProcessingSettings = new paymentprocessingsetting();
 
     //PRINTING SETTINGS
     @SerializedName("printingSettings")
-    private printingsetting printingSettings;
+    private printingsetting printingSettings = new printingsetting();
 
     //PRODUCT SETTINGS
     @SerializedName("productSettings")
-    private productsettings productSettings;
+    private productsettings productSettings = new productsettings();
 
     //SESSION SETTINGS
     @SerializedName("sessionSettings")
-    private sessionSettings sessionSettings;
+    private sessionSettings sessionSettings = new sessionSettings();
 
     //KIOSK SETTINGS
     @SerializedName("kioskSettings")
-    private kioskSettings kioskSettings;
+    private kioskSettings kioskSettings = new kioskSettings();
 
     //SHIPPING CALCULATION
     @SerializedName("shippingCalculation")
-    private shippingCalculation shippingCalculation;
+    private shippingCalculation shippingCalculation = new shippingCalculation();
 
     //TRANSACTION SETTINGS
     @SerializedName("transactionSettings")
-    private transactionSettings transactionSettings;
+    private transactionSettings transactionSettings = new transactionSettings();
 
     //OTHER SETTINGS
     @SerializedName("otherSettings")
-    private otherSettings otherSettings;
+    private otherSettings otherSettings = new otherSettings();
 
     //SYNC PLUS SERVICES
     @SerializedName("syncPlusServices")
-    private syncPlusServices syncPlusServices;
+    private syncPlusServices syncPlusServices = new syncPlusServices();
 
 
     public String getRegid() {

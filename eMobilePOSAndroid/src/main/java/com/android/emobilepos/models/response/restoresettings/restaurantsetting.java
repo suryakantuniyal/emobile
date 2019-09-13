@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class restaurantsetting {
     @SerializedName("Mode")
-    private boolean Mode;
+    private boolean Mode= false;
     @SerializedName("OrderOptions")
-    private boolean OrderOptions;
+    private boolean OrderOptions= false;
     @SerializedName("TableSelection")
-    private boolean TableSelection;
+    private boolean TableSelection= false;
     @SerializedName("NumberOfSeats")
-    private boolean NumberOfSeats;
+    private boolean NumberOfSeats= false;
 
 
     public boolean isMode() {

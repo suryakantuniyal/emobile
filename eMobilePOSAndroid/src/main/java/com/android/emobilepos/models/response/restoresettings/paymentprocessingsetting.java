@@ -4,29 +4,29 @@ import com.google.gson.annotations.SerializedName;
 
 public class paymentprocessingsetting {
     @SerializedName("AllowManualCreditCard")
-    private boolean AllowManualCreditCard;
+    private boolean AllowManualCreditCard= false;
     @SerializedName("ProcessCheckOnline")
-    private boolean ProcessCheckOnline;
+    private boolean ProcessCheckOnline= false;
     @SerializedName("ShowTipsForCash")
-    private boolean ShowTipsForCash;
+    private boolean ShowTipsForCash= false;
     @SerializedName("AudioCardReader")
-    private String AudioCardReader;
+    private String AudioCardReader="";
     @SerializedName("DefaultPaymentMethod")
-    private String DefaultPaymentMethod;
+    private String DefaultPaymentMethod="";
     @SerializedName("ReturnRequireRefund")
-    private boolean ReturnRequireRefund;
+    private boolean ReturnRequireRefund= false;
     @SerializedName("ConvertToReward")
-    private boolean ConvertToReward;
+    private boolean ConvertToReward= false;
     @SerializedName("InvoiceRequirePayment")
-    private boolean InvoiceRequirePayment;
+    private boolean InvoiceRequirePayment= false;
     @SerializedName("InvoiceRequirePaymentFull")
-    private boolean InvoiceRequirePaymentFull;
+    private boolean InvoiceRequirePaymentFull= false;
     @SerializedName("PreFillTotalAmount")
-    private boolean PreFillTotalAmount;
+    private boolean PreFillTotalAmount= false;
     @SerializedName("UseStoreForward")
-    private boolean UseStoreForward;
+    private boolean UseStoreForward= false;
     @SerializedName("ShowCashChangeAmount")
-    private boolean ShowCashChangeAmount;
+    private boolean ShowCashChangeAmount= false;
 
 
     public boolean isAllowManualCreditCard() {

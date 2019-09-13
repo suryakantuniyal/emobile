@@ -6,7 +6,7 @@ import java.util.List;
 
 public class kioskSettings {
     @SerializedName("customerDisplayTerminal")
-    private customerDisplayTerminal customerDisplayTerminal;
+    private customerDisplayTerminal customerDisplayTerminal = new customerDisplayTerminal();
 
 
     public customerDisplayTerminal getCustomerDisplayTerminal() {

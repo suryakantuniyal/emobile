@@ -5,13 +5,13 @@ import com.google.gson.annotations.SerializedName;
 public class syncPlusServices {
 
     @SerializedName("UseSyncPlusServices")
-    private boolean UseSyncPlusServices;
+    private boolean UseSyncPlusServices= false;
     @SerializedName("ConnectionMode")
-    private String ConnectionMode;
+    private String ConnectionMode="";
     @SerializedName("IPAddress")
-    private String IPAddress;
+    private String IPAddress="";
     @SerializedName("PortNumber")
-    private String PortNumber;
+    private String PortNumber="";
 
     public boolean isUseSyncPlusServices() {
         return UseSyncPlusServices;

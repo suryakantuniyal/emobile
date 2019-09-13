@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class transactionSettings {
 
     @SerializedName("RequireManagerPWToVoid")
-    private boolean RequireManagerPWToVoid;
+    private boolean RequireManagerPWToVoid= false;
     @SerializedName("DefaultCountry")
-    private String DefaultCountry;
+    private String DefaultCountry="";
 
     public boolean isRequireManagerPWToVoid() {
         return RequireManagerPWToVoid;

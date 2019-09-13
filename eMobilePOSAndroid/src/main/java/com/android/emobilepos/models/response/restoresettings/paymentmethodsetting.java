@@ -4,19 +4,19 @@ import com.google.gson.annotations.SerializedName;
 
 public class paymentmethodsetting {
     @SerializedName("PayWithTupyx")
-    private boolean PayWithTupyx;
+    private boolean PayWithTupyx= false;
     @SerializedName("CayanGenius")
-    private boolean CayanGenius;
+    private boolean CayanGenius= false;
     @SerializedName("PayWithCardOnFile")
-    private boolean PayWithCardOnFile;
+    private boolean PayWithCardOnFile= false;
     @SerializedName("PAXSecurePay")
-    private boolean PAXSecurePay;
+    private boolean PAXSecurePay= false;
     @SerializedName("SPSecurePay")
-    private boolean SPSecurePay;
+    private boolean SPSecurePay= false;
     @SerializedName("ShowAlsoRedeem")
-    private boolean ShowAlsoRedeem;
+    private boolean ShowAlsoRedeem= false;
     @SerializedName("GeniusIP")
-    private String GeniusIP;
+    private String GeniusIP="";
 
     public boolean isPayWithTupyx() {
         return PayWithTupyx;

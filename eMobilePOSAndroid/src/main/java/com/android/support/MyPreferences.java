@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.ArraySet;
 import android.util.Base64;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -18,7 +19,11 @@ import java.security.AccessControlException;
 import java.security.Guard;
 import java.security.GuardedObject;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
@@ -1160,14 +1165,19 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public void setMainMenuSettings(boolean values[]) {
+    public void setMainMenuSettings(Collection<String> values) {
 //        global.initSalesMenuTab(this.context);
 //        String[] mainMenuList = global.getSalesMainMenuList();
-        String[] mainMenuList = context.getResources().getStringArray(R.array.mainMenuArray);
-        for (int i = 0; i < values.length; i++) {
-            prefEditor.putBoolean(mainMenuList[i], values[i]);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Set<String> mValues = new HashSet<>();
+//        String[] mainMenuList = context.getResources().getStringArray(R.array.mainMenuArray);
+//        for (int i = 0; i < values.size(); i++) {
+//        }
+        if(values.size() > 0){
+            mValues.addAll(values);
+            editor.putStringSet("pref_configure_home_menu", mValues);
         }
-        prefEditor.commit();
+        editor.commit();
     }
 
     public boolean[] getMainMenuPreference() {

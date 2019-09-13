@@ -4,39 +4,39 @@ import com.google.gson.annotations.SerializedName;
 
 public class homeMenuConfig {
     @SerializedName("SalesReceipt")
-    private boolean SalesReceipt;
+    private boolean SalesReceipt= false;
     @SerializedName("Order")
-    private boolean Order;
+    private boolean Order= false;
     @SerializedName("Return")
-    private boolean Return;
+    private boolean Return= false;
     @SerializedName("Invoice")
-    private boolean Invoice;
+    private boolean Invoice= false;
     @SerializedName("Estimate")
-    private boolean Estimate;
+    private boolean Estimate= false;
     @SerializedName("Payment")
-    private boolean Payment;
+    private boolean Payment= false;
     @SerializedName("GiftCard")
-    private boolean GiftCard;
+    private boolean GiftCard= false;
     @SerializedName("LoyaltyCard")
-    private boolean LoyaltyCard;
+    private boolean LoyaltyCard= false;
     @SerializedName("RewardCard")
-    private boolean RewardCard;
+    private boolean RewardCard= false;
     @SerializedName("Refund")
-    private boolean Refund;
+    private boolean Refund= false;
     @SerializedName("Route")
-    private boolean Route;
+    private boolean Route= false;
     @SerializedName("Holds")
-    private boolean Holds;
+    private boolean Holds= false;
     @SerializedName("Consignment")
-    private boolean Consignment;
+    private boolean Consignment= false;
     @SerializedName("InventoryTransfer")
-    private boolean InventoryTransfer;
+    private boolean InventoryTransfer= false;
     @SerializedName("TipAdjustment")
-    private boolean TipAdjustment;
+    private boolean TipAdjustment= false;
     @SerializedName("Shifts")
-    private boolean Shifts;
+    private boolean Shifts= false;
     @SerializedName("NoSale")
-    private boolean NoSale;
+    private boolean NoSale= false;
 
     public boolean isSalesReceipt() {
         return SalesReceipt;

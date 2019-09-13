@@ -4,19 +4,19 @@ import com.google.gson.annotations.SerializedName;
 
 public class giftcardsetting {
     @SerializedName("ShowAlsoRedeem")
-    private boolean ShowAlsoRedeem;
+    private boolean ShowAlsoRedeem= false;
     @SerializedName("ShowRedeemAll")
-    private boolean ShowRedeemAll;
+    private boolean ShowRedeemAll= false;
     @SerializedName("UnitName")
-    private String UnitName;
+    private String UnitName="";
     @SerializedName("TupyxGift")
-    private boolean TupyxGift;
+    private boolean TupyxGift= false;
     @SerializedName("AutoBalanceRequest")
-    private boolean AutoBalanceRequest;
+    private boolean AutoBalanceRequest= false;
     @SerializedName("ShowBalanceAfterPayment")
-    private boolean ShowBalanceAfterPayment;
+    private boolean ShowBalanceAfterPayment= false;
     @SerializedName("UseStadisV4")
-    private boolean UseStadisV4;
+    private boolean UseStadisV4= false;
 
     public boolean isShowAlsoRedeem() {
         return ShowAlsoRedeem;

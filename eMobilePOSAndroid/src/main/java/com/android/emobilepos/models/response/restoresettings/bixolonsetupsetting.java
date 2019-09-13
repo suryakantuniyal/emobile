@@ -4,21 +4,21 @@ import com.google.gson.annotations.SerializedName;
 
 public class bixolonsetupsetting {
     @SerializedName("NCF")
-    private String NCF;
+    private String NCF="";
     @SerializedName("RUC")
-    private String RUC;
+    private String RUC="";
     @SerializedName("MerchantName")
-    private String MerchantName;
+    private String MerchantName="";
     @SerializedName("Date")
-    private String Date;
+    private String Date="";
     @SerializedName("Header")
-    private String Header;
+    private String Header="";
     @SerializedName("Footer")
-    private String Footer;
+    private String Footer="";
     @SerializedName("Taxes")
-    private String Taxes;
+    private String Taxes="";
     @SerializedName("PaymentMethod")
-    private String PaymentMethod;
+    private String PaymentMethod="";
 
     public String getNCF() {
         return NCF;

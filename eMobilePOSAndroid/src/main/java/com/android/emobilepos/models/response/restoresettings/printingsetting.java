@@ -6,37 +6,37 @@ import java.util.List;
 
 public class printingsetting {
     @SerializedName("Enabled")
-    private boolean Enabled;
+    private boolean Enabled= false;
     @SerializedName("AutomaticPrinting")
-    private boolean AutomaticPrinting;
+    private boolean AutomaticPrinting= false;
     @SerializedName("MupltiplePrints")
-    private boolean MupltiplePrints;
+    private boolean MupltiplePrints= false;
     @SerializedName("PermitReceipt")
-    private boolean PermitReceipt;
+    private boolean PermitReceipt= false;
     @SerializedName("PrinterWidth")
-    private String PrinterWidth;
+    private String PrinterWidth="";
     @SerializedName("SplitStationByCategories")
-    private boolean SplitStationByCategories;
+    private boolean SplitStationByCategories= false;
     @SerializedName("WholesalePrintOut")
-    private boolean WholesalePrintOut;
+    private boolean WholesalePrintOut= false;
     @SerializedName("HandwrittenSignature")
-    private boolean HandwrittenSignature;
+    private boolean HandwrittenSignature= false;
     @SerializedName("PromptReceiptCC")
-    private boolean PromptReceiptCC;
+    private boolean PromptReceiptCC= false;
     @SerializedName("PrintTransPayments")
-    private boolean PrintTransPayments;
+    private boolean PrintTransPayments= false;
     @SerializedName("PrintTaxesBreakdown")
-    private boolean PrintTaxesBreakdown;
+    private boolean PrintTaxesBreakdown= false;
     @SerializedName("StarInfo")
-    private String StarInfo;
+    private String StarInfo="";
     @SerializedName("SNBCSetup")
-    private String SNBCSetup;
+    private String SNBCSetup="";
     @SerializedName("BixolonSetup")
-    private bixolonsetupsetting BixolonSetup;
+    private bixolonsetupsetting BixolonSetup = new bixolonsetupsetting();
     @SerializedName("PrintPrefs")
-    private printprefs PrintPrefs;
+    private printprefs PrintPrefs = new printprefs();
     @SerializedName("PrintRasterMode")
-    private boolean PrintRasterMode;
+    private boolean PrintRasterMode= false;
 
 
     public boolean isEnabled() {

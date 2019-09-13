@@ -6,23 +6,23 @@ import java.util.List;
 
 public class otherSettings {
     @SerializedName("homeMenuConfig")
-    private homeMenuConfig homeMenuConfig;
+    private homeMenuConfig homeMenuConfig = new homeMenuConfig();
     @SerializedName("DefaultTransaction")
-    private String DefaultTransaction;
+    private String DefaultTransaction="";
     @SerializedName("BlockPriceLevelChange")
-    private boolean BlockPriceLevelChange;
+    private boolean BlockPriceLevelChange= false;
     @SerializedName("RequireAddress")
-    private boolean RequireAddress;
+    private boolean RequireAddress= false;
     @SerializedName("RequirePO")
-    private boolean RequirePO;
+    private boolean RequirePO= false;
     @SerializedName("SkipManagerPriceOverride")
-    private boolean SkipManagerPriceOverride;
+    private boolean SkipManagerPriceOverride= false;
     @SerializedName("RequirePWToClockOut")
-    private boolean RequirePWToClockOut;
+    private boolean RequirePWToClockOut= false;
     @SerializedName("MapsInsideApp")
-    private boolean MapsInsideApp;
+    private boolean MapsInsideApp= false;
     @SerializedName("UseLocationInventory")
-    private boolean UseLocationInventory;
+    private boolean UseLocationInventory= false;
 
     public homeMenuConfig getHomeMenuConfig() {
         return homeMenuConfig;

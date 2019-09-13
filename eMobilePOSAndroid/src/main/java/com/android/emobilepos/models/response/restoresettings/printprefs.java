@@ -4,37 +4,37 @@ import com.google.gson.annotations.SerializedName;
 
 public class printprefs {
     @SerializedName("Header")
-    private boolean Header;
+    private boolean Header= false;
     @SerializedName("ShipToInfo")
-    private boolean ShipToInfo;
+    private boolean ShipToInfo= false;
     @SerializedName("Terms")
-    private boolean Terms;
+    private boolean Terms= false;
     @SerializedName("CustomerAccNumber")
-    private boolean CustomerAccNumber;
+    private boolean CustomerAccNumber= false;
     @SerializedName("OrderComments")
-    private boolean OrderComments;
+    private boolean OrderComments= false;
     @SerializedName("Addons")
-    private boolean Addons;
+    private boolean Addons= false;
     @SerializedName("ProductTaxDetails")
-    private boolean ProductTaxDetails;
+    private boolean ProductTaxDetails= false;
     @SerializedName("ProductDiscountDetails")
-    private boolean ProductDiscountDetails;
+    private boolean ProductDiscountDetails= false;
     @SerializedName("ProductDescriptions")
-    private boolean ProductDescriptions;
+    private boolean ProductDescriptions= false;
     @SerializedName("ProductComments")
-    private boolean ProductComments;
+    private boolean ProductComments= false;
     @SerializedName("SaleAttributes")
-    private boolean SaleAttributes;
+    private boolean SaleAttributes= false;
     @SerializedName("PaymentComments")
-    private boolean PaymentComments;
+    private boolean PaymentComments= false;
     @SerializedName("IVULotoQRCode")
-    private boolean IVULotoQRCode;
+    private boolean IVULotoQRCode= false;
     @SerializedName("Footer")
-    private boolean Footer;
+    private boolean Footer= false;
     @SerializedName("TermsAndConditions")
-    private boolean TermsAndConditions;
+    private boolean TermsAndConditions= false;
     @SerializedName("EMSWebsiteFooter")
-    private boolean EMSWebsiteFooter;
+    private boolean EMSWebsiteFooter= false;
 
     public boolean isHeader() {
         return Header;

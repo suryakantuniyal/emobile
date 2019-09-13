@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class sessionSettings {
     @SerializedName("ExpireUserLoginSession")
-    private boolean ExpireUserLoginSession;
+    private boolean ExpireUserLoginSession= false;
     @SerializedName("UserSessionExpirationTime")
-    private String UserSessionExpirationTime;
+    private String UserSessionExpirationTime= "";
 
     public boolean isExpireUserLoginSession() {
         return ExpireUserLoginSession;

@@ -774,7 +774,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private void backupSettings(boolean isToGlobal){
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
-
+            String regID = myPref.getAcctNumber();
+            String empID = String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId());
+            if(isToGlobal){
+                sm.backupSettings(getActivity(),"0", regID);
+            }else{
+                sm.backupSettings(getActivity(), empID, regID);
+            }
         }
 
         private void openBixolonSetting() {
