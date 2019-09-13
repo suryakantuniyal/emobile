@@ -37,13 +37,11 @@ import com.android.dao.StoredPaymentsDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
-import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.cardmanager.CardManager_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.CustomerCustomField;
@@ -513,55 +511,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         if (Global.isIvuLoto) {
             intent.putExtra("IvuLottoNumber", ivuLottoNum);
             intent.putExtra("IvuLottoDrawDate", drawDate);
-
-            if (!extras.getBoolean("salesrefund") && !extras.getBoolean("salespayment")
-                    && !extras.getBoolean("histinvoices")) {
-                double subtotal = Double.parseDouble(extras.getString("ord_subtotal"));
-                String taxID = extras.getString("ord_taxID");
-
-                List<GroupTax> groupTax = new TaxesHandler(this).getGroupTaxRate(taxID);
-
-                if (groupTax.size() > 0) {
-                    BigDecimal tempRate;
-                    if (groupTax.get(0).getPrTax().equals("Tax1") || groupTax.get(0).getPrTax().equals("Tax2")) {
-                        tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
-                                BigDecimal.ROUND_UP);
-                        intent.putExtra("Tax1_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax1_name", groupTax.get(0).getTaxName());
-
-                        tempRate = groupTax.size() == 1 ? new BigDecimal(0) : new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
-                                BigDecimal.ROUND_UP);
-                        intent.putExtra("Tax2_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax2_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
-
-                        tempRate = groupTax.size() == 3 ? new BigDecimal(0) :
-                                new BigDecimal(subtotal * Double.parseDouble(
-                                        groupTax.get(2).getTaxRate())).setScale(2,
-                                BigDecimal.ROUND_UP);
-                        intent.putExtra("Tax3_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax3_name", groupTax.size() == 3 ? "" :
-                                groupTax.get(2).getTaxName());
-                    } else {
-                        tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
-                                BigDecimal.ROUND_UP);
-                        intent.putExtra("Tax2_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax2_name", groupTax.get(0).getTaxName());
-
-                        tempRate = groupTax.size() == 1 ? new BigDecimal(0) : new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
-                                BigDecimal.ROUND_UP);
-                        intent.putExtra("Tax1_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax1_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
-
-                        tempRate = groupTax.size() == 3 ? new BigDecimal(0) :
-                                new BigDecimal(subtotal * Double.parseDouble(
-                                        groupTax.get(2).getTaxRate())).setScale(2,
-                                BigDecimal.ROUND_UP);
-                        intent.putExtra("Tax3_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax3_name", groupTax.size() == 3 ? "" :
-                                groupTax.get(2).getTaxName());
-                    }
-                }
-            }
         }
 
         intent.putExtra("amount", payingAmount);
