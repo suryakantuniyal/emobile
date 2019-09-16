@@ -2333,7 +2333,8 @@ public class SynchMethods {
         @Override
         protected Void doInBackground(Void... params) {
             backupSettings = new BackupSettings(preferences);
-            backupSettings.restoreMySettings(mSettings);
+            if(mSettings!=null)
+                backupSettings.restoreMySettings(mSettings);
             return null;
         }
 
