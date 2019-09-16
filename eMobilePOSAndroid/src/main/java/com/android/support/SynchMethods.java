@@ -2271,9 +2271,11 @@ public class SynchMethods {
         private String empID;
         private String regID;
         private OAuthClient oauth;
+        private Context context;
         private ProgressDialog progressDialog;
         private BackupSettings backupSettings;
         private MyPreferences preferences;
+        private oauthclient.HttpClient httpClient;
 
         public AsyncBackupSettings(Context context, OAuthClient oAuthClient, String url, String empID, String regID, MyPreferences preferences) {
             this.oauth = oAuthClient;
@@ -2281,6 +2283,7 @@ public class SynchMethods {
             this.empID = empID;
             this.regID = regID;
             this.preferences = preferences;
+            this.context = context;
             progressDialog = new ProgressDialog(context);
 //            path = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/rset.json";
         }
@@ -2298,6 +2301,13 @@ public class SynchMethods {
         protected Void doInBackground(Void... params) {
             backupSettings = new BackupSettings(preferences);
             String json = backupSettings.backupMySettings(empID,regID);
+
+            httpClient = new oauthclient.HttpClient();
+            try {
+                httpClient.post(context.getString(R.string.account_settings_backup),json,oauth,true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return null;
         }

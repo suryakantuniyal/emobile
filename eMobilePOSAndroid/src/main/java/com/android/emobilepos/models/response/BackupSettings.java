@@ -1,15 +1,20 @@
 package com.android.emobilepos.models.response;
 
+import android.content.Context;
 import android.os.Build;
 
+import com.android.emobilepos.models.response.restoresettings.bixolonsetupsetting;
+import com.android.emobilepos.models.response.restoresettings.homeMenuConfig;
 import com.android.emobilepos.models.response.restoresettings.kioskSettings;
 import com.android.emobilepos.models.response.restoresettings.otherSettings;
 import com.android.emobilepos.models.response.restoresettings.printingsetting;
+import com.android.emobilepos.models.response.restoresettings.printprefs;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -275,11 +280,12 @@ public class BackupSettings {
 
             build.getPrintingSettings().setStarInfo(myPreferences.getPreferencesValue("pref_star_info"));
             build.getPrintingSettings().setSNBCSetup(myPreferences.getPreferencesValue("pref_snbc_setup"));
-//            printingsetting mConfig = build.getPrintingSettings();
-//            mConfig.getBixolonSetup();
-//            myPreferences.setPreferencesValue("pref_bixolon_setup",build.getPrintingSettings().getBixolonSetup());
+//            bixolonsetupsetting mConfig = build.getPrintingSettings().getBixolonSetup();
+//            myPreferences.getPreferencesValue("pref_bixolon_setup");
 
-//            build.getPrintingSettings().setEnabled(myPreferences.getPreferences("pref_set_printing_preferences")); //REPEATED!!!!!!!!!!!!!!!!
+            printprefs printprefs = build.getPrintingSettings().getPrintPrefs();
+//            HashSet<String> element = myPreferences;
+//            build.getPrintingSettings().setEnabled(myPreferences.getPreferences("pref_set_printing_preferences"));
             build.getPrintingSettings().setPrintRasterMode(myPreferences.getPreferences("pref_print_raster_mode"));
 
             //PRODUCT SETTINGS
@@ -312,10 +318,30 @@ public class BackupSettings {
 
             //OTHER SETTINGS
             otherSettings mOther = build.getOtherSettings();
+            homeMenuConfig home = mOther.getHomeMenuConfig();
+            boolean[] values = myPreferences.getMainMenuPreference();
+            home.setSalesReceipt(values[0]);
+            home.setOrder(values[1]);
+            home.setReturn(values[2]);
+            home.setInvoice(values[3]);
+            home.setEstimate(values[4]);
+            home.setPayment(values[5]);
+            home.setGiftCard(values[6]);
+            home.setLoyaltyCard(values[7]);
+            home.setRewardCard(values[8]);
+            home.setRefund(values[9]);
+            home.setRoute(values[10]);
+            home.setHolds(values[11]);
+            home.setConsignment(values[12]);
+            home.setInventoryTransfer(values[13]);
+            home.setTipAdjustment(values[14]);
+            home.setShifts(values[15]);
+            home.setNoSale(values[16]);
+            mOther.setHomeMenuConfig(home);
 
-//            myPreferences.getMainMenuSettings(homeMenuArrValues);
-
-            mOther.setDefaultTransaction(myPreferences.getPreferencesValue("pref_default_transaction"));
+            mOther.setDefaultTransaction(
+                    (myPreferences.getPreferencesValue("pref_default_transaction").equals("-1"))?
+                            "" : myPreferences.getPreferencesValue("pref_default_transaction") );
             mOther.setBlockPriceLevelChange(myPreferences.getPreferences("pref_block_price_level_change"));
             mOther.setRequireAddress(myPreferences.getPreferences("pref_require_address"));
             mOther.setRequirePO(myPreferences.getPreferences("pref_require_po"));
