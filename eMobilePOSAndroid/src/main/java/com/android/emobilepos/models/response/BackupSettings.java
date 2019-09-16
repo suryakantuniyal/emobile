@@ -30,9 +30,14 @@ public class BackupSettings {
     }
 
     public String backupMySettings(String empID,String regID) {
+//        BuildSettingsResponse sendBackupResponse = new BuildSettingsResponse();
         BuildSettings build = new BuildSettings();
-        BuildSettings buildToJson = ConfigSettings(build, false, empID, regID);
-        String json = gson.toJson(buildToJson);
+        BuildSettings mBuild = ConfigSettings(build, false, empID, regID);
+//        List<BuildSettings> mBuildList = new ArrayList<>();
+//        mBuildList.add(mBuild);
+//        sendBackupResponse.setBuildSettings(mBuildList);
+        String json = gson.toJson(mBuild);
+        json = "["+json+"]";
         return json;
     }
 
@@ -120,7 +125,7 @@ public class BackupSettings {
 //            mConfig.getBixolonSetup();
 //            myPreferences.setPreferencesValue("pref_bixolon_setup",build.getPrintingSettings().getBixolonSetup());
 
-            myPreferences.setPreferences("pref_set_printing_preferences", build.getPrintingSettings().isEnabled());
+//            myPreferences.setPreferences("pref_set_printing_preferences", build.getPrintingSettings().getPrintPrefs());
             myPreferences.setPreferences("pref_print_raster_mode", build.getPrintingSettings().isPrintRasterMode());
 
             //PRODUCT SETTINGS
