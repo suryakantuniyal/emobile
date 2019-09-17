@@ -1,24 +1,14 @@
 package com.android.emobilepos.models.response;
 
-import android.content.Context;
-import android.os.Build;
 
-import com.android.emobilepos.models.response.restoresettings.bixolonsetupsetting;
 import com.android.emobilepos.models.response.restoresettings.homeMenuConfig;
 import com.android.emobilepos.models.response.restoresettings.kioskSettings;
 import com.android.emobilepos.models.response.restoresettings.otherSettings;
-import com.android.emobilepos.models.response.restoresettings.printingsetting;
 import com.android.emobilepos.models.response.restoresettings.printprefs;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 public class BackupSettings {
 
     private MyPreferences myPreferences;
@@ -35,14 +25,9 @@ public class BackupSettings {
     }
 
     public String backupMySettings(String empID,String regID) {
-//        BuildSettingsResponse sendBackupResponse = new BuildSettingsResponse();
         BuildSettings build = new BuildSettings();
         BuildSettings mBuild = ConfigSettings(build, false, empID, regID);
-//        List<BuildSettings> mBuildList = new ArrayList<>();
-//        mBuildList.add(mBuild);
-//        sendBackupResponse.setBuildSettings(mBuildList);
         String json = gson.toJson(mBuild);
-        json = "["+json+"]";
         return json;
     }
 
