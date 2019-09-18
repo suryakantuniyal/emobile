@@ -6,12 +6,15 @@ import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.response.restoresettings.homeMenuConfig;
 import com.android.emobilepos.models.response.restoresettings.kioskSettings;
 import com.android.emobilepos.models.response.restoresettings.otherSettings;
+import com.android.emobilepos.models.response.restoresettings.printingsetting;
 import com.android.emobilepos.models.response.restoresettings.printprefs;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BackupSettings {
 
@@ -119,6 +122,25 @@ public class BackupSettings {
 //            mConfig.getBixolonSetup();
 //            myPreferences.setPreferencesValue("pref_bixolon_setup",build.getPrintingSettings().getBixolonSetup());
 
+            printprefs printPref = build.getPrintingSettings().getPrintPrefs();
+            Set<String> values = new HashSet<>();
+            values.add(String.valueOf(printPref.isHeader()));
+            values.add(String.valueOf(printPref.isShipToInfo()));
+            values.add(String.valueOf(printPref.isTerms()));
+            values.add(String.valueOf(printPref.isCustomerAccNumber()));
+            values.add(String.valueOf(printPref.isOrderComments()));
+            values.add(String.valueOf(printPref.isAddons()));
+            values.add(String.valueOf(printPref.isProductTaxDetails()));
+            values.add(String.valueOf(printPref.isProductDiscountDetails()));
+            values.add(String.valueOf(printPref.isProductDescriptions()));
+            values.add(String.valueOf(printPref.isProductComments()));
+            values.add(String.valueOf(printPref.isSaleAttributes()));
+            values.add(String.valueOf(printPref.isPaymentComments()));
+            values.add(String.valueOf(printPref.isIVULotoQRCode()));
+            values.add(String.valueOf(printPref.isFooter()));
+            values.add(String.valueOf(printPref.isTermsAndConditions()));
+            values.add(String.valueOf(printPref.isEMSWebsiteFooter()));
+            myPreferences.setPrintingPreferences(values);
 //            myPreferences.setPreferences("pref_set_printing_preferences", build.getPrintingSettings().getPrintPrefs());
             myPreferences.setPreferences("pref_print_raster_mode", build.getPrintingSettings().isPrintRasterMode());
 

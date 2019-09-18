@@ -1207,6 +1207,10 @@ public class MyPreferences {
         return list;
     }
 
+    public void setPrintingPreferences(Set<String> selections) {
+         sharedPref.getStringSet("pref_set_printing_preferences", selections);
+    }
+
     public boolean loginAdmin(String password) {
         try {
             return getPOSAdminPass().equals(AESCipher.getSha256Hash(password));
