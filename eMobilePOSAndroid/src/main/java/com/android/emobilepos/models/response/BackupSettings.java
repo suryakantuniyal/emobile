@@ -1,6 +1,8 @@
 package com.android.emobilepos.models.response;
 
 
+import com.android.dao.PaymentMethodDAO;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.response.restoresettings.homeMenuConfig;
 import com.android.emobilepos.models.response.restoresettings.kioskSettings;
 import com.android.emobilepos.models.response.restoresettings.otherSettings;
@@ -9,6 +11,8 @@ import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
+
 public class BackupSettings {
 
     private MyPreferences myPreferences;
@@ -125,7 +129,7 @@ public class BackupSettings {
             myPreferences.setPreferences("pref_require_password_to_remove_void", build.getProductSettings().isRequirePasswordRemoveVoid());
             myPreferences.setPreferences("pref_show_removed_void_items_in_printout", build.getProductSettings().isShowRemovedItemsOnPrintOut());
             myPreferences.setPreferencesValue("pref_default_category", build.getProductSettings().getDefaultCategory());
-            myPreferences.setPreferencesValue("prod_name", build.getProductSettings().getAttributeToDisplay());
+            myPreferences.setPreferencesValue("pref_attribute_to_display", build.getProductSettings().getAttributeToDisplay());
             myPreferences.setPreferences("pref_group_in_catalog_by_name", build.getProductSettings().isGroupInCatalogByName());
             myPreferences.setPreferences("pref_filter_products_by_customer", build.getProductSettings().isFilterByCustomers());
             myPreferences.setPreferences("pref_limit_products_on_hand", build.getProductSettings().isLimitProductsOnHand());
@@ -209,7 +213,7 @@ public class BackupSettings {
             //CUSTOMER SETTINGS
             build.getCustomerSettings().setRequired(myPreferences.getPreferences("pref_require_customer"));
             build.getCustomerSettings().setClearAfterTrans(myPreferences.getPreferences("pref_clear_customer"));
-            build.getCustomerSettings().setSelectTag(myPreferences.getPreferencesValue("pref_default_customer_display_name"));
+            build.getCustomerSettings().setSelectTag(myPreferences.getPreferencesValue("pref_default_customer_display_name").toLowerCase());
             build.getCustomerSettings().setDirectSelection(myPreferences.getPreferences("pref_direct_customer_selection"));
             build.getCustomerSettings().setDisplayAccountNumber(myPreferences.getPreferences("pref_display_customer_account_number"));
             build.getCustomerSettings().setAllowCreation(myPreferences.getPreferences("pref_allow_customer_creation"));
@@ -223,7 +227,7 @@ public class BackupSettings {
             //GIFT CARD SETTINGS
             build.getGiftCardSettings().setShowAlsoRedeem(myPreferences.getPreferences("pref_display_also_redeem"));
             build.getGiftCardSettings().setShowRedeemAll(myPreferences.getPreferences("pref_display_redeem_all"));
-            build.getGiftCardSettings().setUnitName(myPreferences.getPreferencesValue("pref_units_name"));
+            build.getGiftCardSettings().setUnitName(myPreferences.getDefaultUnitsName());//.getPreferencesValue("pref_units_name"));
             build.getGiftCardSettings().setTupyxGift(myPreferences.getPreferences("pref_use_loyal_patron"));
             build.getGiftCardSettings().setAutoBalanceRequest(myPreferences.getPreferences("pref_giftcard_auto_balance_request"));
             build.getGiftCardSettings().setUseStadisV4(myPreferences.getPreferences("pref_use_stadis_iv"));
@@ -234,13 +238,24 @@ public class BackupSettings {
             build.getPaymentMethodSettings().setPayWithCardOnFile(myPreferences.getPreferences("pref_pay_with_card_on_file"));
             build.getPaymentMethodSettings().setPAXSecurePay(myPreferences.getPreferences("pref_use_pax"));
             build.getPaymentMethodSettings().setSPSecurePay(myPreferences.getPreferences("pref_use_sound_payments"));
-            build.getPaymentMethodSettings().setGeniusIP(myPreferences.getPreferencesValue("pref_config_genius_peripheral"));
+            build.getPaymentMethodSettings().setGeniusIP(myPreferences.getGeniusIP());//myPreferences.getPreferencesValue("pref_config_genius_peripheral"));
 
             //PAYMENT PROCESSING SETTINGS
+            String audioReader = myPreferences.getPreferencesValue("pref_audio_card_reader");
+            switch(audioReader){
+                case "-1": audioReader = "";break;
+                case "0": audioReader = "unimag";break;
+                case "1": audioReader = "magtek";break;
+                case "2": audioReader = "rover";break;
+                case "3": audioReader = "walker";break;
+            }
+
+            PaymentMethod p = PaymentMethodDAO.getPaymentMethodById(myPreferences.getPreferencesValue("pref_default_payment_method")) ;
+            String dPaymentMethod = p.getPaymethod_id();//myPreferences.getPreferencesValue("pref_default_payment_method");
             build.getPaymentProcessingSettings().setAllowManualCreditCard(myPreferences.getPreferences("pref_allow_manual_credit_card"));
             build.getPaymentProcessingSettings().setProcessCheckOnline(myPreferences.getPreferences("pref_process_check_online"));
             build.getPaymentProcessingSettings().setShowTipsForCash(myPreferences.getPreferences("pref_show_tips_for_cash"));
-            build.getPaymentProcessingSettings().setAudioCardReader(myPreferences.getPreferencesValue("pref_audio_card_reader"));
+            build.getPaymentProcessingSettings().setAudioCardReader(audioReader);
             build.getPaymentProcessingSettings().setDefaultPaymentMethod(myPreferences.getPreferencesValue("pref_default_payment_method"));
             build.getPaymentProcessingSettings().setReturnRequireRefund( myPreferences.getPreferences("pref_return_require_refund"));
             build.getPaymentProcessingSettings().setConvertToReward(myPreferences.getPreferences("pref_convert_to_reward"));
@@ -255,7 +270,7 @@ public class BackupSettings {
             build.getPrintingSettings().setAutomaticPrinting(myPreferences.getPreferences("pref_automatic_printing"));
             build.getPrintingSettings().setMupltiplePrints(myPreferences.getPreferences("pref_enable_multiple_prints"));
             build.getPrintingSettings().setPermitReceipt(myPreferences.getPreferences("pref_use_permitreceipt_printing"));
-            build.getPrintingSettings().setPrinterWidth(myPreferences.getPreferencesValue("pref_printer_width"));
+            build.getPrintingSettings().setPrinterWidth(myPreferences.getPreferencesValue("pref_printer_width").toLowerCase());
             build.getPrintingSettings().setSplitStationByCategories(myPreferences.getPreferences("pref_split_stationprint_by_categories"));
             build.getPrintingSettings().setWholesalePrintOut(myPreferences.getPreferences("pref_wholesale_printout"));
             build.getPrintingSettings().setHandwrittenSignature(myPreferences.getPreferences("pref_handwritten_signature"));
@@ -263,14 +278,29 @@ public class BackupSettings {
             build.getPrintingSettings().setPrintTransPayments(myPreferences.getPreferences("pref_print_receipt_transaction_payment"));
             build.getPrintingSettings().setPrintTaxesBreakdown(myPreferences.getPreferences("pref_print_taxes_breakdown"));
 
-            build.getPrintingSettings().setStarInfo(myPreferences.getPreferencesValue("pref_star_info"));
+            build.getPrintingSettings().setStarInfo(myPreferences.getStarIPAddress());//.getPreferencesValue("pref_star_info"));
             build.getPrintingSettings().setSNBCSetup(myPreferences.getPreferencesValue("pref_snbc_setup"));
 //            bixolonsetupsetting mConfig = build.getPrintingSettings().getBixolonSetup();
 //            myPreferences.getPreferencesValue("pref_bixolon_setup");
 
+            List<String> list = myPreferences.getPrintingPreferences();
             printprefs printprefs = build.getPrintingSettings().getPrintPrefs();
-//            HashSet<String> element = myPreferences;
-//            build.getPrintingSettings().setEnabled(myPreferences.getPreferences("pref_set_printing_preferences"));
+            printprefs.setHeader(Boolean.valueOf(list.get(0)));
+            printprefs.setShipToInfo(Boolean.valueOf(list.get(1)));
+            printprefs.setTerms(Boolean.valueOf(list.get(2)));
+            printprefs.setCustomerAccNumber(Boolean.valueOf(list.get(3)));
+            printprefs.setOrderComments(Boolean.valueOf(list.get(4)));
+            printprefs.setAddons(Boolean.valueOf(list.get(5)));
+            printprefs.setProductTaxDetails(Boolean.valueOf(list.get(6)));
+            printprefs.setProductDiscountDetails(Boolean.valueOf(list.get(7)));
+            printprefs.setProductDescriptions(Boolean.valueOf(list.get(8)));
+            printprefs.setProductComments(Boolean.valueOf(list.get(9)));
+            printprefs.setSaleAttributes(Boolean.valueOf(list.get(10)));
+            printprefs.setPaymentComments(Boolean.valueOf(list.get(11)));
+            printprefs.setIVULotoQRCode(Boolean.valueOf(list.get(12)));
+            printprefs.setFooter(Boolean.valueOf(list.get(13)));
+            printprefs.setTermsAndConditions(Boolean.valueOf(list.get(14)));
+            printprefs.setEMSWebsiteFooter(Boolean.valueOf(list.get(15)));
             build.getPrintingSettings().setPrintRasterMode(myPreferences.getPreferences("pref_print_raster_mode"));
 
             //PRODUCT SETTINGS
@@ -280,7 +310,7 @@ public class BackupSettings {
             build.getProductSettings().setRequirePasswordRemoveVoid(myPreferences.getPreferences("pref_require_password_to_remove_void"));
             build.getProductSettings().setShowRemovedItemsOnPrintOut(myPreferences.getPreferences("pref_show_removed_void_items_in_printout"));
             build.getProductSettings().setDefaultCategory(myPreferences.getPreferencesValue("pref_default_category"));
-            build.getProductSettings().setAttributeToDisplay(myPreferences.getPreferencesValue("prod_name"));
+            build.getProductSettings().setAttributeToDisplay(myPreferences.getPreferencesValue("pref_attribute_to_display").replace("_","").toLowerCase());
             build.getProductSettings().setGroupInCatalogByName(myPreferences.getPreferences("pref_group_in_catalog_by_name"));
             build.getProductSettings().setFilterByCustomers(myPreferences.getPreferences("pref_filter_products_by_customer"));
             build.getProductSettings().setLimitProductsOnHand(myPreferences.getPreferences("pref_limit_products_on_hand"));
@@ -299,7 +329,7 @@ public class BackupSettings {
 
             //TRANSACTION SETTINGS
             build.getTransactionSettings().setRequireManagerPWToVoid(myPreferences.getPreferences("pref_require_manager_pass_to_void_trans"));
-            build.getTransactionSettings().setDefaultCountry(myPreferences.getPreferencesValue("pref_default_country"));
+            build.getTransactionSettings().setDefaultCountry(myPreferences.getDefaultCountryName());
 
             //OTHER SETTINGS
             otherSettings mOther = build.getOtherSettings();
@@ -324,9 +354,9 @@ public class BackupSettings {
             home.setNoSale(values[16]);
             mOther.setHomeMenuConfig(home);
 
-            mOther.setDefaultTransaction(
-                    (myPreferences.getPreferencesValue("pref_default_transaction").equals("-1"))?
-                            "" : myPreferences.getPreferencesValue("pref_default_transaction") );
+            String transaction = myPreferences.getPreferencesValue("pref_default_transaction");
+            mOther.setDefaultTransaction(transaction.equals("-1")? "" :
+                    (transaction.equals("0"))? "startcheck" : "return" );
             mOther.setBlockPriceLevelChange(myPreferences.getPreferences("pref_block_price_level_change"));
             mOther.setRequireAddress(myPreferences.getPreferences("pref_require_address"));
             mOther.setRequirePO(myPreferences.getPreferences("pref_require_po"));

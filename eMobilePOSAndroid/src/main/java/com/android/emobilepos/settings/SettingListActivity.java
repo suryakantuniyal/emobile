@@ -712,7 +712,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         @Override
                         public void onSelectCountry(String name, String code) {
                             myPref.setDefaultCountryCode(code);
-                            myPref.setDefaultCountryCode(name);
+                            myPref.setDefaultCountryName(name);
                             CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
                             newFrag.dismiss();
