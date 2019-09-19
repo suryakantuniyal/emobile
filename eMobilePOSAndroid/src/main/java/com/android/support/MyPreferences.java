@@ -4,26 +4,21 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.ArraySet;
 import android.util.Base64;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.SalesTaxCodesHandler;
-import com.android.emobilepos.R;
 
 import java.security.AccessControlException;
 import java.security.Guard;
 import java.security.GuardedObject;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;

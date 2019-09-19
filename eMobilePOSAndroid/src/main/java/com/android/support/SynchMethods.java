@@ -2299,9 +2299,8 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
-            backupSettings = new BackupSettings(preferences);
+            backupSettings = new BackupSettings(preferences,context);
             String json = backupSettings.backupMySettings(empID,regID);
-
             httpClient = new oauthclient.HttpClient();
             try {
                 httpClient.post(context.getString(R.string.account_settings_backup),json,oauth,true);
@@ -2342,7 +2341,7 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
-            backupSettings = new BackupSettings(preferences);
+            backupSettings = new BackupSettings(preferences,context);
             if(mSettings!=null)
                 backupSettings.restoreMySettings(mSettings);
             return null;

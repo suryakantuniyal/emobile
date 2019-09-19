@@ -1,17 +1,19 @@
 package com.android.emobilepos.models.response;
 
+import android.content.Context;
 
-import com.android.dao.PaymentMethodDAO;
-import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.R;
+
 import com.android.emobilepos.models.response.restoresettings.homeMenuConfig;
 import com.android.emobilepos.models.response.restoresettings.kioskSettings;
 import com.android.emobilepos.models.response.restoresettings.otherSettings;
-import com.android.emobilepos.models.response.restoresettings.printingsetting;
 import com.android.emobilepos.models.response.restoresettings.printprefs;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,18 +22,20 @@ public class BackupSettings {
 
     private MyPreferences myPreferences;
     private Gson gson = new Gson();
+    private Context context;
 
-    public BackupSettings(MyPreferences myPreferences) {
+    public BackupSettings(MyPreferences myPreferences,Context context) {
         this.myPreferences = myPreferences;
+        this.context = context;
     }
 
     public void restoreMySettings(BuildSettings[] mSettings) {
         for (BuildSettings build : mSettings) {
-            ConfigSettings(build, true,null, null);
+            ConfigSettings(build, true, null, null);
         }
     }
 
-    public String backupMySettings(String empID,String regID) {
+    public String backupMySettings(String empID, String regID) {
         BuildSettings build = new BuildSettings();
         BuildSettings mBuild = ConfigSettings(build, false, empID, regID);
         String json = gson.toJson(mBuild);
@@ -264,22 +268,29 @@ public class BackupSettings {
 
             //PAYMENT PROCESSING SETTINGS
             String audioReader = myPreferences.getPreferencesValue("pref_audio_card_reader");
-            switch(audioReader){
-                case "-1": audioReader = "";break;
-                case "0": audioReader = "unimag";break;
-                case "1": audioReader = "magtek";break;
-                case "2": audioReader = "rover";break;
-                case "3": audioReader = "walker";break;
+            switch (audioReader) {
+                case "-1":
+                    audioReader = "";
+                    break;
+                case "0":
+                    audioReader = "unimag";
+                    break;
+                case "1":
+                    audioReader = "magtek";
+                    break;
+                case "2":
+                    audioReader = "rover";
+                    break;
+                case "3":
+                    audioReader = "walker";
+                    break;
             }
-
-            PaymentMethod p = PaymentMethodDAO.getPaymentMethodById(myPreferences.getPreferencesValue("pref_default_payment_method")) ;
-            String dPaymentMethod = p.getPaymethod_id();//myPreferences.getPreferencesValue("pref_default_payment_method");
             build.getPaymentProcessingSettings().setAllowManualCreditCard(myPreferences.getPreferences("pref_allow_manual_credit_card"));
             build.getPaymentProcessingSettings().setProcessCheckOnline(myPreferences.getPreferences("pref_process_check_online"));
             build.getPaymentProcessingSettings().setShowTipsForCash(myPreferences.getPreferences("pref_show_tips_for_cash"));
             build.getPaymentProcessingSettings().setAudioCardReader(audioReader);
             build.getPaymentProcessingSettings().setDefaultPaymentMethod(myPreferences.getPreferencesValue("pref_default_payment_method"));
-            build.getPaymentProcessingSettings().setReturnRequireRefund( myPreferences.getPreferences("pref_return_require_refund"));
+            build.getPaymentProcessingSettings().setReturnRequireRefund(myPreferences.getPreferences("pref_return_require_refund"));
             build.getPaymentProcessingSettings().setConvertToReward(myPreferences.getPreferences("pref_convert_to_reward"));
             build.getPaymentProcessingSettings().setInvoiceRequirePayment(myPreferences.getPreferences("pref_invoice_require_payment"));
             build.getPaymentProcessingSettings().setInvoiceRequirePaymentFull(myPreferences.getPreferences("pref_invoice_require_full_payment"));
@@ -306,23 +317,35 @@ public class BackupSettings {
 //            myPreferences.getPreferencesValue("pref_bixolon_setup");
 
             List<String> list = myPreferences.getPrintingPreferences();
+            HashMap<String, Boolean> mValues = new HashMap<>();
+            String[] prefValues = context.getResources().getStringArray(R.array.printPrefValues);
+            List<String> arr = Arrays.asList(prefValues);
             printprefs printprefs = build.getPrintingSettings().getPrintPrefs();
-            printprefs.setHeader(Boolean.valueOf(list.get(0)));
-            printprefs.setShipToInfo(Boolean.valueOf(list.get(1)));
-            printprefs.setTerms(Boolean.valueOf(list.get(2)));
-            printprefs.setCustomerAccNumber(Boolean.valueOf(list.get(3)));
-            printprefs.setOrderComments(Boolean.valueOf(list.get(4)));
-            printprefs.setAddons(Boolean.valueOf(list.get(5)));
-            printprefs.setProductTaxDetails(Boolean.valueOf(list.get(6)));
-            printprefs.setProductDiscountDetails(Boolean.valueOf(list.get(7)));
-            printprefs.setProductDescriptions(Boolean.valueOf(list.get(8)));
-            printprefs.setProductComments(Boolean.valueOf(list.get(9)));
-            printprefs.setSaleAttributes(Boolean.valueOf(list.get(10)));
-            printprefs.setPaymentComments(Boolean.valueOf(list.get(11)));
-            printprefs.setIVULotoQRCode(Boolean.valueOf(list.get(12)));
-            printprefs.setFooter(Boolean.valueOf(list.get(13)));
-            printprefs.setTermsAndConditions(Boolean.valueOf(list.get(14)));
-            printprefs.setEMSWebsiteFooter(Boolean.valueOf(list.get(15)));
+            for (int i = 0; i < prefValues.length; i++) {
+                if(list.contains(arr.get(i)))
+                    mValues.put(arr.get(i),true);
+//                    mValues.add(i,true);
+                else
+                    mValues.put(arr.get(i),false);
+//                    mValues.add(i,false);
+            }
+            printprefs.setHeader(mValues.get("print_header"));
+            printprefs.setShipToInfo(mValues.get("print_shiptoinfo"));
+            printprefs.setTerms(mValues.get("print_terms"));
+            printprefs.setCustomerAccNumber(mValues.get("print_customer_id"));
+            printprefs.setOrderComments(mValues.get("print_order_comments"));
+            printprefs.setAddons(mValues.get("print_addons"));
+            printprefs.setProductTaxDetails(mValues.get("print_tax_details"));
+            printprefs.setProductDiscountDetails(mValues.get("print_discount_details"));
+            printprefs.setProductDescriptions(mValues.get("print_descriptions"));
+            printprefs.setProductComments(mValues.get("print_prod_comments"));
+            printprefs.setSaleAttributes(mValues.get("print_sale_attributes"));
+            printprefs.setPaymentComments(mValues.get("print_payment_comments"));
+            printprefs.setIVULotoQRCode(mValues.get("print_ivu_loto_qr"));
+            printprefs.setFooter(mValues.get("print_footer"));
+            printprefs.setTermsAndConditions(mValues.get("print_terms_conditions"));
+            printprefs.setEMSWebsiteFooter(mValues.get("print_emobilepos_website"));
+            build.getPrintingSettings().setPrintPrefs(printprefs);
             build.getPrintingSettings().setPrintRasterMode(myPreferences.getPreferences("pref_print_raster_mode"));
 
             //PRODUCT SETTINGS
@@ -332,7 +355,7 @@ public class BackupSettings {
             build.getProductSettings().setRequirePasswordRemoveVoid(myPreferences.getPreferences("pref_require_password_to_remove_void"));
             build.getProductSettings().setShowRemovedItemsOnPrintOut(myPreferences.getPreferences("pref_show_removed_void_items_in_printout"));
             build.getProductSettings().setDefaultCategory(myPreferences.getPreferencesValue("pref_default_category"));
-            build.getProductSettings().setAttributeToDisplay(myPreferences.getPreferencesValue("pref_attribute_to_display").replace("_","").toLowerCase());
+            build.getProductSettings().setAttributeToDisplay(myPreferences.getPreferencesValue("pref_attribute_to_display").replace("_", "").toLowerCase());
             build.getProductSettings().setGroupInCatalogByName(myPreferences.getPreferences("pref_group_in_catalog_by_name"));
             build.getProductSettings().setFilterByCustomers(myPreferences.getPreferences("pref_filter_products_by_customer"));
             build.getProductSettings().setLimitProductsOnHand(myPreferences.getPreferences("pref_limit_products_on_hand"));
@@ -377,8 +400,8 @@ public class BackupSettings {
             mOther.setHomeMenuConfig(home);
 
             String transaction = myPreferences.getPreferencesValue("pref_default_transaction");
-            mOther.setDefaultTransaction(transaction.equals("-1")? "" :
-                    (transaction.equals("0"))? "startcheck" : "return" );
+            mOther.setDefaultTransaction(transaction.equals("-1") ? "" :
+                    (transaction.equals("0")) ? "startcheck" : "return");
             mOther.setBlockPriceLevelChange(myPreferences.getPreferences("pref_block_price_level_change"));
             mOther.setRequireAddress(myPreferences.getPreferences("pref_require_address"));
             mOther.setRequirePO(myPreferences.getPreferences("pref_require_po"));
@@ -389,7 +412,7 @@ public class BackupSettings {
 
             //SYNC PLUS SERVICES
             build.getSyncPlusServices().setUseSyncPlusServices(myPreferences.getPreferences("pref_use_syncplus_services"));
-            build.getSyncPlusServices().setConnectionMode( (myPreferences.getPreferences("pref_syncplus_mode"))?"manual":"automatic" );
+            build.getSyncPlusServices().setConnectionMode((myPreferences.getPreferences("pref_syncplus_mode")) ? "manual" : "automatic");
             build.getSyncPlusServices().setIPAddress(myPreferences.getPreferencesValue("pref_syncplus_ip"));
             build.getSyncPlusServices().setPortNumber(myPreferences.getPreferencesValue("pref_syncplus_port"));
 

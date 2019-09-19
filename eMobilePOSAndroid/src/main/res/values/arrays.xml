@@ -196,9 +196,9 @@
         <item name="print_discount_details">print_discount_details</item>
         <item name="print_descriptions">print_descriptions</item>
         <item name="print_prod_comments">print_prod_comments</item>
-        <item name="print_sale_attributes">print_sale_atributes</item>
+        <item name="print_sale_attributes">print_sale_attributes</item>
         <item name="print_payment_comments">print_payment_comments</item>
-        <item name="print_ivu_loto_qr">print_ivuloto_qr</item>
+        <item name="print_ivu_loto_qr">print_ivu_loto_qr</item>
         <item name="print_footer">print_footer</item>
         <item name="print_terms_conditions">print_terms_conditions</item>
         <item name="print_emobilepos_website">print_emobilepos_website</item>
