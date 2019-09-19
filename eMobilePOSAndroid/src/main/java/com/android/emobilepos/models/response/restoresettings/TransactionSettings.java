@@ -2,7 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-public class transactionSettings {
+public class TransactionSettings {
 
     @SerializedName("RequireManagerPWToVoid")
     private boolean RequireManagerPWToVoid= false;

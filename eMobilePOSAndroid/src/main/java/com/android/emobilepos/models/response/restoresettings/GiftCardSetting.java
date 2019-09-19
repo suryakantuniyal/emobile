@@ -2,7 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-public class giftcardsetting {
+public class GiftCardSetting {
     @SerializedName("ShowAlsoRedeem")
     private boolean ShowAlsoRedeem= false;
     @SerializedName("ShowRedeemAll")

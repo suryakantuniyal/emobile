@@ -2,7 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-public class productsettings {
+public class ProductSettings {
     @SerializedName("AllowDecimalQuantities")
     private boolean AllowDecimalQuantities;
     @SerializedName("RemoveLeadZerosUPCSKU")

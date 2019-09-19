@@ -2,9 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
-public class printingsetting {
+public class PrintingSetting {
     @SerializedName("Enabled")
     private boolean Enabled= false;
     @SerializedName("AutomaticPrinting")
@@ -32,9 +30,9 @@ public class printingsetting {
     @SerializedName("SNBCSetup")
     private String SNBCSetup="";
     @SerializedName("BixolonSetup")
-    private bixolonsetupsetting BixolonSetup = new bixolonsetupsetting();
+    private BixolonSetupSetting BixolonSetup = new BixolonSetupSetting();
     @SerializedName("PrintPrefs")
-    private printprefs PrintPrefs = new printprefs();
+    private com.android.emobilepos.models.response.restoresettings.PrintPrefs printPrefs = new PrintPrefs();
     @SerializedName("PrintRasterMode")
     private boolean PrintRasterMode= false;
 
@@ -143,20 +141,20 @@ public class printingsetting {
         this.SNBCSetup = SNBCSetup;
     }
 
-    public bixolonsetupsetting getBixolonSetup() {
+    public BixolonSetupSetting getBixolonSetup() {
         return BixolonSetup;
     }
 
-    public void setBixolonSetup(bixolonsetupsetting bixolonSetup) {
+    public void setBixolonSetup(BixolonSetupSetting bixolonSetup) {
         BixolonSetup = bixolonSetup;
     }
 
-    public printprefs getPrintPrefs() {
-        return PrintPrefs;
+    public com.android.emobilepos.models.response.restoresettings.PrintPrefs getPrintPrefs() {
+        return printPrefs;
     }
 
-    public void setPrintPrefs(printprefs printPrefs) {
-        PrintPrefs = printPrefs;
+    public void setPrintPrefs(com.android.emobilepos.models.response.restoresettings.PrintPrefs printPrefs) {
+        this.printPrefs = printPrefs;
     }
 
     public boolean isPrintRasterMode() {

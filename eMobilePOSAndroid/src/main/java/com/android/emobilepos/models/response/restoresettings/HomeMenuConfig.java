@@ -2,7 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-public class homeMenuConfig {
+public class HomeMenuConfig {
     @SerializedName("SalesReceipt")
     private boolean SalesReceipt= false;
     @SerializedName("Order")

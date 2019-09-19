@@ -4,10 +4,10 @@ import android.content.Context;
 
 import com.android.emobilepos.R;
 
-import com.android.emobilepos.models.response.restoresettings.homeMenuConfig;
-import com.android.emobilepos.models.response.restoresettings.kioskSettings;
-import com.android.emobilepos.models.response.restoresettings.otherSettings;
-import com.android.emobilepos.models.response.restoresettings.printprefs;
+import com.android.emobilepos.models.response.restoresettings.HomeMenuConfig;
+import com.android.emobilepos.models.response.restoresettings.KioskSettings;
+import com.android.emobilepos.models.response.restoresettings.OtherSettings;
+import com.android.emobilepos.models.response.restoresettings.PrintPrefs;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
@@ -122,11 +122,11 @@ public class BackupSettings {
 
             myPreferences.setPreferencesValue("pref_star_info", build.getPrintingSettings().getStarInfo());
             myPreferences.setPreferencesValue("pref_snbc_setup", build.getPrintingSettings().getSNBCSetup());
-//            printingsetting mConfig = build.getPrintingSettings();
+//            PrintingSetting mConfig = build.getPrintingSettings();
 //            mConfig.getBixolonSetup();
 //            myPreferences.setPreferencesValue("pref_bixolon_setup",build.getPrintingSettings().getBixolonSetup());
 
-            printprefs printPref = build.getPrintingSettings().getPrintPrefs();
+            PrintPrefs printPref = build.getPrintingSettings().getPrintPrefs();
             Set<String> values = new HashSet<>();
             values.add(String.valueOf(printPref.isHeader()));
             values.add(String.valueOf(printPref.isShipToInfo()));
@@ -165,7 +165,7 @@ public class BackupSettings {
             myPreferences.setPreferencesValue("pref_expire_usersession_time", build.getSessionSettings().getUserSessionExpirationTime());
 
             //KIOSK CONFIGURATION
-            kioskSettings mKiosk = build.getKioskSettings();
+            KioskSettings mKiosk = build.getKioskSettings();
             myPreferences.cdtLine1(false, mKiosk.getCustomerDisplayTerminal().getDisplayLine1());
             myPreferences.cdtLine2(false, mKiosk.getCustomerDisplayTerminal().getDisplayLine2());
 
@@ -177,7 +177,7 @@ public class BackupSettings {
             myPreferences.setPreferencesValue("pref_default_country", build.getTransactionSettings().getDefaultCountry());
 
             //OTHER SETTINGS
-            otherSettings mOther = build.getOtherSettings();
+            OtherSettings mOther = build.getOtherSettings();
             ArrayList<String> homeMenuArrValues = new ArrayList<>();
             homeMenuArrValues.add((mOther.getHomeMenuConfig().isSalesReceipt()) ? "1" : "");
             homeMenuArrValues.add((mOther.getHomeMenuConfig().isOrder()) ? "2" : "");
@@ -313,14 +313,14 @@ public class BackupSettings {
 
             build.getPrintingSettings().setStarInfo(myPreferences.getStarIPAddress());//.getPreferencesValue("pref_star_info"));
             build.getPrintingSettings().setSNBCSetup(myPreferences.getPreferencesValue("pref_snbc_setup"));
-//            bixolonsetupsetting mConfig = build.getPrintingSettings().getBixolonSetup();
+//            BixolonSetupSetting mConfig = build.getPrintingSettings().getBixolonSetup();
 //            myPreferences.getPreferencesValue("pref_bixolon_setup");
 
             List<String> list = myPreferences.getPrintingPreferences();
             HashMap<String, Boolean> mValues = new HashMap<>();
             String[] prefValues = context.getResources().getStringArray(R.array.printPrefValues);
             List<String> arr = Arrays.asList(prefValues);
-            printprefs printprefs = build.getPrintingSettings().getPrintPrefs();
+            PrintPrefs PrintPrefs = build.getPrintingSettings().getPrintPrefs();
             for (int i = 0; i < prefValues.length; i++) {
                 if(list.contains(arr.get(i)))
                     mValues.put(arr.get(i),true);
@@ -329,23 +329,23 @@ public class BackupSettings {
                     mValues.put(arr.get(i),false);
 //                    mValues.add(i,false);
             }
-            printprefs.setHeader(mValues.get("print_header"));
-            printprefs.setShipToInfo(mValues.get("print_shiptoinfo"));
-            printprefs.setTerms(mValues.get("print_terms"));
-            printprefs.setCustomerAccNumber(mValues.get("print_customer_id"));
-            printprefs.setOrderComments(mValues.get("print_order_comments"));
-            printprefs.setAddons(mValues.get("print_addons"));
-            printprefs.setProductTaxDetails(mValues.get("print_tax_details"));
-            printprefs.setProductDiscountDetails(mValues.get("print_discount_details"));
-            printprefs.setProductDescriptions(mValues.get("print_descriptions"));
-            printprefs.setProductComments(mValues.get("print_prod_comments"));
-            printprefs.setSaleAttributes(mValues.get("print_sale_attributes"));
-            printprefs.setPaymentComments(mValues.get("print_payment_comments"));
-            printprefs.setIVULotoQRCode(mValues.get("print_ivu_loto_qr"));
-            printprefs.setFooter(mValues.get("print_footer"));
-            printprefs.setTermsAndConditions(mValues.get("print_terms_conditions"));
-            printprefs.setEMSWebsiteFooter(mValues.get("print_emobilepos_website"));
-            build.getPrintingSettings().setPrintPrefs(printprefs);
+            PrintPrefs.setHeader(mValues.get("print_header"));
+            PrintPrefs.setShipToInfo(mValues.get("print_shiptoinfo"));
+            PrintPrefs.setTerms(mValues.get("print_terms"));
+            PrintPrefs.setCustomerAccNumber(mValues.get("print_customer_id"));
+            PrintPrefs.setOrderComments(mValues.get("print_order_comments"));
+            PrintPrefs.setAddons(mValues.get("print_addons"));
+            PrintPrefs.setProductTaxDetails(mValues.get("print_tax_details"));
+            PrintPrefs.setProductDiscountDetails(mValues.get("print_discount_details"));
+            PrintPrefs.setProductDescriptions(mValues.get("print_descriptions"));
+            PrintPrefs.setProductComments(mValues.get("print_prod_comments"));
+            PrintPrefs.setSaleAttributes(mValues.get("print_sale_attributes"));
+            PrintPrefs.setPaymentComments(mValues.get("print_payment_comments"));
+            PrintPrefs.setIVULotoQRCode(mValues.get("print_ivu_loto_qr"));
+            PrintPrefs.setFooter(mValues.get("print_footer"));
+            PrintPrefs.setTermsAndConditions(mValues.get("print_terms_conditions"));
+            PrintPrefs.setEMSWebsiteFooter(mValues.get("print_emobilepos_website"));
+            build.getPrintingSettings().setPrintPrefs(PrintPrefs);
             build.getPrintingSettings().setPrintRasterMode(myPreferences.getPreferences("pref_print_raster_mode"));
 
             //PRODUCT SETTINGS
@@ -365,7 +365,7 @@ public class BackupSettings {
             build.getSessionSettings().setUserSessionExpirationTime(myPreferences.getPreferencesValue("pref_expire_usersession_time"));
 
             //KIOSK CONFIGURATION
-            kioskSettings mKiosk = build.getKioskSettings();
+            KioskSettings mKiosk = build.getKioskSettings();
             mKiosk.getCustomerDisplayTerminal().setDisplayLine1(myPreferences.cdtLine1(true, null));
             mKiosk.getCustomerDisplayTerminal().setDisplayLine2(myPreferences.cdtLine2(true, null));
 
@@ -377,8 +377,8 @@ public class BackupSettings {
             build.getTransactionSettings().setDefaultCountry(myPreferences.getDefaultCountryName());
 
             //OTHER SETTINGS
-            otherSettings mOther = build.getOtherSettings();
-            homeMenuConfig home = mOther.getHomeMenuConfig();
+            OtherSettings mOther = build.getOtherSettings();
+            HomeMenuConfig home = mOther.getHomeMenuConfig();
             boolean[] values = myPreferences.getMainMenuPreference();
             home.setSalesReceipt(values[0]);
             home.setOrder(values[1]);

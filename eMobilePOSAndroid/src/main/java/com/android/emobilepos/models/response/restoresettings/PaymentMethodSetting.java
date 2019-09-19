@@ -2,7 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-public class paymentmethodsetting {
+public class PaymentMethodSetting {
     @SerializedName("PayWithTupyx")
     private boolean PayWithTupyx= false;
     @SerializedName("CayanGenius")

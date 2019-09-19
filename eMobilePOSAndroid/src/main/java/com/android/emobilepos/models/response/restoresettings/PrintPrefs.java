@@ -2,7 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-public class printprefs {
+public class PrintPrefs {
     @SerializedName("Header")
     private boolean Header= false;
     @SerializedName("ShipToInfo")

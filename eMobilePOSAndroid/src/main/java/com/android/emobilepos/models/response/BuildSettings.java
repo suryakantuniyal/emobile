@@ -1,10 +1,7 @@
 package com.android.emobilepos.models.response;
 
 import com.android.emobilepos.models.response.restoresettings.*;
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 public class BuildSettings {
 
@@ -15,59 +12,59 @@ public class BuildSettings {
 
     //GENERAL SETTINGS
     @SerializedName("generalSettings")
-    private generalsetting generalSettings = new generalsetting();
+    private GeneralSetting generalSettings = new GeneralSetting();
 
     //CUSTOMER SETTINGS
     @SerializedName("customerSettings")
-    private customersetting customerSettings = new customersetting();
+    private CustomerSetting customerSettings = new CustomerSetting();
 
     //RESTAURANT SETTINGS
     @SerializedName("restaurantSettings")
-    private restaurantsetting restaurantSettings = new restaurantsetting();
+    private RestaurantSetting restaurantSettings = new RestaurantSetting();
 
     //GIFTCARD SETTINGS
     @SerializedName("giftCardSettings")
-    private giftcardsetting giftCardSettings = new giftcardsetting();
+    private GiftCardSetting giftCardSettings = new GiftCardSetting();
 
     //PAYMENT METHOD SETTINGS
     @SerializedName("paymentMethodSettings")
-    private paymentmethodsetting paymentMethodSettings = new paymentmethodsetting();
+    private PaymentMethodSetting paymentMethodSettings = new PaymentMethodSetting();
 
     //PAYMENT PROCESSING SETTINGS
     @SerializedName("paymentProcessingSettings")
-    private paymentprocessingsetting paymentProcessingSettings = new paymentprocessingsetting();
+    private PaymentProcessingSetting paymentProcessingSettings = new PaymentProcessingSetting();
 
     //PRINTING SETTINGS
     @SerializedName("printingSettings")
-    private printingsetting printingSettings = new printingsetting();
+    private PrintingSetting printingSettings = new PrintingSetting();
 
     //PRODUCT SETTINGS
     @SerializedName("productSettings")
-    private productsettings productSettings = new productsettings();
+    private ProductSettings productSettings = new ProductSettings();
 
     //SESSION SETTINGS
     @SerializedName("sessionSettings")
-    private sessionSettings sessionSettings = new sessionSettings();
+    private SessionSettings SessionSettings = new SessionSettings();
 
     //KIOSK SETTINGS
     @SerializedName("kioskSettings")
-    private kioskSettings kioskSettings = new kioskSettings();
+    private KioskSettings KioskSettings = new KioskSettings();
 
     //SHIPPING CALCULATION
     @SerializedName("shippingCalculation")
-    private shippingCalculation shippingCalculation = new shippingCalculation();
+    private ShippingCalculation ShippingCalculation = new ShippingCalculation();
 
     //TRANSACTION SETTINGS
     @SerializedName("transactionSettings")
-    private transactionSettings transactionSettings = new transactionSettings();
+    private TransactionSettings TransactionSettings = new TransactionSettings();
 
     //OTHER SETTINGS
     @SerializedName("otherSettings")
-    private otherSettings otherSettings = new otherSettings();
+    private OtherSettings otherSettings = new OtherSettings();
 
     //SYNC PLUS SERVICES
     @SerializedName("syncPlusServices")
-    private syncPlusServices syncPlusServices = new syncPlusServices();
+    private SyncPlusServices SyncPlusServices = new SyncPlusServices();
 
 
     public String getRegid() {
@@ -86,115 +83,115 @@ public class BuildSettings {
         this.empid = empid;
     }
 
-    public generalsetting getGeneralSettings() {
+    public GeneralSetting getGeneralSettings() {
         return generalSettings;
     }
 
-    public void setGeneralSettings(generalsetting generalSettings) {
+    public void setGeneralSettings(GeneralSetting generalSettings) {
         this.generalSettings = generalSettings;
     }
 
-    public customersetting getCustomerSettings() {
+    public CustomerSetting getCustomerSettings() {
         return customerSettings;
     }
 
-    public void setCustomerSettings(customersetting customerSettings) {
+    public void setCustomerSettings(CustomerSetting customerSettings) {
         this.customerSettings = customerSettings;
     }
 
-    public restaurantsetting getRestaurantSettings() {
+    public RestaurantSetting getRestaurantSettings() {
         return restaurantSettings;
     }
 
-    public void setRestaurantSettings(restaurantsetting restaurantSettings) {
+    public void setRestaurantSettings(RestaurantSetting restaurantSettings) {
         this.restaurantSettings = restaurantSettings;
     }
 
-    public giftcardsetting getGiftCardSettings() {
+    public GiftCardSetting getGiftCardSettings() {
         return giftCardSettings;
     }
 
-    public void setGiftCardSettings(giftcardsetting giftCardSettings) {
+    public void setGiftCardSettings(GiftCardSetting giftCardSettings) {
         this.giftCardSettings = giftCardSettings;
     }
 
-    public paymentmethodsetting getPaymentMethodSettings() {
+    public PaymentMethodSetting getPaymentMethodSettings() {
         return paymentMethodSettings;
     }
 
-    public void setPaymentMethodSettings(paymentmethodsetting paymentMethodSettings) {
+    public void setPaymentMethodSettings(PaymentMethodSetting paymentMethodSettings) {
         this.paymentMethodSettings = paymentMethodSettings;
     }
 
-    public paymentprocessingsetting getPaymentProcessingSettings() {
+    public PaymentProcessingSetting getPaymentProcessingSettings() {
         return paymentProcessingSettings;
     }
 
-    public void setPaymentProcessingSettings(paymentprocessingsetting paymentProcessingSettings) {
+    public void setPaymentProcessingSettings(PaymentProcessingSetting paymentProcessingSettings) {
         this.paymentProcessingSettings = paymentProcessingSettings;
     }
 
-    public printingsetting getPrintingSettings() {
+    public PrintingSetting getPrintingSettings() {
         return printingSettings;
     }
 
-    public void setPrintingSettings(printingsetting printingSettings) {
+    public void setPrintingSettings(PrintingSetting printingSettings) {
         this.printingSettings = printingSettings;
     }
 
-    public productsettings getProductSettings() {
+    public ProductSettings getProductSettings() {
         return productSettings;
     }
 
-    public void setProductSettings(productsettings productSettings) {
+    public void setProductSettings(ProductSettings productSettings) {
         this.productSettings = productSettings;
     }
 
-    public sessionSettings getSessionSettings() {
-        return sessionSettings;
+    public SessionSettings getSessionSettings() {
+        return SessionSettings;
     }
 
-    public void setSessionSettings(sessionSettings sessionSettings) {
-        this.sessionSettings = sessionSettings;
+    public void setSessionSettings(SessionSettings SessionSettings) {
+        this.SessionSettings = SessionSettings;
     }
 
-    public kioskSettings getKioskSettings() {
-        return kioskSettings;
+    public KioskSettings getKioskSettings() {
+        return KioskSettings;
     }
 
-    public void setKioskSettings(kioskSettings kioskSettings) {
-        this.kioskSettings = kioskSettings;
+    public void setKioskSettings(KioskSettings KioskSettings) {
+        this.KioskSettings = KioskSettings;
     }
 
-    public shippingCalculation getShippingCalculation() {
-        return shippingCalculation;
+    public ShippingCalculation getShippingCalculation() {
+        return ShippingCalculation;
     }
 
-    public void setShippingCalculation(shippingCalculation shippingCalculation) {
-        this.shippingCalculation = shippingCalculation;
+    public void setShippingCalculation(ShippingCalculation ShippingCalculation) {
+        this.ShippingCalculation = ShippingCalculation;
     }
 
-    public transactionSettings getTransactionSettings() {
-        return transactionSettings;
+    public TransactionSettings getTransactionSettings() {
+        return TransactionSettings;
     }
 
-    public void setTransactionSettings(transactionSettings transactionSettings) {
-        this.transactionSettings = transactionSettings;
+    public void setTransactionSettings(TransactionSettings TransactionSettings) {
+        this.TransactionSettings = TransactionSettings;
     }
 
-    public otherSettings getOtherSettings() {
+    public OtherSettings getOtherSettings() {
         return otherSettings;
     }
 
-    public void setOtherSettings(otherSettings otherSettings) {
+    public void setOtherSettings(OtherSettings otherSettings) {
         this.otherSettings = otherSettings;
     }
 
-    public syncPlusServices getSyncPlusServices() {
-        return syncPlusServices;
+    public SyncPlusServices getSyncPlusServices() {
+        return SyncPlusServices;
     }
 
-    public void setSyncPlusServices(syncPlusServices syncPlusServices) {
-        this.syncPlusServices = syncPlusServices;
+    public void setSyncPlusServices(SyncPlusServices SyncPlusServices) {
+        this.SyncPlusServices = SyncPlusServices;
     }
 }

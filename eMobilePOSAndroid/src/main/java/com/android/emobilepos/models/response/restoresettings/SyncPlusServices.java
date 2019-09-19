@@ -2,7 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-public class syncPlusServices {
+public class SyncPlusServices {
 
     @SerializedName("UseSyncPlusServices")
     private boolean UseSyncPlusServices= false;

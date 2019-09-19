@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class shippingCalculation {
+public class ShippingCalculation {
     @SerializedName("UseNexternal")
     private boolean UseNexternal= false;
 

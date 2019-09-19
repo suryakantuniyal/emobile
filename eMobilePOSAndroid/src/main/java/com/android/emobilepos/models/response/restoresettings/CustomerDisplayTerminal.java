@@ -2,7 +2,7 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-public class customerDisplayTerminal {
+public class CustomerDisplayTerminal {
     @SerializedName("DisplayLine1")
     private String DisplayLine1="";
     @SerializedName("DisplayLine2")

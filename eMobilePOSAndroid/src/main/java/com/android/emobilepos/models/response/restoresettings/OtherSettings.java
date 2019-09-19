@@ -2,11 +2,9 @@ package com.android.emobilepos.models.response.restoresettings;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
-public class otherSettings {
+public class OtherSettings {
     @SerializedName("homeMenuConfig")
-    private homeMenuConfig homeMenuConfig = new homeMenuConfig();
+    private HomeMenuConfig HomeMenuConfig = new HomeMenuConfig();
     @SerializedName("DefaultTransaction")
     private String DefaultTransaction="";
     @SerializedName("BlockPriceLevelChange")
@@ -24,12 +22,12 @@ public class otherSettings {
     @SerializedName("UseLocationInventory")
     private boolean UseLocationInventory= false;
 
-    public homeMenuConfig getHomeMenuConfig() {
-        return homeMenuConfig;
+    public HomeMenuConfig getHomeMenuConfig() {
+        return HomeMenuConfig;
     }
 
-    public void setHomeMenuConfig(homeMenuConfig homeMenuConfig) {
-        this.homeMenuConfig = homeMenuConfig;
+    public void setHomeMenuConfig(HomeMenuConfig HomeMenuConfig) {
+        this.HomeMenuConfig = HomeMenuConfig;
     }
 
     public String getDefaultTransaction() {
