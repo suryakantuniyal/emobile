@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
@@ -34,7 +33,6 @@ import com.epson.epos2.discovery.FilterOption;
 import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
 import com.epson.epos2.printer.ReceiveListener;
-import com.epson.eposprint.Print;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -143,6 +141,7 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
         if (isEpsonConnected) {
             statusInfo = epsonPrinter.getStatus();
+            Global.mainPrinterManager.setCurrentDevice(this);
         }
         return true;
 
@@ -370,7 +369,6 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                     ordID, saleTypes, isFromHistory, fromOnHold);
             printReceipt(receipt);
 //            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
-
             releasePrinter();
             result = true;
         } catch (Exception e) {
@@ -639,7 +637,13 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void openCashDrawer() {
-
+        try {
+            epsonPrinter.clearCommandBuffer();
+            epsonPrinter.addPulse(Printer.DRAWER_2PIN,Printer.PARAM_DEFAULT);
+            epsonPrinter.sendData(Printer.PARAM_DEFAULT);
+        } catch (Epos2Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
