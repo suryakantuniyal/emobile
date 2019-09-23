@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.emobilepos.app"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 28
         versionName "1.2.11.5"
         versionCode 176

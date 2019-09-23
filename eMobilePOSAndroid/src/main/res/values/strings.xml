@@ -1000,6 +1000,7 @@
     <string name="config_batch">Batch</string>
     <string name="config_batch_pax">PAX Batch</string>
     <string name="config_batch_pax_close">Close PAX\'s current batch</string>
+    <string name="config_batch_pax_close_hour">Hour to close PAX\'s current batch</string>
 
     <string name="header_scanner">Scanner</string>
     <string name="header_tupyx">Tupyx</string>
@@ -1227,6 +1228,7 @@
     <string name="install">Install</string>
     <string name="config_units_name">Default unit name</string>
     <string name="enter_default_units_name">Enter default unit name</string>
+    <string name="enter_batch_close_hour">Enter batch close hour</string>
     <string name="default_unit_name_format">%s Management</string>
     <string name="receipt_point_used">Points Used:</string>
     <string name="receipt_reward_balance">Reward Balance:</string>

@@ -28,6 +28,7 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACTION_DIAL" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <permission
         android:name="android.permission.MSR_OPERATION"
@@ -528,7 +529,8 @@
             android:name=".service.SyncConfigServerService"
             android:enabled="true"
             android:exported="true" />
-
+        <service android:name=".service.CloseBatchPaxService"
+            android:permission="android.permission.BIND_JOB_SERVICE" ></service>
         <activity
             android:name=".settings.printers.DeviceListActivity"
             android:label="@string/title_device_list"></activity>

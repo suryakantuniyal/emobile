@@ -16,12 +16,14 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.settings.SettingListActivity;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
