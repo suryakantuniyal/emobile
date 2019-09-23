@@ -141,7 +141,8 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
         if (isEpsonConnected) {
             statusInfo = epsonPrinter.getStatus();
-            Global.mainPrinterManager.setCurrentDevice(this);
+            if(Global.mainPrinterManager != null)
+                Global.mainPrinterManager.setCurrentDevice(this);
         }
         return true;
 
