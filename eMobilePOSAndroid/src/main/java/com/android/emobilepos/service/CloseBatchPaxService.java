@@ -32,20 +32,22 @@ public class CloseBatchPaxService extends JobService implements BatchProcessing.
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
+        DateFormat fmt = new SimpleDateFormat("MM/dd/yyyy");
+        DateFormat fmtHHmmAMPM = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
         Calendar calNow     = Calendar.getInstance();
         Calendar calStart   = Calendar.getInstance();
         Calendar calEnd     = Calendar.getInstance();
-
         calStart.add(Calendar.MINUTE,-5);
         calEnd.add(Calendar.MINUTE, 5);
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy kk:mm:ss");
-        Date todayDate   = calNow.getTime();
-        Date startDate   = calStart.getTime();
-        Date endDate     = calEnd.getTime();
         try{
             Context context = this;
             MyPreferences myPref = new MyPreferences(context);
-            if(todayDate.compareTo(startDate) >= 0 && todayDate.compareTo(endDate) <= 0){
+            String processDateString = fmt.format(calNow.getTime()) + " " + myPref.getPreferencesValue(MyPreferences.pref_pax_close_batch_hour);
+            Date runDate   = fmtHHmmAMPM.parse(processDateString);
+            Date startDate   = calStart.getTime();
+            Date endDate     = calEnd.getTime();
+            if(runDate.compareTo(startDate) >= 0 && runDate.compareTo(endDate) <= 0){
                 BatchProcessing batchProcessing = new BatchProcessing(this, this.getApplicationContext() );
                 batchProcessing.close();
             }
