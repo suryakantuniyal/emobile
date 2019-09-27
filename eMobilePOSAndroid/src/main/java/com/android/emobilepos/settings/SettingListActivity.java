@@ -2070,7 +2070,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
             closeCurrentJob(componentName, jobScheduler);
             JobInfo jobInfo = new JobInfo.Builder(1, componentName)
-                    .setPeriodic(30 * ONE_SECOND)
+                    .setPeriodic(FIFTEEN_MINUTES)
                     .setPersisted(true)
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .build();
