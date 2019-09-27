@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.emobilepos.app"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 28
         versionName "1.2.11.5"
         versionCode 176
@@ -109,6 +109,7 @@ configurations {
 }
 
 dependencies {
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
     icmpevoApi(name: 'evoSnapSdk-icmp-release', ext: 'aar')
     icmpevoApi files('libs_icmpevo/Android_Platform_Adapter.jar')
     icmpevoApi files('libs/RBA_SDK.jar')
