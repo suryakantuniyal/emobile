@@ -2237,8 +2237,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordersList.clear(); // empty queue
                     }
                     if (!splitByCat && queueAccum.size() > 0) {
-                        emsDeviceManager.getCurrentDevice().printRemoteStation(
-                                queueAccum, orderId);
+                        if(emsDeviceManager.getCurrentDevice() != null) {
+                            emsDeviceManager.getCurrentDevice().printRemoteStation(
+                                    queueAccum, orderId);
+                        }
                         queueAccum.clear(); // empty accum queue
                     }
                 }

@@ -18,6 +18,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
@@ -72,7 +74,10 @@ import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.pax.poslink.peripheries.POSLinkScanner;
+import com.pax.poslink.peripheries.ProcessResult;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -128,6 +133,8 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             }
         }
     };
+    private POSLinkScanner posLinkScanner;
+    public EditText invisibleSearchMain;
 
     public static void checkAutoLogout(Activity activity) {
         MyPreferences myPref = new MyPreferences(activity);
@@ -178,6 +185,17 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         checkPermissions();
         View view = inflater.inflate(R.layout.sales_layout, container, false);
+        Button btnScan = null;
+        if (MyPreferences.isPaxA920()) {
+            btnScan = view.findViewById(R.id.btnScan);
+            btnScan.setVisibility(View.VISIBLE);
+            btnScan.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    paxScan();
+                }
+            });
+        }
         myPref = new MyPreferences(getActivity());
         myPref.setLogIn(true);
         SettingListActivity.loadDefaultValues(getActivity());
@@ -188,6 +206,8 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         salesInvoices = view.findViewById(R.id.invoiceButton);
         hiddenField = view.findViewById(R.id.hiddenField);
         hiddenField.addTextChangedListener(textWatcher());
+        invisibleSearchMain = view.findViewById(R.id.invisibleSearchMain);
+        invisibleSearchMain.addTextChangedListener(textWatcher());
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(getActivity());
         isReaderConnected = usbDevices != null && usbDevices.size() > 0;
         digitalPersona = new DigitalPersona(getActivity().getApplicationContext(), this, EmobileBiometric.UserType.CUSTOMER);
@@ -248,6 +268,43 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
         return view;
 
+    }
+    private void paxScan() {
+        // open scanner
+        posLinkScanner = POSLinkScanner.getPOSLinkScanner(getContext(), POSLinkScanner.ScannerType.REAR);
+        ProcessResult result = posLinkScanner.open();
+        if (!result.getCode().equals(ProcessResult.CODE_OK)) {
+            paxScanError(result.getMessage());
+        }
+
+        // start scanner
+        invisibleSearchMain.setText("");
+        if (posLinkScanner == null) {
+            paxScanError("Error Starting Scanner.");
+            return;
+        }
+        posLinkScanner.start(new POSLinkScanner.ScannerListener() {
+            @Override
+            public void onRead(String s) {
+                invisibleSearchMain.setText(String.format("%s\n", s));
+            }
+
+            @Override
+            public void onFinish() {
+                // close scanner
+                if (posLinkScanner == null) {
+                    paxScanError("Error Closing Scanner.");
+                    return;
+                }
+                ProcessResult result = posLinkScanner.close();
+                if (!result.getCode().equals(ProcessResult.CODE_OK)) {
+                    paxScanError(result.getMessage());
+                }
+            }
+        });
+    }
+    private void paxScanError(String errorMessage) {
+        Crashlytics.log("PAX Scanner Error: " + errorMessage);
     }
 
     private void checkPermissions() {
@@ -1143,40 +1200,50 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     doneScanning = false;
                     hiddenField.setText("");
                     map = custHandler.getCustomerInfo(val.replace("\n", "").trim());
+                    if (MyPreferences.isPaxA920()) {
+                        scannerWasRead(val.replace("\n", "").trim());
+                    }else{
+                        if (map.size() > 0) {
+                            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
+                            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
+                            myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
+                            myPref.setCustID(map.get("cust_id"));    //getting cust_id as _id
+                            myPref.setCustName(map.get("cust_name"));
+                            myPref.setCustIDKey(map.get("custidkey"));
+                            myPref.setCustSelected(true);
 
-                    if (map.size() > 0) {
-                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
-                        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
-                        myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
-                        myPref.setCustID(map.get("cust_id"));    //getting cust_id as _id
-                        myPref.setCustName(map.get("cust_name"));
-                        myPref.setCustIDKey(map.get("custidkey"));
-                        myPref.setCustSelected(true);
+                            myPref.setCustPriceLevel(map.get("pricelevel_id"));
 
-                        myPref.setCustPriceLevel(map.get("pricelevel_id"));
+                            myPref.setCustEmail(map.get("cust_email"));
 
-                        myPref.setCustEmail(map.get("cust_email"));
+                            setCustName();
 
-                        setCustName();
+                            salesInvoices.setVisibility(View.VISIBLE);
+                            isCustomerSelected = true;
+                            myAdapter = new SalesMenuAdapter(getActivity(), true);
+                            myListview.setAdapter(myAdapter);
 
-                        salesInvoices.setVisibility(View.VISIBLE);
-                        isCustomerSelected = true;
-                        myAdapter = new SalesMenuAdapter(getActivity(), true);
-                        myListview.setAdapter(myAdapter);
+                            myListview.setOnItemClickListener(new MyListener());
 
-                        myListview.setOnItemClickListener(new MyListener());
+                        } else {
+                            isCustomerSelected = false;
+                            myPref.resetCustInfo(getString(R.string.no_customer));
+                            myPref.setCustSelected(false);
 
-                    } else {
-                        isCustomerSelected = false;
-                        myPref.resetCustInfo(getString(R.string.no_customer));
-                        myPref.setCustSelected(false);
-
-                        selectedCust.setText(getString(R.string.no_customer));
-                        myAdapter = new SalesMenuAdapter(getActivity(), false);
-                        myListview.setAdapter(myAdapter);
-                        myListview.setOnItemClickListener(new MyListener());
-                        salesInvoices.setVisibility(View.GONE);
+                            selectedCust.setText(getString(R.string.no_customer));
+                            myAdapter = new SalesMenuAdapter(getActivity(), false);
+                            myListview.setAdapter(myAdapter);
+                            myListview.setOnItemClickListener(new MyListener());
+                            salesInvoices.setVisibility(View.GONE);
+                        }
                     }
+
+
+
+
+
+
+
 
                 }
             }
