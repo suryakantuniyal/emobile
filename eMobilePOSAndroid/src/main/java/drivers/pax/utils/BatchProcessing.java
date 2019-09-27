@@ -1,7 +1,11 @@
 package drivers.pax.utils;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.pax.poslink.BatchRequest;
 import com.pax.poslink.BatchResponse;
@@ -9,6 +13,8 @@ import com.pax.poslink.POSLinkAndroid;
 import com.pax.poslink.PosLink;
 import com.pax.poslink.ProcessTransResult;
 import com.pax.poslink.poslink.POSLinkCreator;
+
+import java.math.BigDecimal;
 
 import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
 import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
@@ -86,7 +92,7 @@ public class BatchProcessing {
             BatchResponse response = poslink.BatchResponse;
             switch (response.ResultCode) {
                 case TRANSACTION_SUCCESS:
-                    result = "Batch Closed!";
+                    result = "Batch Closed!" +" CreditAmount:$" + (new BigDecimal(response.CreditAmount).divide(new BigDecimal(100.00)));
                     break;
                 case TRANS_NOT_FOUND:
                     result = "Transactions Not Found!";

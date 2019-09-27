@@ -121,6 +121,7 @@ import main.EMSDeviceManager;
  * item details side-by-side using two vertical panes.
  */
 public class SettingListActivity extends BaseFragmentActivityActionBar {
+
     private static SettingsTab_FR.SettingsRoles settingsType;
 //    private FragmentManager supportFragmentManager;
     /**

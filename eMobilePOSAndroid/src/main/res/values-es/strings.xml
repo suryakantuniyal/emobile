@@ -991,6 +991,7 @@
     <string name="config_batch_pax">"PAX Batch"</string>
     <string name="config_batch_pax_close">"Cerrar batch actual de la PAX"</string>
     <string name="config_batch_pax_close_hour">"Hora para cerrar el batch actual de la PAX"</string>
+    <string name="config_batch_pax_close_history">"Historico de cierre de PAX"</string>
 
     <string name="header_scanner">"Escáner"</string>
     <string name="header_tupyx">"Tupyx"</string>

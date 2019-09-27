@@ -3,6 +3,7 @@
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
         android:title="@string/config_batch">
+
         <Preference
             android:key="pref_batch_pax"
             android:layout="@layout/settings_custom_layout"
@@ -14,5 +15,18 @@
             android:key="pref_pax_close_batch_hour"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_batch_pax_close_hour" />
+
+        <com.android.emobilepos.service.CloseBatchPaxHistoryPreference
+            android:key="pref_batch_close_pax_history"
+            android:title="Batch Close Pax History"
+            android:summary="batchclosepaxhistory_summary"
+            android:selectable="true"
+            />
+
+<!--
+    Historico de cierre de pax
+    config_batch_pax_close_history
+-->
+
     </PreferenceCategory>
 </PreferenceScreen>
