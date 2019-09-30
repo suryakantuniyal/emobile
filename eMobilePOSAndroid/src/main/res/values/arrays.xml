@@ -248,6 +248,252 @@
         <item name="reader_rover">2</item>
         <item name="reader_walker">3</item>
     </string-array>
+    <!-- Close batch hours -->
+    <string-array name="closeBatchHourEntries">
+        <item name="12_00_am">12:00 AM</item>
+        <item name="12_15_am">12:15 AM</item>
+        <item name="12_30_am">12:30 AM</item>
+        <item name="12_45_am">12:45 AM</item>
+
+        <item name="1_00_am">1:00 AM</item>
+        <item name="1_15_am">1:15 AM</item>
+        <item name="1_30_am">1:30 AM</item>
+        <item name="1_45_am">1:45 AM</item>
+
+        <item name="2_00_am">2:00 AM</item>
+        <item name="2_15_am">2:15 AM</item>
+        <item name="2_30_am">2:30 AM</item>
+        <item name="2_45_am">2:45 AM</item>
+
+
+        <item name="3_00_am">3:00 AM</item>
+        <item name="3_15_am">3:15 AM</item>
+        <item name="3_30_am">3:30 AM</item>
+        <item name="3_45_am">3:45 AM</item>
+
+        <item name="4_00_am">4:00 AM</item>
+        <item name="4_15_am">4:15 AM</item>
+        <item name="4_30_am">4:30 AM</item>
+        <item name="4_45_am">4:45 AM</item>
+
+        <item name="5_00_am">5:00 AM</item>
+        <item name="5_15_am">5:15 AM</item>
+        <item name="5_30_am">5:30 AM</item>
+        <item name="5_45_am">5:45 AM</item>
+
+        <item name="6_00_am">6:00 AM</item>
+        <item name="6_15_am">6:15 AM</item>
+        <item name="6_30_am">6:30 AM</item>
+        <item name="6_45_am">6:45 AM</item>
+
+        <item name="7_00_am">7:00 AM</item>
+        <item name="7_15_am">7:15 AM</item>
+        <item name="7_30_am">7:30 AM</item>
+        <item name="7_45_am">7:45 AM</item>
+
+        <item name="8_00_am">8:00 AM</item>
+        <item name="8_15_am">8:15 AM</item>
+        <item name="8_30_am">8:30 AM</item>
+        <item name="8_45_am">8:45 AM</item>
+
+        <item name="9_00_am">9:00 AM</item>
+        <item name="9_15_am">9:15 AM</item>
+        <item name="9_30_am">9:30 AM</item>
+        <item name="9_45_am">9:45 AM</item>
+
+        <item name="10_00_am">10:00 AM</item>
+        <item name="10_15_am">10:15 AM</item>
+        <item name="10_30_am">10:30 AM</item>
+        <item name="10_45_am">10:45 AM</item>
+
+        <item name="11_00_am">11:00 AM</item>
+        <item name="11_15_am">11:15 AM</item>
+        <item name="11_30_am">11:30 AM</item>
+        <item name="11_45_am">11:45 AM</item>
+
+        <item name="12_00_pm">12:00 PM</item>
+        <item name="12_15_pm">12:15 PM</item>
+        <item name="12_30_pm">12:30 PM</item>
+        <item name="12_45_pm">12:45 PM</item>
+
+        <item name="1_00_pm">1:00 PM</item>
+        <item name="1_15_pm">1:15 PM</item>
+        <item name="1_30_pm">1:30 PM</item>
+        <item name="1_45_pm">1:45 PM</item>
+
+        <item name="2_00_pm">2:00 PM</item>
+        <item name="2_15_pm">2:15 PM</item>
+        <item name="2_30_pm">2:30 PM</item>
+        <item name="2_45_pm">2:45 PM</item>
+
+        <item name="3_00_pm">3:00 PM</item>
+        <item name="3_15_pm">3:15 PM</item>
+        <item name="3_30_pm">3:30 PM</item>
+        <item name="3_45_pm">3:45 PM</item>
+
+        <item name="4_00_pm">4:00 PM</item>
+        <item name="4_15_pm">4:15 PM</item>
+        <item name="4_30_pm">4:30 PM</item>
+        <item name="4_45_pm">4:45 PM</item>
+
+        <item name="5_00_pm">5:00 PM</item>
+        <item name="5_15_pm">5:15 PM</item>
+        <item name="5_30_pm">5:30 PM</item>
+        <item name="5_45_pm">5:45 PM</item>
+
+        <item name="6_00_pm">6:00 PM</item>
+        <item name="6_15_pm">6:15 PM</item>
+        <item name="6_30_pm">6:30 PM</item>
+        <item name="6_45_pm">6:45 PM</item>
+
+        <item name="7_00_pm">7:00 PM</item>
+        <item name="7_15_pm">7:15 PM</item>
+        <item name="7_30_pm">7:30 PM</item>
+        <item name="7_45_pm">7:45 PM</item>
+
+        <item name="8_00_pm">8:00 PM</item>
+        <item name="8_15_pm">8:15 PM</item>
+        <item name="8_30_pm">8:30 PM</item>
+        <item name="8_45_pm">8:45 PM</item>
+
+        <item name="9_00_pm">9:00 PM</item>
+        <item name="9_15_pm">9:15 PM</item>
+        <item name="9_30_pm">9:30 PM</item>
+        <item name="9_45_pm">9:45 PM</item>
+
+        <item name="10_00_pm">10:00 PM</item>
+        <item name="10_15_pm">10:15 PM</item>
+        <item name="10_30_pm">10:30 PM</item>
+        <item name="10_45_pm">10:45 PM</item>
+
+        <item name="11_00_pm">11:00 PM</item>
+        <item name="11_15_pm">11:15 PM</item>
+        <item name="11_30_pm">11:30 PM</item>
+        <item name="11_45_pm">11:45 PM</item>
+    </string-array>
+    <string-array name="closeBatchHourValues">
+        <item name="12_00_am">12:00 AM</item>
+        <item name="12_15_am">12:15 AM</item>
+        <item name="12_30_am">12:30 AM</item>
+        <item name="12_45_am">12:45 AM</item>
+
+        <item name="1_00_am">1:00 AM</item>
+        <item name="1_15_am">1:15 AM</item>
+        <item name="1_30_am">1:30 AM</item>
+        <item name="1_45_am">1:45 AM</item>
+
+        <item name="2_00_am">2:00 AM</item>
+        <item name="2_15_am">2:15 AM</item>
+        <item name="2_30_am">2:30 AM</item>
+        <item name="2_45_am">2:45 AM</item>
+
+
+        <item name="3_00_am">3:00 AM</item>
+        <item name="3_15_am">3:15 AM</item>
+        <item name="3_30_am">3:30 AM</item>
+        <item name="3_45_am">3:45 AM</item>
+
+        <item name="4_00_am">4:00 AM</item>
+        <item name="4_15_am">4:15 AM</item>
+        <item name="4_30_am">4:30 AM</item>
+        <item name="4_45_am">4:45 AM</item>
+
+        <item name="5_00_am">5:00 AM</item>
+        <item name="5_15_am">5:15 AM</item>
+        <item name="5_30_am">5:30 AM</item>
+        <item name="5_45_am">5:45 AM</item>
+
+        <item name="6_00_am">6:00 AM</item>
+        <item name="6_15_am">6:15 AM</item>
+        <item name="6_30_am">6:30 AM</item>
+        <item name="6_45_am">6:45 AM</item>
+
+        <item name="7_00_am">7:00 AM</item>
+        <item name="7_15_am">7:15 AM</item>
+        <item name="7_30_am">7:30 AM</item>
+        <item name="7_45_am">7:45 AM</item>
+
+        <item name="8_00_am">8:00 AM</item>
+        <item name="8_15_am">8:15 AM</item>
+        <item name="8_30_am">8:30 AM</item>
+        <item name="8_45_am">8:45 AM</item>
+
+        <item name="9_00_am">9:00 AM</item>
+        <item name="9_15_am">9:15 AM</item>
+        <item name="9_30_am">9:30 AM</item>
+        <item name="9_45_am">9:45 AM</item>
+
+        <item name="10_00_am">10:00 AM</item>
+        <item name="10_15_am">10:15 AM</item>
+        <item name="10_30_am">10:30 AM</item>
+        <item name="10_45_am">10:45 AM</item>
+
+        <item name="11_00_am">11:00 AM</item>
+        <item name="11_15_am">11:15 AM</item>
+        <item name="11_30_am">11:30 AM</item>
+        <item name="11_45_am">11:45 AM</item>
+
+        <item name="12_00_pm">12:00 PM</item>
+        <item name="12_15_pm">12:15 PM</item>
+        <item name="12_30_pm">12:30 PM</item>
+        <item name="12_45_pm">12:45 PM</item>
+
+        <item name="1_00_pm">1:00 PM</item>
+        <item name="1_15_pm">1:15 PM</item>
+        <item name="1_30_pm">1:30 PM</item>
+        <item name="1_45_pm">1:45 PM</item>
+
+        <item name="2_00_pm">2:00 PM</item>
+        <item name="2_15_pm">2:15 PM</item>
+        <item name="2_30_pm">2:30 PM</item>
+        <item name="2_45_pm">2:45 PM</item>
+
+        <item name="3_00_pm">3:00 PM</item>
+        <item name="3_15_pm">3:15 PM</item>
+        <item name="3_30_pm">3:30 PM</item>
+        <item name="3_45_pm">3:45 PM</item>
+
+        <item name="4_00_pm">4:00 PM</item>
+        <item name="4_15_pm">4:15 PM</item>
+        <item name="4_30_pm">4:30 PM</item>
+        <item name="4_45_pm">4:45 PM</item>
+
+        <item name="5_00_pm">5:00 PM</item>
+        <item name="5_15_pm">5:15 PM</item>
+        <item name="5_30_pm">5:30 PM</item>
+        <item name="5_45_pm">5:45 PM</item>
+
+        <item name="6_00_pm">6:00 PM</item>
+        <item name="6_15_pm">6:15 PM</item>
+        <item name="6_30_pm">6:30 PM</item>
+        <item name="6_45_pm">6:45 PM</item>
+
+        <item name="7_00_pm">7:00 PM</item>
+        <item name="7_15_pm">7:15 PM</item>
+        <item name="7_30_pm">7:30 PM</item>
+        <item name="7_45_pm">7:45 PM</item>
+
+        <item name="8_00_pm">8:00 PM</item>
+        <item name="8_15_pm">8:15 PM</item>
+        <item name="8_30_pm">8:30 PM</item>
+        <item name="8_45_pm">8:45 PM</item>
+
+        <item name="9_00_pm">9:00 PM</item>
+        <item name="9_15_pm">9:15 PM</item>
+        <item name="9_30_pm">9:30 PM</item>
+        <item name="9_45_pm">9:45 PM</item>
+
+        <item name="10_00_pm">10:00 PM</item>
+        <item name="10_15_pm">10:15 PM</item>
+        <item name="10_30_pm">10:30 PM</item>
+        <item name="10_45_pm">10:45 PM</item>
+
+        <item name="11_00_pm">11:00 PM</item>
+        <item name="11_15_pm">11:15 PM</item>
+        <item name="11_30_pm">11:30 PM</item>
+        <item name="11_45_pm">11:45 PM</item>
+    </string-array>
+
     <string-array name="customernamesEntries">
         <item name="name">Name</item>
         <item name="fullName">Full Name</item>

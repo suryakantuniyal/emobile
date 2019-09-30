@@ -6,8 +6,11 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +37,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +67,7 @@ import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.security.ClerkManagementActivity;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.emobilepos.service.CloseBatchPaxService;
 import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.emobilepos.settings.printers.DeviceListActivity;
 import com.android.support.DateUtils;
@@ -404,7 +409,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                     break;
                 case BATCH:
-                    prefManager.findPreference("pref_batch_pax").setOnPreferenceClickListener(this);
+                    try {
+                        prefManager.findPreference("pref_batch_pax").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_pax_close_batch_hour").setOnPreferenceClickListener(this);
+                    }catch (Exception x){
+                        x.printStackTrace();
+                    }
                     break;
                 case KIOSK:
                     prefManager.findPreference("pref_customer_display").setOnPreferenceClickListener(this);
@@ -655,6 +665,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     batchProcessing.close();
 
                     break;
+                case R.string.config_batch_pax_close_hour:
+                    //setBatchClose();
+                    break;
                 case R.string.config_transaction_num_prefix:
                     break;
                 case R.string.config_customer_display:
@@ -850,7 +863,43 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             });
             globalDlog.show();
         }
+        private void setBatchClose() {
+            final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            globalDlog.setCancelable(true);
+            globalDlog.setCanceledOnTouchOutside(true);
+            globalDlog.setContentView(R.layout.dlog_field_single_layout);
 
+            final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT);
+            if (!TextUtils.isEmpty(myPref.getBatchCloseTime())) {
+                viewField.setText(myPref.getBatchCloseTime());
+            }
+            TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewTitle.setText(R.string.enter_batch_close_hour);
+            viewMsg.setVisibility(View.GONE);
+            Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    String value = viewField.getText().toString().trim();
+                    myPref.setBatchCloseTime(value);
+                }
+            });
+            globalDlog.show();
+        }
         private void setDefaultUnitsName() {
             final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1985,6 +2034,49 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             public String toString() {
                 return super.toString();
             }
+        }
+    }
+    private void closeCurrentJob(ComponentName componentName, JobScheduler jobScheduler){
+        for(JobInfo job: jobScheduler.getAllPendingJobs()){
+            if(componentName.getPackageName() != null
+                    && componentName.getClassName() != null
+                && job.getService().getPackageName() != null
+                        && job.getService().getClassName() != null
+            )
+            {
+                String compName = componentName.getPackageName() + componentName.getClassName();
+                String currName = job.getService().getPackageName() + componentName.getClassName();
+                if(compName.equals(currName)){
+                    try{
+                        jobScheduler.cancel(job.getId());
+                    }catch (Exception x){
+                        x.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+    //Schedule Job
+    public void scheduleJob(Context context){
+        try{
+            final long ONE_SECOND = 1000;
+            final long ONE_MINUTE = ONE_SECOND * 60;
+            final long FIFTEEN_MINUTES = ONE_MINUTE * 15;
+            final long ONE_HOUR = ONE_MINUTE * 60;
+
+            JobScheduler jobScheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
+            ComponentName componentName = new ComponentName(context, CloseBatchPaxService.class);
+            MyPreferences myPref = new MyPreferences(context);
+
+            closeCurrentJob(componentName, jobScheduler);
+            JobInfo jobInfo = new JobInfo.Builder(1, componentName)
+                    .setPeriodic(FIFTEEN_MINUTES)
+                    .setPersisted(true)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .build();
+            jobScheduler.schedule(jobInfo);
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 }

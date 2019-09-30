@@ -1,6 +1,11 @@
 package drivers.pax.utils;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.pax.poslink.BatchRequest;
 import com.pax.poslink.BatchResponse;
@@ -8,6 +13,8 @@ import com.pax.poslink.POSLinkAndroid;
 import com.pax.poslink.PosLink;
 import com.pax.poslink.ProcessTransResult;
 import com.pax.poslink.poslink.POSLinkCreator;
+
+import java.math.BigDecimal;
 
 import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
 import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
@@ -17,6 +24,7 @@ import static drivers.pax.utils.Constant.TRANS_NOT_FOUND;
  * Created by Luis Camayd on 9/12/2019.
  */
 public class BatchProcessing {
+    private Context context;
     private Activity activity;
     private PosLink poslink;
     private static ProcessTransResult ptr;
@@ -26,14 +34,22 @@ public class BatchProcessing {
         this.callback = callback;
         this.activity = activity;
     }
-
+    public BatchProcessing(OnBatchProcessedCallback callback, Context context) {
+        this.callback = callback;
+        this.context = context;
+    }
     public interface OnBatchProcessedCallback {
         void onBatchProcessedDone(String result);
     }
 
     public void close() {
-        POSLinkAndroid.init(activity, PosLinkHelper.getCommSetting());
-        poslink = POSLinkCreator.createPoslink(activity);
+        if(activity != null){
+            POSLinkAndroid.init(activity, PosLinkHelper.getCommSetting());
+            poslink = POSLinkCreator.createPoslink(activity);
+        } else if(context != null){
+            POSLinkAndroid.init(context, PosLinkHelper.getCommSetting());
+            poslink = POSLinkCreator.createPoslink(context);
+        }
         BatchRequest batchrequest = new BatchRequest();
         batchrequest.EDCType = 0;
         batchrequest.TransType = 1;
@@ -51,12 +67,21 @@ public class BatchProcessing {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        processPaxBatchResponse();
-                    }
-                });
+                if(activity != null){
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            processPaxBatchResponse();
+                        }
+                    });
+                } else if(context != null){
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            processPaxBatchResponse();
+                        }
+                    }.run();
+                }
             }
         }).start();
     }
@@ -67,7 +92,7 @@ public class BatchProcessing {
             BatchResponse response = poslink.BatchResponse;
             switch (response.ResultCode) {
                 case TRANSACTION_SUCCESS:
-                    result = "Batch Closed!";
+                    result = "Batch Closed!" +" CreditAmount:$" + (new BigDecimal(response.CreditAmount).divide(new BigDecimal(100.00)));
                     break;
                 case TRANS_NOT_FOUND:
                     result = "Transactions Not Found!";

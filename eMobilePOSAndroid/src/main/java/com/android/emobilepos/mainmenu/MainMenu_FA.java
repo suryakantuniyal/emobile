@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
@@ -36,6 +37,7 @@ import com.android.emobilepos.recovery.RecoveriesPickerDlog_FR;
 import com.android.emobilepos.recovery.RecoveriesPicker_Listener;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.service.SyncConfigServerService;
+import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.OrderRecoveryUtils;
@@ -164,6 +166,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
         ViewPager viewPager = (ViewPager) findViewById(R.id.main_menu_pager);
         synchTextView = (TextView) findViewById(R.id.synch_title);
         synchTextView.setVisibility(View.GONE);
@@ -229,6 +232,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 newFrag.show(this.getSupportFragmentManager(), "dialog");
             }
         }
+
+        new SettingListActivity().scheduleJob(MainMenu_FA.this);
     }
 
     public void registerWithNotificationHubs() {
