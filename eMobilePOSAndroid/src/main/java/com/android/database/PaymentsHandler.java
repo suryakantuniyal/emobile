@@ -192,7 +192,7 @@ public class PaymentsHandler {
             String sql = "INSERT INTO " + table_name + " (" + sb1.toString() + ")" +
                     "VALUES (" + sb2.toString() + ")";
             sqlinsert = getDatabase().compileStatement(sql);
-            DBUtils dbUtils = DBUtils.getInstance(myPref.getAcctNumber(), sqlinsert, sql, DBUtils.DBChild.PAYMENTS);
+            DBUtils dbUtils = DBUtils.getInstance(sqlinsert, DBUtils.DBChild.PAYMENTS);
             dbUtils.bindString(index(pay_id), payment.getPay_id() == null ? "" : payment.getPay_id()); // pay_id
             dbUtils.bindString(index(group_pay_id), payment.getGroup_pay_id() == null ? "" : payment.getGroup_pay_id()); // group_pay_id
             dbUtils.bindString(index(original_pay_id), payment.getOriginal_pay_id() == null ? "" : payment.getOriginal_pay_id()); // group_pay_id
@@ -273,8 +273,7 @@ public class PaymentsHandler {
             dbUtils.bindString(index(Tax3_name), payment.getTax3_name() == null ? "" : payment.getTax3_name());
             dbUtils.bindString(index(EMVJson), payment.getEmvContainer() == null ? "" : new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
 
-
-            dbUtils.executeAuditedDB();
+            sqlinsert.execute();
             sqlinsert.clearBindings();
             getDatabase().setTransactionSuccessful();
 

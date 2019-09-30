@@ -1,8 +1,6 @@
 package com.android.database;
 
 import com.android.support.HttpClient;
-import com.crashlytics.android.Crashlytics;
-import com.google.gson.Gson;
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
@@ -18,8 +16,6 @@ import java.security.InvalidKeyException;
 import java.util.HashMap;
 import java.util.Map;
 
-import util.json.JsonUtils;
-
 public class DBUtils {
     public static final String storageConnectionString = "DefaultEndpointsProtocol=https;"
             + "AccountName=enablerbackup;"
@@ -29,15 +25,11 @@ public class DBUtils {
     DBChild dbChild;
     Map<String, Object> sparseArray = new HashMap<>();
     HttpClient httpClient;
-    String url = "https://emobilepos-53888.firebaseio.com/";
-    private String index;
-    private String sql;
+//    String url = "https://emobilepos-53888.firebaseio.com/";
     private SQLiteStatement statement;
 
-    public static DBUtils getInstance(String index, SQLiteStatement statement, String sql, DBChild dbChild) {
+    public static DBUtils getInstance(SQLiteStatement statement, DBChild dbChild) {
         DBUtils dbUtils = new DBUtils();
-        dbUtils.index = index;
-        dbUtils.sql = sql;
         dbUtils.dbChild = dbChild;
         dbUtils.httpClient = new HttpClient();
         dbUtils.statement = statement;
@@ -54,40 +46,10 @@ public class DBUtils {
         imageBlob.upload(dbFileInputStream, dbFileInputStream.available());
     }
 
-    public static void release() {
-        try {
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public void bindString(int index, String value) {
         statement.bindString(index, value);
         sparseArray.put(String.valueOf(index), value);
-    }
-
-    public void executeAuditedDB() {
-        statement.execute();
-        try {
-            final AuditingRecord record = new AuditingRecord();
-            record.setIndex(index);
-            record.setSql(sql);
-            record.setData(sparseArray);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        String response = oauthclient.HttpClient.getString(url + dbChild.name() + ".json", record.toJson(), null,true);
-                    } catch (Exception e) {
-
-                    }
-                }
-            }).start();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-        }
     }
 
     public void bindDouble(int index, double value) {
@@ -107,56 +69,6 @@ public class DBUtils {
 
     public enum DBChild {
         ORDER_PRODUCT, PAYMENTS, ORDERS
-    }
-
-    private class AuditingRecord {
-        private String sql;
-        private String index;
-        private Map<String, Object> data;
-        private String timestamp = String.valueOf(System.currentTimeMillis());
-
-        public AuditingRecord() {
-
-        }
-
-        public String toJson() {
-            Gson gson = JsonUtils.getInstance();
-            String toJson = gson.toJson(this);
-            toJson = "{\"" + index + "\":" + toJson + "}";
-            return toJson;
-        }
-
-        public String getSql() {
-            return sql;
-        }
-
-        public void setSql(String sql) {
-            this.sql = sql;
-        }
-
-        public String getIndex() {
-            return index;
-        }
-
-        public void setIndex(String index) {
-            this.index = index;
-        }
-
-        public Map<String, Object> getData() {
-            return data;
-        }
-
-        public void setData(Map<String, Object> data) {
-            this.data = data;
-        }
-
-        public String getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(String timestamp) {
-            this.timestamp = timestamp;
-        }
     }
 
 }

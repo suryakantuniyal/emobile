@@ -19,7 +19,6 @@ import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -254,14 +253,13 @@ public class OrdersHandler {
     public void insert(List<Order> orders) {
 
         DBManager.getDatabase().beginTransaction();
-        MyPreferences preferences = new MyPreferences(activity);
         try {
             for (Order order : orders) {
 
                 String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
                         "VALUES (" + sb2.toString() + ")";
                 sqlinsert = DBManager.getDatabase().compileStatement(sb);
-                DBUtils dbUtils = DBUtils.getInstance(preferences.getAcctNumber(), sqlinsert, sb, DBUtils.DBChild.ORDERS);
+                DBUtils dbUtils = DBUtils.getInstance(sqlinsert, DBUtils.DBChild.ORDERS);
 //                order.ord_id = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
                 dbUtils.bindString(index(ord_id), order.ord_id == null ? "" : order.ord_id); // cust_id
                 dbUtils.bindString(index(qbord_id), order.qbord_id == null ? "" : order.qbord_id); // cust_id
@@ -321,7 +319,7 @@ public class OrdersHandler {
                 dbUtils.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
                 dbUtils.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
 
-                dbUtils.executeAuditedDB();
+                sqlinsert.execute();
                 sqlinsert.clearBindings();
                 sqlinsert.close();
                 DinningTableOrderDAO.createDinningTableOrder(order);

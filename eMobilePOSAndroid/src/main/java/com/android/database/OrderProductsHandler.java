@@ -270,7 +270,7 @@ public class OrderProductsHandler {
                 deleteAllOrdProd(orderProducts.get(0).getOrd_id());
             }
             for (int i = 0; i < size; i++) {
-                DBUtils dbUtils = DBUtils.getInstance(myPref.getAcctNumber(), sqlinsert, sql, DBUtils.DBChild.ORDER_PRODUCT);
+                DBUtils dbUtils = DBUtils.getInstance(sqlinsert, DBUtils.DBChild.ORDER_PRODUCT);
                 OrderProduct prod = orderProducts.get(i);
                 double qty = Double.parseDouble(prod.getOrdprod_qty());
                 if (qty == 0) {
@@ -337,8 +337,7 @@ public class OrderProductsHandler {
                 dbUtils.bindLong(index(seatGroupId), prod.getSeatGroupId());
                 dbUtils.bindLong(index(prodPricePoints), Double.valueOf(prod.getProd_price_points()).longValue());
                 dbUtils.bindString(index(isGC), String.valueOf(prod.isGC()));
-//                sqlinsert.execute();
-                dbUtils.executeAuditedDB();
+                sqlinsert.execute();
                 sqlinsert.clearBindings();
 //                Log.d("Insert OrderProduct", prod.toString());
                 if (isRestaurantMode && !prod.addonsProducts.isEmpty()) {
