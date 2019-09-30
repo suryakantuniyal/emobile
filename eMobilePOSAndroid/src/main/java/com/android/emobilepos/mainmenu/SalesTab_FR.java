@@ -207,7 +207,9 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         hiddenField = view.findViewById(R.id.hiddenField);
         hiddenField.addTextChangedListener(textWatcher());
         invisibleSearchMain = view.findViewById(R.id.invisibleSearchMain);
-        invisibleSearchMain.addTextChangedListener(textWatcher());
+        if(invisibleSearchMain != null)
+            invisibleSearchMain.addTextChangedListener(textWatcher());
+
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(getActivity());
         isReaderConnected = usbDevices != null && usbDevices.size() > 0;
         digitalPersona = new DigitalPersona(getActivity().getApplicationContext(), this, EmobileBiometric.UserType.CUSTOMER);
