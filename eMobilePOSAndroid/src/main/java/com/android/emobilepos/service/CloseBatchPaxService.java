@@ -34,7 +34,14 @@ public class CloseBatchPaxService extends JobService implements BatchProcessing.
         try{
             Context context = this;
             MyPreferences myPref = new MyPreferences(context);
-            String processDateString = fmt.format(calNow.getTime()) + " " + myPref.getPreferencesValue(MyPreferences.pref_pax_close_batch_hour);
+            String hour = myPref.getPreferencesValue(MyPreferences.pref_pax_close_batch_hour);
+            if(hour != null ){
+                hour = hour.trim();
+                if(hour.equals("")){
+                    hour = "12:00 AM";
+                }
+            }
+            String processDateString = fmt.format(calNow.getTime()) + " " + hour ;
             Date runDate   = fmtHHmmAMPM.parse(processDateString);
             Date startDate   = calStart.getTime();
             Date endDate     = calEnd.getTime();
