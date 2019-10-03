@@ -34,6 +34,7 @@ import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
@@ -541,13 +542,42 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
             payment.setIvuLottoNumber(ivuLottoNum);
             payment.setIvuLottoDrawDate(drawDate);
-
-            payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1));
-            payment.setTax1_name(tax1Lbl.getText().toString());
-            payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2));
-            payment.setTax2_name(tax2Lbl.getText().toString());
-            payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3));
-            payment.setTax3_name(tax3Lbl.getText().toString());
+            if (extras.getBoolean("isFromSalesReceipt")) {
+                BigDecimal tempVal1 = new BigDecimal(0);
+                BigDecimal tempVal2 = new BigDecimal(0);
+                BigDecimal tempVal3 = new BigDecimal(0);
+                for (OrderProduct product : global.order.getOrderProducts()) {
+                    if (product.getTaxes() != null && product.getTaxes().size() != 0) {
+                        for (int i = 0; i < product.getTaxes().size(); i++) {
+                            BigDecimal mTaxAmount = product.getTaxes().get(i).getTaxAmount();
+                            switch (i) {
+                                case 0:
+                                    tempVal1 = tempVal1.add(mTaxAmount);
+                                    break;
+                                case 1:
+                                    tempVal2 = tempVal2.add(mTaxAmount);
+                                    break;
+                                case 2:
+                                    tempVal3 = tempVal3.add(mTaxAmount);
+                                    break;
+                            }
+                        }
+                    }
+                }
+                payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tempVal1.toString()));
+                payment.setTax1_name(tax1Lbl.getText().toString());
+                payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tempVal2.toString()));
+                payment.setTax1_name(tax2Lbl.getText().toString());
+                payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tempVal3.toString()));
+                payment.setTax3_name(tax3Lbl.getText().toString());
+            } else {
+                payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1));
+                payment.setTax1_name(tax1Lbl.getText().toString());
+                payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2));
+                payment.setTax2_name(tax2Lbl.getText().toString());
+                payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3));
+                payment.setTax3_name(tax3Lbl.getText().toString());
+            }
         }
 
 
