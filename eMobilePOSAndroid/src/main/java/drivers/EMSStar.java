@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Log;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
@@ -344,8 +345,13 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         commands = builder.getCommands();
 
         try {
+            port.beginCheckedBlock();
             port.writePort(commands, 0, commands.length);
             port.setEndCheckedBlockTimeoutMillis(30000);
+            StarPrinterStatus status = port.endCheckedBlock();
+            if(status.offline) {
+//                Log.e("Star","offline");
+            }
 //            StarPrinterStatus status = port.endCheckedBlock();
             // todo: implement status
         } catch (StarIOPortException e) {
