@@ -155,7 +155,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     @Override
     public void onDestroy() {
-        myCursor.close();
+        closeCursor(myCursor);
         super.onDestroy();
         unregisterReceiver(messageReceiver);
     }
@@ -294,7 +294,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 {
                     validPassword = true;
                     isUpdateOnHold = true;
-                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    new CheckHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
                     validPassword = false;
                     askForManagerPassDlg();
@@ -341,7 +341,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     }
                     if (hasTable) {
                         validPassword = true;
-                        new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        new CheckHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     } else {
                         final Dialog popDlog = new Dialog(OnHoldActivity.this, R.style.TransparentDialogFullScreen);
                         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -372,7 +372,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                                     popDlog.dismiss();
                                     validPassword = true;
                                     isUpdateOnHold = true;
-                                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                    new CheckHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 } else {
                                     validPassword = false;
                                     viewMsg.setText(R.string.invalid_password);
@@ -388,7 +388,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                         popDlog.show();
                     }
                 } else {
-                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    new CheckHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             }
         });
@@ -401,7 +401,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
                     new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
-                    new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                    new ExecuteOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                 }
             }
         });
@@ -472,9 +472,10 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class checkHoldStatus extends AsyncTask<Void, String, Boolean> {
+    public class CheckHoldStatus extends AsyncTask<Void, String, Boolean> {
         boolean wasProcessed = false;
         private ProgressDialog myProgressDialog;
+        private Cursor backgroundCursor = null;
 
         @Override
         protected void onPreExecute() {
@@ -487,32 +488,38 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            myCursor.moveToPosition(selectedPos);
-            myPref.setCustSelected(false);
-            String ordID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-            global.setSelectedComments(myCursor.getString(myCursor.getColumnIndex("ord_comment")));
-            if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
-                    || NetworkUtils.isConnectedToInternet(activity)) {
-                try {
-                    if (!isUpdateOnHold) {
-                        if (!OnHoldsManager.isOnHoldAdminClaimRequired(ordID, activity)) {
+            OrdersHandler ordersHandler = new OrdersHandler(activity);
+            try{
+                backgroundCursor = ordersHandler.getOrdersOnHoldCursor();
+                backgroundCursor.moveToPosition(selectedPos);
+                myPref.setCustSelected(false);
+                String ordID = backgroundCursor.getString(backgroundCursor.getColumnIndex("ord_id"));
+                global.setSelectedComments(backgroundCursor.getString(backgroundCursor.getColumnIndex("ord_comment")));
+                if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
+                        || NetworkUtils.isConnectedToInternet(activity)) {
+                    try {
+                        if (!isUpdateOnHold) {
+                            if (!OnHoldsManager.isOnHoldAdminClaimRequired(ordID, activity)) {
+                                wasProcessed = true;
+                                OnHoldsManager.updateStatusOnHold(ordID, activity);
+                            }
+                        } else {
                             wasProcessed = true;
                             OnHoldsManager.updateStatusOnHold(ordID, activity);
                         }
-                    } else {
-                        wasProcessed = true;
-                        OnHoldsManager.updateStatusOnHold(ordID, activity);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Crashlytics.logException(e);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Crashlytics.logException(e);
+                    return true;
+                } else {
+                    ordersHandler = new OrdersHandler(activity);
+                    if (ordersHandler.isOrderOffline(ordID) || validPassword)
+                        wasProcessed = true;
+                    return false;
                 }
-                return true;
-            } else {
-                OrdersHandler ordersHandler = new OrdersHandler(activity);
-                if (ordersHandler.isOrderOffline(ordID) || validPassword)
-                    wasProcessed = true;
-                return false;
+            }finally {
+                closeCursor(backgroundCursor);
             }
         }
 
@@ -521,19 +528,20 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             myProgressDialog.dismiss();
 
             if (wasProcessed) {
-                new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                new ExecuteOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             } else {
                 claimedTransactionPrompt(isConnectedInternet);
             }
         }
     }
 
-    private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
+    private class ExecuteOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
         private boolean proceed = false;
         private Intent intent;
         private OrderProductsHandler orderProdHandler;
         private boolean forPrinting = false;
         private ProgressDialog myProgressDialog;
+        private Cursor backgroundCursor = null;
 
         @Override
         protected void onPreExecute() {
@@ -546,77 +554,86 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected Intent doInBackground(Boolean... params) {
-            myCursor.moveToPosition(selectedPos);
-            Order order = OrdersHandler.getOrder(myCursor, activity);
-            orderProdHandler = new OrderProductsHandler(activity);
-            Global.lastOrdID = order.ord_id;
-            Global.taxID = order.tax_id;
-            orderType = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
-            String ord_HoldName = order.ord_HoldName;
-            selectCustomer(order.cust_id);
-            forPrinting = params[0];
-            if (!forPrinting) {
-                intent = new Intent(activity, OrderingMain_FA.class);
-                String assignedTable = order.assignedTable;
-                intent.putExtra("selectedDinningTableNumber", assignedTable);
-                intent.putExtra("onHoldOrderJson", order.toJson());
+                OrdersHandler ordersHandler = new OrdersHandler(activity);
+                    backgroundCursor     = ordersHandler.getOrdersOnHoldCursor();
+                    backgroundCursor.moveToPosition(selectedPos);
+                    Order order = OrdersHandler.getOrder(backgroundCursor, activity);
+                    orderProdHandler = new OrderProductsHandler(activity);
+                    Global.lastOrdID = order.ord_id;
+                    Global.taxID = order.tax_id;
+                    orderType = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
+                    String ord_HoldName = order.ord_HoldName;
+                    selectCustomer(order.cust_id);
+                    forPrinting = params[0];
+                    if (!forPrinting) {
+                        intent = new Intent(activity, OrderingMain_FA.class);
+                        String assignedTable = order.assignedTable;
+                        intent.putExtra("selectedDinningTableNumber", assignedTable);
+                        intent.putExtra("onHoldOrderJson", order.toJson());
 
-                intent.putExtra("openFromHold", true);
-                if (assignedTable != null && !assignedTable.isEmpty()) {
-                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
-                } else {
-                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
-                }
-                switch (orderType) {
-                    case SALES_RECEIPT:
-                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                        break;
-                    case RETURN:
-                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-                        break;
-                    case ORDER:
-                        intent.putExtra("option_number", Global.TransactionType.ORDERS);
-                        break;
-                    case INVOICE:
-                        intent.putExtra("option_number", Global.TransactionType.INVOICE);
-                        break;
-                    case ESTIMATE:
-                        intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
-                        break;
-                }
-                intent.putExtra("ord_HoldName", ord_HoldName);
-                intent.putExtra("associateId", order.associateID);
-                Global.isFromOnHold = true;
-            }
+                        intent.putExtra("openFromHold", true);
+                        if (assignedTable != null && !assignedTable.isEmpty()) {
+                            intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+                        } else {
+                            intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                        }
+                        switch (orderType) {
+                            case SALES_RECEIPT:
+                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                                break;
+                            case RETURN:
+                                intent.putExtra("option_number", Global.TransactionType.RETURN);
+                                break;
+                            case ORDER:
+                                intent.putExtra("option_number", Global.TransactionType.ORDERS);
+                                break;
+                            case INVOICE:
+                                intent.putExtra("option_number", Global.TransactionType.INVOICE);
+                                break;
+                            case ESTIMATE:
+                                intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
+                                break;
+                        }
+                        intent.putExtra("ord_HoldName", ord_HoldName);
+                        intent.putExtra("associateId", order.associateID);
+                        Global.isFromOnHold = true;
+                    }
 
-            if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
-                    || NetworkUtils.isConnectedToInternet(activity))
-                proceed = true;
-            return intent;
+                    if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
+                            || NetworkUtils.isConnectedToInternet(activity))
+                        proceed = true;
+                    return intent;
         }
 
         @Override
         protected void onPostExecute(Intent intent) {
-            myProgressDialog.dismiss();
-            if (proceed) {
-                DBManager dbManager = new DBManager(activity);
-                if (!forPrinting)
-                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 0, activity);
-                else
-                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1, activity);
-            } else {
-                Cursor c = orderProdHandler.getOrderProductsOnHold(myCursor.getString(myCursor.getColumnIndex("ord_id")));
-                int size = c.getCount();
-                if (size > 0) {
-                    if (!forPrinting) {
-                        startActivityForResult(intent, 0);
-                        activity.finish();
-                    } else {
-                        DBManager dbManager = new DBManager(activity);
-                        dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1, activity);
-                    }
-                } else
-                    Toast.makeText(activity, "no available items", Toast.LENGTH_LONG).show();
+            try{
+                myProgressDialog.dismiss();
+                if (proceed) {
+                    DBManager dbManager = new DBManager(activity);
+                    if (!forPrinting)
+                        dbManager.synchDownloadOnHoldDetails(intent, backgroundCursor.getString(backgroundCursor.getColumnIndex("ord_id")), 0, activity);
+                    else
+                        dbManager.synchDownloadOnHoldDetails(intent, backgroundCursor.getString(backgroundCursor.getColumnIndex("ord_id")), 1, activity);
+                } else {
+                    Cursor c = orderProdHandler.getOrderProductsOnHold(backgroundCursor.getString(backgroundCursor.getColumnIndex("ord_id")));
+                    int size = c.getCount();
+                    if (size > 0) {
+                        if (!forPrinting) {
+                            startActivityForResult(intent, 0);
+                            activity.finish();
+                        } else {
+                            DBManager dbManager = new DBManager(activity);
+                            dbManager.synchDownloadOnHoldDetails(intent, backgroundCursor.getString(backgroundCursor.getColumnIndex("ord_id")), 1, activity);
+                        }
+                    } else
+                        Toast.makeText(activity, "no available items", Toast.LENGTH_LONG).show();
+                }
+            }catch (Exception x){
+                x.printStackTrace();
+            }
+            finally{
+                closeCursor(backgroundCursor);
             }
         }
     }
@@ -754,6 +771,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             Global.dismissDialog(OnHoldActivity.this, dialog);
+        }
+    }
+    private void closeCursor(Cursor cursor){
+        if(cursor != null && !cursor.isClosed()){
+            cursor.close();
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
@@ -174,10 +175,9 @@ public class ProductsAttrHandler {
             }
         }
     }
-
-
-    public Cursor getNewAttributeProduct(String prod_name, String[] attributesKey, LinkedHashMap<String, String> attributesMap) {
+    public OrderProduct getNewAttributeProduct(String prod_name, String[] attributesKey, LinkedHashMap<String, String> attributesMap) {
         Cursor cursor = null;
+        OrderProduct orderProduct = new OrderProduct();
         try {
             StringBuilder sb_1 = new StringBuilder();
             sb_1.append("SELECT pa.prod_id, pa.prodAttrKey,pa.attr_id,pa.attr_name,pa.attr_desc,Count(*) as 'count' ");
@@ -225,15 +225,45 @@ public class ProductsAttrHandler {
                 cursor = DBManager.getDatabase().rawQuery(sb_1.toString(), new String[]{priceLevelID, priceLevelID, myPref.getCustID()});
                 cursor.moveToFirst();
             }
+            orderProduct.setProd_id(cursor.getString(cursor.getColumnIndex("_id")));
+            orderProduct.setOrdprod_name(cursor.getString(cursor.getColumnIndex("prod_name")));
 
-            //db.close();
+            String tempPrice = cursor.getString(cursor.getColumnIndex("volume_price"));
+            if (tempPrice == null || tempPrice.isEmpty()) {
+                tempPrice = cursor.getString(cursor.getColumnIndex("pricelevel_price"));
+                if (tempPrice == null || tempPrice.isEmpty()) {
+                    tempPrice = cursor.getString(cursor.getColumnIndex("chain_price"));
 
-            return cursor;
+                    if (tempPrice == null || tempPrice.isEmpty())
+                        tempPrice = cursor.getString(cursor.getColumnIndex("master_price"));
+                }
+            }
+
+            orderProduct.setProd_price(tempPrice);
+            orderProduct.setOrdprod_desc(cursor.getString(cursor.getColumnIndex("prod_desc")));
+
+            tempPrice = cursor.getString(cursor.getColumnIndex("local_prod_onhand"));
+            if (tempPrice == null || tempPrice.isEmpty())
+                tempPrice = cursor.getString(cursor.getColumnIndex("master_prod_onhand"));
+            if (tempPrice.isEmpty())
+                tempPrice = "0";
+            orderProduct.setOnHand(tempPrice);
+
+            orderProduct.setImgURL(cursor.getString(cursor.getColumnIndex("prod_img_name")));
+            orderProduct.setProd_istaxable(cursor.getString(cursor.getColumnIndex("prod_istaxable")));
+            orderProduct.setProd_type(cursor.getString(cursor.getColumnIndex("prod_type")));
+
+            orderProduct.setProd_price_points(cursor.getString(cursor.getColumnIndex("prod_price_points")));
+            if (orderProduct.getProd_price_points() == null || orderProduct.getProd_price_points().isEmpty())
+                orderProduct.setProd_price_points("0");
+            orderProduct.setProd_value_points(cursor.getString(cursor.getColumnIndex("prod_value_points")));
+            if (orderProduct.getProd_value_points() == null || orderProduct.getProd_value_points().isEmpty())
+                orderProduct.setProd_value_points("0");
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
+        return orderProduct;
     }
-
 }
