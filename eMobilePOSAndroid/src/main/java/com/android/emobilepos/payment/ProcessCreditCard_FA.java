@@ -914,12 +914,42 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         String taxName3 = null;
         String taxAmnt3 = null;
         if (Global.isIvuLoto) {
-            taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tax1);
-            taxName1 = tax1Lbl.getText().toString();
-            taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tax2);
-            taxName2 = tax2Lbl.getText().toString();
-            taxAmnt3 = NumberUtils.cleanCurrencyFormatedNumber(tax3);
-            taxName3 = tax3Lbl.getText().toString();
+            if (extras.getBoolean("isFromSalesReceipt")) {
+                BigDecimal tempVal1 = new BigDecimal(0);
+                BigDecimal tempVal2 = new BigDecimal(0);
+                BigDecimal tempVal3 = new BigDecimal(0);
+                for (OrderProduct product : global.order.getOrderProducts()) {
+                    if (product.getTaxes() != null && product.getTaxes().size() != 0) {
+                        for (int i = 0; i < product.getTaxes().size(); i++) {
+                            BigDecimal mTaxAmount = product.getTaxes().get(i).getTaxAmount();
+                            switch (i) {
+                                case 0:
+                                    tempVal1 = tempVal1.add(mTaxAmount);
+                                    break;
+                                case 1:
+                                    tempVal2 = tempVal2.add(mTaxAmount);
+                                    break;
+                                case 2:
+                                    tempVal3 = tempVal3.add(mTaxAmount);
+                                    break;
+                            }
+                        }
+                    }
+                }
+                taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tempVal1.toString());
+                taxName1 = tax1Lbl.getText().toString();
+                taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tempVal2.toString());
+                taxName2 = tax2Lbl.getText().toString();
+                taxAmnt3 = NumberUtils.cleanCurrencyFormatedNumber(tempVal3.toString());
+                taxName3 = tax3Lbl.getText().toString();
+            } else {
+                taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tax1);
+                taxName1 = tax1Lbl.getText().toString();
+                taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tax2);
+                taxName2 = tax2Lbl.getText().toString();
+                taxAmnt3 = NumberUtils.cleanCurrencyFormatedNumber(tax3);
+                taxName3 = tax3Lbl.getText().toString();
+            }
         }
         double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
 

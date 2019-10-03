@@ -655,7 +655,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 BigDecimal tempVal2 = new BigDecimal(0);
                 BigDecimal tempVal3 = new BigDecimal(0);
                 for(OrderProduct product : global.order.getOrderProducts()){
-                    if(product.getTaxes().size()!=0) {
+                    if(product.getTaxes() != null && product.getTaxes().size()!=0) {
                         for (int i = 0; i < product.getTaxes().size(); i++) {
                             BigDecimal mTaxAmount = product.getTaxes().get(i).getTaxAmount();
                             switch(i){
