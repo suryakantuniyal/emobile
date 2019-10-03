@@ -136,6 +136,18 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public OrderProduct() {
 
     }
+    public OrderProduct(OrderProduct orderProduct){
+        setProd_id(orderProduct.getProd_id());
+        setOrdprod_name(orderProduct.getOrdprod_name());
+        setProd_price(orderProduct.getProd_price());
+        setOrdprod_desc(orderProduct.getOrdprod_desc());
+        setOnHand(orderProduct.getOnHand());
+        setImgURL(orderProduct.getImgURL());
+        setProd_istaxable(orderProduct.getProd_istaxable());
+        setProd_type(orderProduct.getProd_type());
+        setProd_price_points(orderProduct.getProd_price_points());
+        setProd_value_points(orderProduct.getProd_value_points());
+    }
 
     public static OrderProduct getInstance(String ordprod_id) {
         OrderProduct product = new OrderProduct();

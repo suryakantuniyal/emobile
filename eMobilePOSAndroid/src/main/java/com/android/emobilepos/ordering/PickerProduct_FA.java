@@ -47,6 +47,7 @@ import com.android.emobilepos.adapters.InventoryLocationsListAdapter;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.InventoryItem;
 import com.android.emobilepos.models.PriceLevel;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.ProductAttribute;
@@ -504,65 +505,24 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-
                 attributeValue.setText(val[position]);
                 attributesSelected.put(key, val[position]);
-                refreshAttributeProduct(prodAttrHandler.getNewAttributeProduct(orderProduct.getOrdprod_name(), attributesKey, attributesSelected));
+                OrderProduct orderProd = prodAttrHandler.getNewAttributeProduct(orderProduct.getOrdprod_name(), attributesKey, attributesSelected);
+                refreshAttributeProduct(orderProd);
                 promptDialog.dismiss();
             }
         });
-
-
         dialogBuilder.setView(listView);
-
         dialogBuilder.setInverseBackgroundForced(true);
         promptDialog = dialogBuilder.create();
-
         promptDialog.show();
     }
 
-    private void refreshAttributeProduct(Cursor myCursor) {
-
-//        OrderProduct orderProduct = new OrderProduct();
+    private void refreshAttributeProduct(OrderProduct orderProd) {
         if (isModify) {
             orderProduct = global.order.getOrderProducts().get(modifyOrderPosition);
         }
-        orderProduct.setProd_id(myCursor.getString(myCursor.getColumnIndex("_id")));
-        orderProduct.setOrdprod_name(myCursor.getString(myCursor.getColumnIndex("prod_name")));
-
-        String tempPrice = myCursor.getString(myCursor.getColumnIndex("volume_price"));
-        if (tempPrice == null || tempPrice.isEmpty()) {
-            tempPrice = myCursor.getString(myCursor.getColumnIndex("pricelevel_price"));
-            if (tempPrice == null || tempPrice.isEmpty()) {
-                tempPrice = myCursor.getString(myCursor.getColumnIndex("chain_price"));
-
-                if (tempPrice == null || tempPrice.isEmpty())
-                    tempPrice = myCursor.getString(myCursor.getColumnIndex("master_price"));
-            }
-        }
-
-        orderProduct.setProd_price(tempPrice);
-        orderProduct.setOrdprod_desc(myCursor.getString(myCursor.getColumnIndex("prod_desc")));
-
-        tempPrice = myCursor.getString(myCursor.getColumnIndex("local_prod_onhand"));
-        if (tempPrice == null || tempPrice.isEmpty())
-            tempPrice = myCursor.getString(myCursor.getColumnIndex("master_prod_onhand"));
-        if (tempPrice.isEmpty())
-            tempPrice = "0";
-        orderProduct.setOnHand(tempPrice);
-
-        orderProduct.setImgURL(myCursor.getString(myCursor.getColumnIndex("prod_img_name")));
-        orderProduct.setProd_istaxable(myCursor.getString(myCursor.getColumnIndex("prod_istaxable")));
-        orderProduct.setProd_type(myCursor.getString(myCursor.getColumnIndex("prod_type")));
-
-        orderProduct.setProd_price_points(myCursor.getString(myCursor.getColumnIndex("prod_price_points")));
-        if (orderProduct.getProd_price_points() == null || orderProduct.getProd_price_points().isEmpty())
-            orderProduct.setProd_price_points("0");
-        orderProduct.setProd_value_points(myCursor.getString(myCursor.getColumnIndex("prod_value_points")));
-        if (orderProduct.getProd_value_points() == null || orderProduct.getProd_value_points().isEmpty())
-            orderProduct.setProd_value_points("0");
-
-
+        orderProduct = new OrderProduct(orderProduct);
         imgURL = orderProduct.getImgURL();
         headerOnHand.setText(orderProduct.getOnHand());
         prodID = orderProduct.getProd_id();
