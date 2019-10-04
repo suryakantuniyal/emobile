@@ -522,7 +522,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (isModify) {
             orderProduct = global.order.getOrderProducts().get(modifyOrderPosition);
         }
-        orderProduct = new OrderProduct(orderProduct);
+        orderProduct.updateOrderProduct(orderProd);
         imgURL = orderProduct.getImgURL();
         headerOnHand.setText(orderProduct.getOnHand());
         prodID = orderProduct.getProd_id();
