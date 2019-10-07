@@ -21,6 +21,15 @@
             android:key="pref_use_pax"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_pax" />
+        <ListPreference
+            android:key="pref_use_pax_device_list"
+            android:layout="@layout/settings_custom_layout"
+            android:title="Select Pax Device"
+            android:enabled="false"
+            android:defaultValue="false"
+            android:entries="@array/pax_devices"
+            android:entryValues="@array/pax_devices"
+            />
         <CheckBoxPreference
             android:key="pref_use_sound_payments"
             android:layout="@layout/settings_custom_layout"

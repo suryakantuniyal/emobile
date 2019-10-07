@@ -363,6 +363,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_pay_with_card_on_file").setOnPreferenceClickListener(this);
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_use_pax").setOnPreferenceClickListener(this);
 
                     break;
                 case PAYMENT_PROCESSING:
@@ -614,6 +615,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         PayMethodsDAO.insert(PaymentMethod.getTupyxPaymentMethod());
                     } else {
                         PayMethodsDAO.delete("Wallet");
+                    }
+                    break;
+                case R.string.config_use_pax:
+                    checkBoxPreference = (CheckBoxPreference) preference;
+                    if (checkBoxPreference.isChecked()) {
+                        findPreference("pref_use_pax_device_list").setEnabled(true);
+                    } else {
+                        findPreference("pref_use_pax_device_list").setEnabled(false);
                     }
                     break;
                 case R.string.config_pay_with_card_on_file:
