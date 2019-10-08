@@ -1460,5 +1460,6 @@
     <string name="handlingmsg_err_wrong_paper">Configure el rollo de papel correcto.\n</string>
     <string name="handlingmsg_err_battery_real_end">Conecte el cargador o cambie la batería.\nLa batería de la impresora está casi agotada.\n</string>
     <string name="handlingmsg_err_offline">La impresora está desconectado.\n</string>
+    <string name="config_use_pax_device_list">Seleccionar Dispositivo Pax</string>
 
 </resources>

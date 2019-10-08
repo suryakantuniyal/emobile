@@ -24,7 +24,7 @@
         <ListPreference
             android:key="pref_use_pax_device_list"
             android:layout="@layout/settings_custom_layout"
-            android:title="Select Pax Device"
+            android:title="@string/config_use_pax_device_list"
             android:enabled="false"
             android:defaultValue="false"
             android:entries="@array/pax_devices"

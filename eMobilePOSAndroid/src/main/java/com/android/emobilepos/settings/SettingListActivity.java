@@ -364,6 +364,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_use_pax").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_use_pax_device_list").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            return checkPaxDevices(newValue);
+                        }
+                    });
 
                     break;
                 case PAYMENT_PROCESSING:
@@ -553,6 +559,57 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             super.onPause();
             getPreferenceScreen().getSharedPreferences()
                     .unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        private boolean checkPaxDevices(Object newValue){
+            boolean result = false;
+            if(newValue.equals("D220")){
+                promptPaxSetup(newValue);
+                result = true;
+            }else if(newValue.equals("A920")){
+                Log.e("PAX","A920");
+                result = true;
+            }
+            return result;
+        }
+
+        private void promptPaxSetup(Object value){
+            final String deviceModel = (String) value;
+            promptDialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+            promptDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            promptDialog.setCancelable(false);
+            promptDialog.setContentView(R.layout.dlog_pax_connect_selected_device_layout);
+
+            TextView viewTitle = promptDialog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = promptDialog.findViewById(R.id.dlogMessage);
+            final EditText ip = promptDialog.findViewById(R.id.dlogEditText);
+            viewTitle.setText(R.string.dlog_title_conn_payment_device);
+//            viewMsg.setText(R.string.dlog_msg_confirm_force_upload);
+            viewMsg.setText("Enter Device IP Address:");
+            promptDialog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
+            Button btnYes = promptDialog.findViewById(R.id.btnDlogLeft);
+            Button btnNo = promptDialog.findViewById(R.id.btnDlogRight);
+            btnYes.setText(R.string.button_save);
+            btnNo.setText(R.string.button_cancel);
+
+            btnYes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new FindPaxDevice(getActivity()).executeOnExecutor(
+                            AsyncTask.THREAD_POOL_EXECUTOR,
+                            ip.getText().toString(),
+                            deviceModel);
+                    promptDialog.dismiss();
+                }
+            });
+            btnNo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    promptDialog.dismiss();
+                }
+            });
+            promptDialog.show();
         }
 
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -1883,6 +1940,40 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 super.onPostExecute(aVoid);
                 progressDialog.dismiss();
                 loadEpsonDlogSetup(activity);
+            }
+        }
+
+        private class FindPaxDevice extends AsyncTask<String,Void,Void>{
+            private Activity activity;
+            private ProgressDialog progressDialog;
+
+            public FindPaxDevice(Activity activity){
+                this.activity = activity;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog = new ProgressDialog(activity);
+                progressDialog.setCancelable(true);
+                progressDialog.setCanceledOnTouchOutside(true);
+                progressDialog.setTitle("PAX");
+                progressDialog.setMessage(getResources().getString(R.string.sync_saving_settings));
+                progressDialog.show();
+            }
+
+            @Override
+            protected Void doInBackground(String... strings) {
+                String ip = (String) strings[0];
+                String deviceModel = (String) strings[1];
+                myPref.setPaymentDevice(deviceModel);
+                myPref.setPaymentDeviceIP(ip);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                progressDialog.dismiss();
             }
         }
     }
