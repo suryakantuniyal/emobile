@@ -85,9 +85,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custselec_listview_layout);
         digitalPersona = new DigitalPersona(getApplicationContext(), this, EmobileBiometric.UserType.CUSTOMER);
-        soundManager = SoundManager.getInstance();
-        soundManager.initSounds(this);
-        soundManager.loadSounds();
+        soundManager = SoundManager.getInstance(this);
         activity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
