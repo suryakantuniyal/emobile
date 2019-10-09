@@ -597,7 +597,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         myProgressDialog.setCancelable(false);
         myProgressDialog.show();
 
-        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
+        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
         poslink = POSLinkCreator.createPoslink(getApplicationContext());
         ptr = null;
 
@@ -619,7 +619,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                         payrequest.TransType = REQUEST_TRANSACTION_TYPE_VOID;
 
                         poslink.PaymentRequest = payrequest;
-                        poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+                        poslink.SetCommSetting(PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
 
                         try {
                             Thread.sleep(500);

@@ -7,15 +7,24 @@ import com.pax.poslink.CommSetting;
  */
 public class PosLinkHelper {
 
-    public static CommSetting getCommSetting() {
+    public static CommSetting getCommSetting(String paymentDevice, String paxDeviceIP) {
         CommSetting commsetting = new CommSetting();
-        commsetting.setTimeOut("60000");
-        commsetting.setType(CommSetting.AIDL);
-        commsetting.setSerialPort("COM1");
-        commsetting.setBaudRate("9600");
-        commsetting.setDestIP("172.16.20.15");
-        commsetting.setDestPort("10009");
-        commsetting.setMacAddr("");
+        if (paymentDevice != null && paymentDevice.equalsIgnoreCase("D220")) {
+            commsetting.setTimeOut("60000");
+            commsetting.setSerialPort("COM1");
+            commsetting.setBaudRate("9600");
+            commsetting.setDestPort("10009");
+            commsetting.setType(CommSetting.TCP);
+            commsetting.setDestIP(paxDeviceIP);
+        } else {
+            commsetting.setTimeOut("60000");
+            commsetting.setSerialPort("COM1");
+            commsetting.setBaudRate("9600");
+            commsetting.setDestPort("10009");
+            commsetting.setMacAddr("");
+            commsetting.setType(CommSetting.AIDL);
+            commsetting.setDestIP("172.16.20.15");
+        }
         return commsetting;
     }
 

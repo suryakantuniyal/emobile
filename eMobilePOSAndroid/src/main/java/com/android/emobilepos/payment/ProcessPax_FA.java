@@ -2,6 +2,7 @@ package com.android.emobilepos.payment;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -135,12 +136,12 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.processButton:
-                processPayment();
+                processPayment(view.getContext());
                 break;
         }
     }
 
-    private void processPayment() {
+    private void processPayment(Context context) {
         String paymethod_id = extras.getString("paymethod_id");
         payment = new Payment(this);
 
@@ -185,17 +186,17 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payment.setPay_type("2");
         }
 
-        startPaxPayment();
+        startPaxPayment(context);
     }
 
-    private void startPaxPayment() {
-        myProgressDialog = new ProgressDialog(this);
+    private void startPaxPayment(Context context) {
+        myProgressDialog = new ProgressDialog(context);
         myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
         myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         myProgressDialog.setCancelable(false);
         myProgressDialog.show();
 
-        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
+        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
         poslink = POSLinkCreator.createPoslink(getApplicationContext());
         PaymentRequest payrequest = new PaymentRequest();
         if (creditRadioButton.isChecked()) {
@@ -215,7 +216,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
                         NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
         payrequest.ECRRefNum = DateUtils.getEpochTime();
         poslink.PaymentRequest = payrequest;
-        poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+        poslink.SetCommSetting(PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
         payment.setPay_stamp(String.valueOf(payrequest.TenderType));
 
         // as processTrans is blocked, we must run it in an async task
