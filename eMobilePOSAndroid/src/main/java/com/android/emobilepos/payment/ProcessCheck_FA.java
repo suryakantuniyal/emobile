@@ -25,11 +25,13 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
+import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.GroupTax;
-import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
@@ -48,10 +50,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -513,39 +516,35 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
             payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
 
-            if(extras.getBoolean("isFromSalesReceipt")){
-                BigDecimal tempVal1 = new BigDecimal(0);
-                BigDecimal tempVal2 = new BigDecimal(0);
-                BigDecimal tempVal3 = new BigDecimal(0);
-                for(OrderProduct product : global.order.getOrderProducts()){
-                    if(product.getTaxes() != null && product.getTaxes().size()!=0) {
-                        for (int i = 0; i < product.getTaxes().size(); i++) {
-                            BigDecimal mTaxAmount = product.getTaxes().get(i).getTaxAmount();
-                            switch(i){
-                                case 0: tempVal1 = tempVal1.add(mTaxAmount);
-                                    break;
-                                case 1: tempVal2 = tempVal2.add(mTaxAmount);
-                                    break;
-                                case 2: tempVal3 = tempVal3.add(mTaxAmount);
-                                    break;
-                            }
-                        }
+            if (extras.getBoolean("isFromSalesReceipt")) {
+                int counter = 0;
+                OrdersHandler orderHandler = new OrdersHandler(activity);
+                Order mOrder = orderHandler.getPrintedOrder(extras.getString("job_id"));
+                List<DataTaxes> taxesList = mOrder.getListOrderTaxes();
+                HashMap<String, String[]> arr = TaxesCalculator.getOrderTaxes(activity, taxesList, mOrder);
+                Iterator it = arr.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+                    if (counter == 0) {
+                        payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(String.valueOf(pair.getValue()[1])));
+                        payment.setTax1_name(pair.getValue()[0]);
+                    } else if (counter == 1) {
+                        payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(String.valueOf(pair.getValue()[1])));
+                        payment.setTax2_name(pair.getValue()[0]);
+                    } else {
+                        payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(String.valueOf(pair.getValue()[1])));
+                        payment.setTax3_name(pair.getValue()[0]);
                     }
+                    counter++;
+                    it.remove();
                 }
-                payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tempVal1.toString()));
+            } else {
+                payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1));
                 payment.setTax1_name(tax1Lbl.getText().toString());
-                payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tempVal2.toString()));
-                payment.setTax1_name(tax2Lbl.getText().toString());
-                payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tempVal3.toString()));
+                payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2));
+                payment.setTax2_name(tax2Lbl.getText().toString());
+                payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3));
                 payment.setTax3_name(tax3Lbl.getText().toString());
-            }
-            else{
-            payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1));
-            payment.setTax1_name(tax1Lbl.getText().toString());
-            payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2));
-            payment.setTax2_name(tax2Lbl.getText().toString());
-            payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3));
-            payment.setTax3_name(tax3Lbl.getText().toString());
             }
         }
 

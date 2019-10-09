@@ -47,8 +47,10 @@ import com.android.database.PaymentsXML_DB;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Device;
@@ -88,8 +90,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -915,33 +919,28 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         String taxAmnt3 = null;
         if (Global.isIvuLoto) {
             if (extras.getBoolean("isFromSalesReceipt")) {
-                BigDecimal tempVal1 = new BigDecimal(0);
-                BigDecimal tempVal2 = new BigDecimal(0);
-                BigDecimal tempVal3 = new BigDecimal(0);
-                for (OrderProduct product : global.order.getOrderProducts()) {
-                    if (product.getTaxes() != null && product.getTaxes().size() != 0) {
-                        for (int i = 0; i < product.getTaxes().size(); i++) {
-                            BigDecimal mTaxAmount = product.getTaxes().get(i).getTaxAmount();
-                            switch (i) {
-                                case 0:
-                                    tempVal1 = tempVal1.add(mTaxAmount);
-                                    break;
-                                case 1:
-                                    tempVal2 = tempVal2.add(mTaxAmount);
-                                    break;
-                                case 2:
-                                    tempVal3 = tempVal3.add(mTaxAmount);
-                                    break;
-                            }
-                        }
+                int counter = 0;
+                OrdersHandler orderHandler = new OrdersHandler(activity);
+                Order mOrder = orderHandler.getPrintedOrder(extras.getString("job_id"));
+                List<DataTaxes> taxesList = mOrder.getListOrderTaxes();
+                HashMap<String, String[]> arr = TaxesCalculator.getOrderTaxes(activity,taxesList, mOrder);
+                Iterator it = arr.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+                    if(counter==0) {
+                        taxName1 = pair.getValue()[0];
+                        taxAmnt1 = String.valueOf(pair.getValue()[1]);
+                    }else if(counter==1){
+                        taxName2 = pair.getValue()[0];
+                        taxAmnt2 = String.valueOf(pair.getValue()[1]);
                     }
+                    else {
+                        taxName3 = pair.getValue()[0];
+                        taxAmnt3 = String.valueOf(pair.getValue()[1]);
+                    }
+                    counter++;
+                    it.remove();
                 }
-                taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tempVal1.toString());
-                taxName1 = tax1Lbl.getText().toString();
-                taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tempVal2.toString());
-                taxName2 = tax2Lbl.getText().toString();
-                taxAmnt3 = NumberUtils.cleanCurrencyFormatedNumber(tempVal3.toString());
-                taxName3 = tax3Lbl.getText().toString();
             } else {
                 taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tax1);
                 taxName1 = tax1Lbl.getText().toString();
