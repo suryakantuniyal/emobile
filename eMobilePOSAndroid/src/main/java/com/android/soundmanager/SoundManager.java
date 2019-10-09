@@ -11,32 +11,42 @@ import java.util.HashMap;
 
 
 public class SoundManager {
-    Context mContext;
-    //    private SoundManager _instance;
-    private SoundPool mSoundPool;
-    private HashMap<Integer, Integer> mSoundPoolMap;
-    private AudioManager mAudioManager;
+    static Context mContext;
+    private static final SoundManager _instance;
+    private static SoundPool mSoundPool;
+    private static HashMap<Integer, Integer> mSoundPoolMap;
+    private static AudioManager mAudioManager;
 
+    static {
+        try {
+            _instance = new SoundManager();
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
     /**
      * Requests the instance of the Sound Manager and creates it if it does not
      * exist.
      *
      * @return Returns the single instance of the SoundManager
      */
-    static synchronized public SoundManager getInstance() {
-        return new SoundManager();
+    static public SoundManager getInstance(Context context) {
+        if(mContext == null) {
+            initSounds(context);
+            loadSounds();
+        }
+        return _instance;
     }
-
     /**
      * Initialises the storage for the sounds
      *
      * @param theContext The Application context
      */
-    public void initSounds(Context theContext) {
-        mContext = theContext;
-        mSoundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
-        mSoundPoolMap = new HashMap<>();
-        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+    private static void initSounds(Context theContext) {
+            mContext = theContext;
+            mSoundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
+            mSoundPoolMap = new HashMap<>();
+            mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
     }
 
     /**
@@ -53,7 +63,7 @@ public class SoundManager {
      * Loads the various sound assets Currently hardcoded but could easily be
      * changed to be flexible.
      */
-    public void loadSounds() {
+    private static void loadSounds() {
         mSoundPoolMap.put(1, mSoundPool.load(mContext, R.raw.beep, 1));
         mSoundPoolMap.put(2, mSoundPool.load(mContext, R.raw.buzz, 1));
     }

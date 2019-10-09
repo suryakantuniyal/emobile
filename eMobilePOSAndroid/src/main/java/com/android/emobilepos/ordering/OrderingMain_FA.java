@@ -466,7 +466,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         // using the StartActivity method let's handle the intent
         Intent i = getIntent();
         handleDecodeData(i);
-        soundManager = SoundManager.getInstance();
+        soundManager = SoundManager.getInstance(this);
         hasBeenCreated = true;
 
     }
@@ -863,8 +863,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onResume() {
-        soundManager.initSounds(this);
-        soundManager.loadSounds();
         buildOrderStarted = false;
         if ((myPref.isPollingHoldsEnable()
                 || myPref.isAutoSyncEnable())

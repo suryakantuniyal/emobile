@@ -470,9 +470,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             try {
                 DeviceManager deviceManager = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity);
                 com.elo.device.peripherals.CashDrawer cashDrawer = deviceManager.getCashDrawer();
-                if (cashDrawer.isOpen()) {
-                    Toast.makeText(activity, "The Cash Drawer is already open !", Toast.LENGTH_SHORT).show();
-                } else {
+                if (!cashDrawer.isOpen()) {
                     cashDrawer.open();
                 }
             } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
