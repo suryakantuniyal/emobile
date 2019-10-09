@@ -135,7 +135,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
         setUpCardReader();
         setUpIfModify();
-        soundManager = SoundManager.getInstance();
+        soundManager = SoundManager.getInstance(this);
 
         hasBeenCreated = true;
     }
@@ -163,11 +163,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 Crashlytics.logException(e);
             }
         }
-        if (mDecodeManager != null) {
-            soundManager.initSounds(this);
-            soundManager.loadSounds();
-        }
-
         super.onResume();
     }
 
