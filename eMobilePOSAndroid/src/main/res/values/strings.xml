@@ -906,7 +906,7 @@
     <string name="config_enable_multi_category">Mult. Categories Per Product</string>
     <string name="config_skip_email_phone">Skip e-Mail and Phone Prompt</string>
     <string name="config_show_only_group_taxes">Show Only Group Taxes</string>
-    <string name="config_retail_taxes">Retail Taxes</string>
+    <string name="config_retail_taxes">Item Based Taxes</string>
     <string name="config_require_customer">Require Customer</string>
     <string name="config_show_confirmation_screen">Show Confirmation Screen</string>
     <string name="config_ask_order_comments">Ask for order comments</string>

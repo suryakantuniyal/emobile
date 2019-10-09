@@ -897,7 +897,7 @@
     <string name="config_enable_multi_category">"Mult. Categorías por producto"</string>
     <string name="config_skip_email_phone">"Omitir correo electrónico y solicitud de teléfono"</string>
     <string name="config_show_only_group_taxes">"Mostrar sólo impuestos de grupo"</string>
-    <string name="config_retail_taxes">"Impuestos al por menor"</string>
+    <string name="config_retail_taxes">"Impuestos Basado en Productos"</string>
     <string name="config_require_customer">"Requerir Cliente"</string>
     <string name="config_show_confirmation_screen">"Mostrar pantalla de confirmación"</string>
     <string name="config_ask_order_comments">"Solicitar comentarios del pedido"</string>
