@@ -201,6 +201,11 @@ public class MyPreferences {
     private SharedPreferences sharedPref;
     private String defaultUnitsName;
     private String batchCloseTime;
+    // Gratuities
+    public static final String suggested_gratuity = "suggested_gratuity";
+    public static final String gratuity_one     = "gratuity_one";
+    public static final String gratuity_two     = "gratuity_two";
+    public static final String gratuity_three   = "gratuity_three";
 
     public MyPreferences(Context context) {
         this.context = context;
@@ -1601,5 +1606,29 @@ public class MyPreferences {
             return 15;
         else
             return Integer.parseInt(value);
+    }
+
+    public String getGratuityOne() {
+        return getPreferencesValue(gratuity_one);
+    }
+
+    public void setGratuityOne(String gratuity) {
+        setPreferencesValue(gratuity_one, gratuity);
+    }
+
+    public String getGratuityTwo() {
+        return getPreferencesValue(gratuity_two);
+    }
+
+    public void setGratuityTwo(String gratuity) {
+        setPreferencesValue(gratuity_two, gratuity);
+    }
+
+    public String getGratuityThree() {
+        return getPreferencesValue(gratuity_three);
+    }
+
+    public void setGratuityThree(String gratuity) {
+        setPreferencesValue(gratuity_three, gratuity);
     }
 }

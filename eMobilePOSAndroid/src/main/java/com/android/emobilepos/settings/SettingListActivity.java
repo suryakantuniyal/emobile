@@ -389,6 +389,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_bixolon_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_configure_ingenico_settings").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("gratuity_one").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("gratuity_two").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("gratuity_three").setOnPreferenceClickListener(this);
                     }
                     prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
@@ -796,6 +799,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
                     break;
+                case R.string.enter_gratuity_one:
+                    setGratuityOne();
+                    break;
+                case R.string.enter_gratuity_two:
+                    setGratuityTwo();
+                    break;
+                case R.string.enter_gratuity_three:
+                    setGratuityThree();
+                    break;
             }
             return false;
         }
@@ -900,6 +912,117 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     globalDlog.dismiss();
                     String value = viewField.getText().toString().trim();
                     myPref.setBatchCloseTime(value);
+                }
+            });
+            globalDlog.show();
+        }
+        private void setGratuityOne() {
+            final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            globalDlog.setCancelable(true);
+            globalDlog.setCanceledOnTouchOutside(true);
+            globalDlog.setContentView(R.layout.dlog_field_single_layout);
+
+            final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT);
+            if (!TextUtils.isEmpty(myPref.getGratuityOne())) {
+                viewField.setText(myPref.getGratuityOne());
+            }
+            TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewTitle.setText(R.string.enter_gratuity_one);
+            viewMsg.setVisibility(View.GONE);
+            Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    String value = viewField.getText().toString().trim();
+                    myPref.setGratuityOne(value);
+                }
+            });
+            globalDlog.show();
+        }
+        private void setGratuityTwo() {
+            final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            globalDlog.setCancelable(true);
+            globalDlog.setCanceledOnTouchOutside(true);
+            globalDlog.setContentView(R.layout.dlog_field_single_layout);
+
+            final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT);
+            if (!TextUtils.isEmpty(myPref.getGratuityTwo())) {
+                viewField.setText(myPref.getGratuityTwo());
+            }
+            TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewTitle.setText(R.string.enter_gratuity_two);
+            viewMsg.setVisibility(View.GONE);
+            Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    String value = viewField.getText().toString().trim();
+                    myPref.setGratuityTwo(value);
+                }
+            });
+            globalDlog.show();
+        }
+        private void setGratuityThree() {
+            final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            globalDlog.setCancelable(true);
+            globalDlog.setCanceledOnTouchOutside(true);
+            globalDlog.setContentView(R.layout.dlog_field_single_layout);
+
+            final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT);
+            if (!TextUtils.isEmpty(myPref.getGratuityThree())) {
+                viewField.setText(myPref.getGratuityThree());
+            }
+            TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewTitle.setText(R.string.enter_gratuity_three);
+            viewMsg.setVisibility(View.GONE);
+            Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    String value = viewField.getText().toString().trim();
+                    myPref.setGratuityThree(value);
                 }
             });
             globalDlog.show();

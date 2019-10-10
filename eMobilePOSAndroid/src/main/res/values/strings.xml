@@ -1230,6 +1230,9 @@
     <string name="config_units_name">Default unit name</string>
     <string name="enter_default_units_name">Enter default unit name</string>
     <string name="enter_batch_close_hour">Enter batch close hour</string>
+    <string name="enter_gratuity_one">Gratuity One</string>
+    <string name="enter_gratuity_two">Gratuity Two</string>
+    <string name="enter_gratuity_three">Gratuity Three</string>
     <string name="default_unit_name_format">%s Management</string>
     <string name="receipt_point_used">Points Used:</string>
     <string name="receipt_reward_balance">Reward Balance:</string>
@@ -1440,6 +1443,7 @@
     <string name="activationKey" translatable="false">Activation Key</string>
     <string name="startRestore" translatable="false">Start Restore</string>
     <string name="config_print_raster_mode">Print Raster Mode</string>
+    <string name="config_print_set_suggested_gratuity">Print Suggested Gratuity</string>
     <string name="sync_sending_signatures">Sending payment signatures</string>
     <string name="gift_balance">Gift Balance:</string>
     <string name="backup_data_fail">Cloud Backup data has fail</string>
