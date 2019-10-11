@@ -147,8 +147,6 @@ public class Receipt {
 
     public void setGratuityTitle(String gratuityTitle) { this.gratuityTitle = gratuityTitle; }
 
-    public String getGratuity() { return gratuity; }
-
     public void setGratuity(String gratuity) { this.gratuity = gratuity; }
 
     public String getPaymentsDetails() {
