@@ -67,6 +67,7 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
+        soundManager = SoundManager.getInstance(activity);
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         encrypt = new Encrypt(activity);

@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
@@ -307,7 +308,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             case R.id.printReceiptbutton2: {
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.getCurrentDevice() != null) {
-                    new PrintPreview().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, restaurantSplitedOrder);
+                    EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+                    if(emsDeviceManager!= null) {
+                        new PrintPreview().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, restaurantSplitedOrder);
+                    }else {
+                        Toast.makeText(v.getContext(),R.string.check_printer_config,Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
             }
@@ -542,11 +548,21 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
         @Override
         protected Void doInBackground(SplittedOrder... params) {
-            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
-            for (SplittedOrder order : params) {
-                emsDeviceManager.getCurrentDevice().printReceiptPreview(order);
+            try {
+                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+                if(emsDeviceManager != null
+                        && emsDeviceManager.getCurrentDevice() != null ) {
+                    for (SplittedOrder order : params) {
+                        emsDeviceManager.getCurrentDevice().printReceiptPreview(order);
+                    }
+                }else{
+                    System.out.println("Printer not available");
+                }
+            }catch (Exception x){
+                x.printStackTrace();
+            }finally {
+                return null;
             }
-            return null;
         }
 
         @Override

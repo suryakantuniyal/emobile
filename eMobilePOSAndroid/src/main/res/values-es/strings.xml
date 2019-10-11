@@ -957,9 +957,10 @@
     <string name="config_redetect_peripherals">"Volver a detectar los periféricos"</string>
     <string name="config_delete_saved_peripherals">"Eliminar los periféricos guardados"</string>
     <string name="suggested_gratuity_title">"Propinas Sugeridas"</string>
-    <string name="enter_gratuity_one">"Primera Propina"</string>
-    <string name="enter_gratuity_two">"Segunda Propina"</string>
-    <string name="enter_gratuity_three">"Tercera Propina"</string>
+    <string name="enter_gratuity_one">"Coloque Porciento Primera Propina"</string>
+    <string name="enter_gratuity_two">"Coloque Porciento Segunda Propina"</string>
+    <string name="enter_gratuity_three">"Coloque Porciento Tercera Propina"</string>
+    <string name="check_printer_config">"Por favor, verifique la configuración de la impresora"</string>
     <string name="config_print_set_suggested_gratuity">Imprimir Propina Sugerida</string>
     <string name="config_wholesale_printout">"Impresión al por mayor"</string>
     <string name="config_prompt_customer_copy">"Solicitar copia de recibo de impresión para los pagos de CC"</string>
