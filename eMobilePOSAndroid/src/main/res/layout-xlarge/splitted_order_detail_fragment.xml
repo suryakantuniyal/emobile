@@ -311,6 +311,82 @@
                     android:textColor="#000"
                     android:textStyle="normal" />
             </LinearLayout>
+            <!-- Gratuity title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/gratuityTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/suggested_gratuity_title"
+                    android:textColor="#000"
+                    android:textStyle="normal"
+                    android:visibility="gone" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+                <!-- gratuity one -->
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/gratuityOneLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/gratuityOneTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+                <!-- gratuity two -->
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/gratuityTwoLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/gratuityTwoTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+                <!-- gratuity three -->
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/gratuityThreeLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/gratuityThreeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

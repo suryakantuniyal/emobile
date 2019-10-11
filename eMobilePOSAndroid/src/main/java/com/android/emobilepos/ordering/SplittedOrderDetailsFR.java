@@ -63,6 +63,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private TextView lineItemDiscountTotal;
     private TextView taxTotal;
     private TextView granTotal;
+    private TextView gratuityTitle;
+    private TextView gratuityOneLabel;
+    private TextView gratuityTwoLabel;
+    private TextView gratuityThreeLabel;
     private LinearLayout productAddonsSection;
     private LinearLayout orderProductSection;
     private LayoutInflater inflater;
@@ -112,6 +116,11 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         globalDiscountTextView = getActivity().findViewById(R.id.globaldiscounttextView);
         taxTotal = getActivity().findViewById(R.id.taxtotaltextView14a);
         granTotal = view.findViewById(R.id.granTotaltextView16);
+        gratuityTitle       = view.findViewById(R.id.gratuityTitle);
+        gratuityOneLabel    = view.findViewById(R.id.gratuityOneLabel);
+        gratuityTwoLabel    = view.findViewById(R.id.gratuityTwoLabel);
+        gratuityThreeLabel  = view.findViewById(R.id.gratuityThreeLabel);
+
         TextView footer1 = getActivity().findViewById(R.id.footerLine1textView);
         TextView footer2 = getActivity().findViewById(R.id.footerLine2textView);
         TextView footer3 = getActivity().findViewById(R.id.footerLine3textView);
@@ -151,7 +160,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             footer3.setVisibility(View.GONE);
         }
     }
-
+    private BigDecimal getGratuity(BigDecimal gratuity,BigDecimal subTotal){
+        BigDecimal oneHundred = new BigDecimal(100);
+        return subTotal.multiply((gratuity.divide(oneHundred).setScale(2,BigDecimal.ROUND_DOWN))).setScale(2, BigDecimal.ROUND_DOWN);
+    }
     private void addProductLine(String leftString, String rightString, int indentedTabs) {
         LinearLayout itemLL;
         switch (indentedTabs) {
@@ -272,6 +284,15 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         lineItemDiscountTotal.setText(Global.formatDoubleToCurrency(Double.parseDouble(splitedOrder.ord_lineItemDiscount)));
         taxTotal.setText(Global.formatDoubleToCurrency(Double.parseDouble(splitedOrder.ord_taxamount)));
         granTotal.setText(Global.formatDoubleToCurrency(Double.parseDouble(splitedOrder.gran_total)));
+       if(myPref.isGratuitySelected()) {
+           // Gratuities
+           gratuityTitle.setVisibility(View.VISIBLE);
+           gratuityOneLabel.setText(myPref.getGratuityOne() + "%:$" + getGratuity(new BigDecimal(myPref.getGratuityOne()), new BigDecimal(splitedOrder.ord_subtotal)));
+           gratuityTwoLabel.setText(myPref.getGratuityTwo() + "%:$" + getGratuity(new BigDecimal(myPref.getGratuityTwo()), new BigDecimal(splitedOrder.ord_subtotal)));
+           gratuityThreeLabel.setText(myPref.getGratuityThree() + "%:$" + getGratuity(new BigDecimal(myPref.getGratuityThree()), new BigDecimal(splitedOrder.ord_subtotal)));
+       }
+
+
         orderId.setText(splitedOrder.ord_id);
         globalDiscountTextView.setText(Global.formatDoubleToCurrency(Double.parseDouble(splitedOrder.ord_discount)));
     }
