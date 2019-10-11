@@ -18,6 +18,7 @@ import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.android.soundmanager.SoundManager;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -49,9 +50,11 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
     private Handler m_scraHandler;
     private EMSCallBack scannerCallBack;
     private MTSCRA m_scra;
+    private SoundManager soundManager;
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+        soundManager = SoundManager.getInstance(activity);
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         encrypt = new Encrypt(activity);
@@ -142,8 +145,7 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
     @Override
     public void playSound() {
         try {
-            MediaPlayer mPlayer = MediaPlayer.create(activity, R.raw.beep);
-            mPlayer.start();
+            soundManager.playSound(1,1);
         } catch (Exception e) {
             e.printStackTrace();
         }
