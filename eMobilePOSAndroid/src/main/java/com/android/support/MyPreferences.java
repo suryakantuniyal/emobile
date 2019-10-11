@@ -1608,9 +1608,7 @@ public class MyPreferences {
             return Integer.parseInt(value);
     }
 
-    public String getGratuityOne() {
-        return getPreferencesValue(gratuity_one);
-    }
+    public String getGratuityOne() { return getPreferencesValue(gratuity_one);    }
 
     public void setGratuityOne(String gratuity) {
         setPreferencesValue(gratuity_one, gratuity);
@@ -1630,5 +1628,9 @@ public class MyPreferences {
 
     public void setGratuityThree(String gratuity) {
         setPreferencesValue(gratuity_three, gratuity);
+    }
+
+    public boolean isGratuitySelected(){
+        return getPreferences(suggested_gratuity) ;
     }
 }

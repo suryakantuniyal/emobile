@@ -956,6 +956,7 @@
     <string name="config_configure_ingenico_settings">"Configuración de Ingenico"</string>
     <string name="config_redetect_peripherals">"Volver a detectar los periféricos"</string>
     <string name="config_delete_saved_peripherals">"Eliminar los periféricos guardados"</string>
+    <string name="suggested_gratuity_title">"Propinas Sugeridas"</string>
     <string name="enter_gratuity_one">"Primera Propina"</string>
     <string name="enter_gratuity_two">"Segunda Propina"</string>
     <string name="enter_gratuity_three">"Tercera Propina"</string>

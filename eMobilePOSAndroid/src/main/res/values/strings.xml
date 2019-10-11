@@ -1230,6 +1230,7 @@
     <string name="config_units_name">Default unit name</string>
     <string name="enter_default_units_name">Enter default unit name</string>
     <string name="enter_batch_close_hour">Enter batch close hour</string>
+    <string name="suggested_gratuity_title">Suggested Gratuity</string>
     <string name="enter_gratuity_one">Gratuity One</string>
     <string name="enter_gratuity_two">Gratuity Two</string>
     <string name="enter_gratuity_three">Gratuity Three</string>

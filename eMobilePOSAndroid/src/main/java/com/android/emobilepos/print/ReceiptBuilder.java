@@ -469,6 +469,22 @@ public class ReceiptBuilder {
             sb.append(textHandler.newLines(1));
 
             receipt.setGrandTotal(sb.toString());
+            receipt.setSubTotal(new BigDecimal(order.ord_subtotal));
+            sb.setLength(0);
+
+            receipt.setGratuityTitle(context.getString(R.string.suggested_gratuity_title));
+
+            EMSPlainTextHelper emsPlainTextHelper = new EMSPlainTextHelper();
+            if(myPref.getGratuityOne() != null && !myPref.getGratuityOne().trim().equals(""))
+                sb.append(emsPlainTextHelper.centeredString(myPref.getGratuityOne()+"%:",lineWidth));
+
+            if(myPref.getGratuityTwo() != null && !myPref.getGratuityTwo().trim().equals(""))
+                sb.append(emsPlainTextHelper.centeredString(myPref.getGratuityTwo(),lineWidth));
+
+            if(myPref.getGratuityThree() != null && !myPref.getGratuityThree().trim().equals(""))
+                sb.append(emsPlainTextHelper.centeredString(myPref.getGratuityThree(),lineWidth));
+
+            receipt.setGratuity(sb.toString());
             sb.setLength(0);
 
             PaymentsHandler payHandler = new PaymentsHandler(context);
@@ -798,6 +814,8 @@ public class ReceiptBuilder {
 
             receipt.setGrandTotal(sb.toString());
             sb.setLength(0);
+            receipt.setSubTotal(Global.getBigDecimalNum(
+                    splitedOrder.ord_subtotal));
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_tip),
                     textHandler.newDivider('_', lineWidth / 2),
@@ -1285,6 +1303,7 @@ public class ReceiptBuilder {
             double ordTotal = 0, totalSold = 0, totalReturned = 0,
                     totalDispached = 0, totalLines = 0, returnAmount,
                     subtotalAmount;
+            subtotalAmount = 0;
 
             receipt.setMerchantLogo(getMerchantLogo());
 
@@ -1360,7 +1379,7 @@ public class ReceiptBuilder {
                     sb.setLength(0);
                 }
             }
-
+            receipt.setSubTotal(new BigDecimal(subtotalAmount));
             sb.append(textHandler.lines(lineWidth));
             sb.append(textHandler.newLines(2));
             receipt.setSeparator(sb.toString());
@@ -1385,6 +1404,7 @@ public class ReceiptBuilder {
 
             receipt.setGrandTotal(sb.toString());
             sb.setLength(0);
+            receipt.setSubTotal(new BigDecimal(subtotalAmount));
 
             if (!TextUtils.isEmpty(encodedSig)) {
                 byte[] img = Base64.decode(encodedSig, Base64.DEFAULT);
@@ -1637,6 +1657,7 @@ public class ReceiptBuilder {
 
                 receipt.setGrandTotal(sb.toString());
                 sb.setLength(0);
+//                receipt.setSubTotal(new BigDecimal(subtotalAmount));
             }
 
             String encodedSig = map.get("encoded_signature");

@@ -2,6 +2,7 @@ package com.android.emobilepos.models;
 
 import android.graphics.Bitmap;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +21,11 @@ public class Receipt {
     private String separator;
     private String totals;
     private String taxes;
+    private BigDecimal subTotal;
     private String totalItems;
     private String grandTotal;
+    private String gratuityTitle;
+    private String gratuity;
     private String paymentsDetails;
     private String youSave;
     private String ivuLoto;
@@ -139,6 +143,14 @@ public class Receipt {
         this.grandTotal = grandTotal;
     }
 
+    public String getGratuityTitle() { return gratuityTitle; }
+
+    public void setGratuityTitle(String gratuityTitle) { this.gratuityTitle = gratuityTitle; }
+
+    public String getGratuity() { return gratuity; }
+
+    public void setGratuity(String gratuity) { this.gratuity = gratuity; }
+
     public String getPaymentsDetails() {
         return paymentsDetails;
     }
@@ -225,5 +237,13 @@ public class Receipt {
 
     public void setEnablerWebsite(String eNablerWebsite) {
         this.eNablerWebsite = eNablerWebsite;
+    }
+
+    public BigDecimal getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(BigDecimal subTotal) {
+        this.subTotal = subTotal;
     }
 }
