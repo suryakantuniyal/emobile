@@ -317,6 +317,8 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             builder.append((receipt.getTotalItems()).getBytes(encoding));
         if (receipt.getGrandTotal() != null)
             builder.appendMultipleWidth((receipt.getGrandTotal()).getBytes(encoding), 2);
+        if (receipt.getPaymentsDetails() != null)
+            builder.append((receipt.getPaymentsDetails()).getBytes(encoding));
         // Gratuities line
         if (myPref.isGratuitySelected() && myPref.getGratuityOne() != null
                 && myPref.getGratuityTwo() != null
@@ -339,8 +341,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
             builder.append(line.getBytes(encoding));
         }
-        if (receipt.getPaymentsDetails() != null)
-            builder.append((receipt.getPaymentsDetails()).getBytes(encoding));
         if (receipt.getYouSave() != null)
             builder.append((receipt.getYouSave()).getBytes(encoding));
         if (receipt.getIvuLoto() != null)
@@ -477,40 +477,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
                     receipt.getGrandTotal(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
             builder.appendBitmap(bitmapFromText, false);
         }
-        // Gratuities line
-        if (myPref.isGratuitySelected() && myPref.getGratuityOne() != null
-            && myPref.getGratuityTwo() != null
-            && myPref.getGratuityThree() != null) {
-            // Gratuity title
-            EMSPlainTextHelper emsPlainTextHelper = new EMSPlainTextHelper();
-            String title = getString(R.string.suggested_gratuity_title);
-            title = emsPlainTextHelper.centeredString(title,LINE_WIDTH);
-            if (title != null) {
-                bitmapFromText = BitmapUtils.createBitmapFromText(
-                        title, FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
-                builder.appendBitmap(bitmapFromText, false);
-            }
-            String line = "" ;
-            line = myPref.getGratuityOne()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityOne()),receipt.getSubTotal()));
-            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
-            bitmapFromText = BitmapUtils.createBitmapFromText(
-                    line, FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
-            builder.appendBitmap(bitmapFromText, false);
-            line = myPref.getGratuityTwo()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityTwo()),receipt.getSubTotal()));
-            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
-            bitmapFromText = BitmapUtils.createBitmapFromText(
-                    line, FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
-            builder.appendBitmap(bitmapFromText, false);
-            line = myPref.getGratuityThree()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityThree()),receipt.getSubTotal()));
-            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
-            bitmapFromText = BitmapUtils.createBitmapFromText(
-                    line, FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
-            builder.appendBitmap(bitmapFromText, false);
-            bitmapFromText = BitmapUtils.createBitmapFromText(
-                    "", FONT_SIZE_NORMAL, LINE_WIDTH, typefaceBold);
-            builder.appendBitmap(bitmapFromText, false);
-        }
-
         if (receipt.getPaymentsDetails() != null) {
             bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getPaymentsDetails(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
@@ -570,7 +536,39 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
                     receipt.getTermsAndConditions(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceNormal);
             builder.appendBitmap(bitmapFromText, false);
         }
-
+        // Gratuities line
+        if (myPref.isGratuitySelected() && myPref.getGratuityOne() != null
+                && myPref.getGratuityTwo() != null
+                && myPref.getGratuityThree() != null) {
+            // Gratuity title
+            EMSPlainTextHelper emsPlainTextHelper = new EMSPlainTextHelper();
+            String title = getString(R.string.suggested_gratuity_title);
+            title = emsPlainTextHelper.centeredString(title,LINE_WIDTH);
+            if (title != null) {
+                bitmapFromText = BitmapUtils.createBitmapFromText(
+                        title, FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+                builder.appendBitmap(bitmapFromText, false);
+            }
+            String line = "" ;
+            line = myPref.getGratuityOne()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityOne()),receipt.getSubTotal()));
+            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    line, FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+            builder.appendBitmap(bitmapFromText, false);
+            line = myPref.getGratuityTwo()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityTwo()),receipt.getSubTotal()));
+            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    line, FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+            builder.appendBitmap(bitmapFromText, false);
+            line = myPref.getGratuityThree()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityThree()),receipt.getSubTotal()));
+            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    line, FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);
+            builder.appendBitmap(bitmapFromText, false);
+            bitmapFromText = BitmapUtils.createBitmapFromText(
+                    "", FONT_SIZE_NORMAL, LINE_WIDTH, typefaceBold);
+            builder.appendBitmap(bitmapFromText, false);
+        }
         if (receipt.getEnablerWebsite() != null) {
             bitmapFromText = BitmapUtils.createBitmapFromText(
                     receipt.getEnablerWebsite(), FONT_SIZE_NORMAL, PAPER_WIDTH, typefaceBold);

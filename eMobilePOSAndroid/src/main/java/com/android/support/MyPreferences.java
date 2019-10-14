@@ -1608,26 +1608,36 @@ public class MyPreferences {
             return Integer.parseInt(value);
     }
 
-    public String getGratuityOne() { return getPreferencesValue(gratuity_one);    }
+    public String getGratuityOne() { return cleanGratuity(getPreferencesValue(gratuity_one));    }
 
+    private String cleanGratuity(String gratuity){
+        double gratResult;
+        try{
+            gratResult = Double.parseDouble(gratuity);
+        }catch (Exception x){
+            gratResult = 0;
+        }
+        return new Double(gratResult).toString();
+    }
     public void setGratuityOne(String gratuity) {
-        setPreferencesValue(gratuity_one, gratuity);
+
+        setPreferencesValue(gratuity_one, cleanGratuity(gratuity));
     }
 
     public String getGratuityTwo() {
-        return getPreferencesValue(gratuity_two);
+        return cleanGratuity( getPreferencesValue(gratuity_two));
     }
 
     public void setGratuityTwo(String gratuity) {
-        setPreferencesValue(gratuity_two, gratuity);
+        setPreferencesValue(gratuity_two, cleanGratuity(gratuity));
     }
 
     public String getGratuityThree() {
-        return getPreferencesValue(gratuity_three);
+        return cleanGratuity(getPreferencesValue(gratuity_three));
     }
 
     public void setGratuityThree(String gratuity) {
-        setPreferencesValue(gratuity_three, gratuity);
+        setPreferencesValue(gratuity_three, cleanGratuity(gratuity));
     }
 
     public boolean isGratuitySelected(){
