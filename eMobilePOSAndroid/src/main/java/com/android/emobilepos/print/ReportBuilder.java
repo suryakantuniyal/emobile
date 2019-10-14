@@ -15,6 +15,7 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Report;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.orders.SalesByClerk;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Payment;
@@ -657,14 +658,14 @@ public class ReportBuilder {
             String endDate = DateUtils.getDateAsString(
                     shift.getEndTime(), "yyyy-MM-dd HH:mm");
 
-            List<OrderProduct> listDeptSalesByClerk = orderProductsHandler
-                    .getDepartmentShiftReportByClerk(true, null, startDate, endDate);
+            List<SalesByClerk> listDeptSalesByClerk = orderProductsHandler
+                    .getSalesShiftReportByClerk(true, null, startDate, endDate);
             sb.append(textHandler.centeredString(
                     context.getString(R.string.eod_report_sales_by_clerk), lineWidth));
-            for (OrderProduct product : listDeptSalesByClerk) {
+            for (SalesByClerk salesByClerk : listDeptSalesByClerk) {
                 String clerkName = "";
-                if (!product.getCat_id().isEmpty()) {
-                    Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(product.getCat_id()));
+                if (!salesByClerk.getClerkId().isEmpty()) {
+                    Clerk reportClerk = ClerkDAO.getByEmpId(Integer.parseInt(salesByClerk.getClerkId()));
                     if (reportClerk != null) {
                         clerkName = String.format(
                                 "%s (%s)", reportClerk.getEmpName(), reportClerk.getEmpId());
@@ -675,9 +676,9 @@ public class ReportBuilder {
                 sb.append(
                         textHandler.threeColumnLineItem(clerkName, // clerk name
                                 60,
-                                product.getOrdprod_qty(), // total orders
+                                salesByClerk.getOrdProdQuantity(), // total orders
                                 20,
-                                Global.getCurrencyFormat(product.getFinalPrice()), // total
+                                Global.getCurrencyFormat(salesByClerk.getOverwritePrice()), // total
                                 20, lineWidth, 0));
             }
             sb.append(textHandler.newLines(3));

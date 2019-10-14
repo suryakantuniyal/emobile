@@ -11,6 +11,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.orders.SalesByClerk;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -752,27 +753,23 @@ public class OrderProductsHandler {
         }
     }
 
-    public List<OrderProduct> getDepartmentShiftReportByClerk(boolean isSales, String clerk_id,
-                                                              String startDate, String endDate) {
+    public List<SalesByClerk> getSalesShiftReportByClerk(boolean isSales, String clerk_id,
+                                                         String startDate, String endDate) {
         Cursor c = null;
         try {
             StringBuilder query = new StringBuilder();
-            List<OrderProduct> listOrdProd = new ArrayList<>();
+            List<SalesByClerk> salesByClerkList = new ArrayList<SalesByClerk>();
 
             String sqlDateFunction = "date";
             if (endDate != null) sqlDateFunction = "datetime";
 
             query.append(
-                    "SELECT o.clerk_id as 'cat_id', count(DISTINCT o.ord_id) AS 'ordprod_qty', " +
-                            "sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
-                            "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty END) AS 'overwrite_price', ");
+                    "SELECT o.clerk_id, count(o.ord_id) AS 'ordprod_qty', \n" +
+                            "sum(o.ord_subtotal) as 'overwrite_price', ");
             query.append(sqlDateFunction);
             query.append("(o.ord_timecreated) as 'date'" +
-                    "FROM " + table_name + " op ");
-            query.append(
-                    "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
-                            "LEFT JOIN Orders o ON op.ord_id = o.ord_id " +
-                            "WHERE o.isVoid = '0' AND processed != '10' AND o.ord_type IN ");
+                    " FROM Orders o ");
+            query.append(" WHERE o.isVoid = '0' AND processed != '10' AND o.ord_type IN ");
 
             if (isSales)
                 query.append("('2','5') ");
@@ -803,22 +800,23 @@ public class OrderProductsHandler {
             c = DBManager.getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));
 
             if (c.moveToFirst()) {
-                int i_cat_id = c.getColumnIndex(cat_id); // clerk_id
+                int clerkId = c.getColumnIndex("o.clerk_id");
                 int i_ordprod_qty = c.getColumnIndex(ordprod_qty); // total items
                 int i_overwrite_price = c.getColumnIndex(overwrite_price); // total
 
                 do {
-                    OrderProduct ordProd = new OrderProduct();
-                    ordProd.setCat_id(c.getString(i_cat_id)); // clerk_id
-                    ordProd.setOverwrite_price(c.getString(i_overwrite_price) == null
-                            ? null : new BigDecimal(c.getString(i_overwrite_price)));
-                    ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
-                    listOrdProd.add(ordProd);
+                    SalesByClerk salesByClerk = new SalesByClerk();;
+                    salesByClerk.setClerkId(c.getString(clerkId));
+                    salesByClerk.setOrdProdQuantity(c.getString(i_ordprod_qty));
+                    salesByClerk.setOverwritePrice(c.getString(i_overwrite_price) == null
+                            ? null : c.getString(i_overwrite_price));
+                    salesByClerkList.add(salesByClerk);
+
                 } while (c.moveToNext());
             }
 
             c.close();
-            return listOrdProd;
+            return salesByClerkList;
         } finally {
             if (c != null && !c.isClosed()) {
                 c.close();
