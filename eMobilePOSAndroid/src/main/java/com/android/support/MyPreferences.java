@@ -267,19 +267,21 @@ public class MyPreferences {
     }
 
     public String getPaymentDevice(){
-        return prefs.getString(pref_payment_device, null);
+        return getPreferencesValue(pref_payment_device);
     }
 
     public void setPaymentDevice(String device){
+        setPreferencesValue(pref_payment_device,device);
         prefEditor.putString(pref_payment_device, device);
         prefEditor.commit();
     }
 
     public String getPaymentDeviceIP(){
-        return prefs.getString(pref_payment_device_ip, null);
+        return getPreferencesValue(pref_payment_device_ip);
     }
 
     public void setPaymentDeviceIP(String ip){
+        setPreferencesValue(pref_payment_device_ip,ip);
         prefEditor.putString(pref_payment_device_ip, ip);
         prefEditor.commit();
     }
