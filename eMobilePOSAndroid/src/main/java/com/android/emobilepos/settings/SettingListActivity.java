@@ -370,7 +370,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                             return checkPaxDevices(newValue);
                         }
                     });
-
+                    if(((CheckBoxPreference)prefManager.findPreference("pref_use_pax")).isChecked() &&
+                            !myPref.getPaymentDevice().isEmpty() &&
+                            myPref.getPaymentDevice() != null){
+                        prefManager.findPreference("pref_use_pax_device_list").setEnabled(true);
+                    }else{
+                        prefManager.findPreference("pref_use_pax_device_list").setEnabled(false);
+                    }
                     break;
                 case PAYMENT_PROCESSING:
                     if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
