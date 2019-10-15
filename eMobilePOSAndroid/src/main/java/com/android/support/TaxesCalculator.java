@@ -87,12 +87,6 @@ public class TaxesCalculator {
                     }
                 }
             }
-            Iterator it = prodTaxes.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
-
-                it.remove();
-            }
         } else {
             if (taxes != null) {
                 for (DataTaxes tax : taxes) {
