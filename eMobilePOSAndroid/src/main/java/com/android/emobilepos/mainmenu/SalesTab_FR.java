@@ -134,7 +134,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         }
     };
     private POSLinkScanner posLinkScanner;
-    public EditText invisibleSearchMain;
 
     public static void checkAutoLogout(Activity activity) {
         MyPreferences myPref = new MyPreferences(activity);
@@ -205,10 +204,10 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         selectedCust = view.findViewById(R.id.salesCustomerName);
         salesInvoices = view.findViewById(R.id.invoiceButton);
         hiddenField = view.findViewById(R.id.hiddenField);
-        hiddenField.addTextChangedListener(textWatcher());
-        invisibleSearchMain = view.findViewById(R.id.invisibleSearchMain);
-        if(invisibleSearchMain != null)
-            invisibleSearchMain.addTextChangedListener(textWatcher());
+        if(hiddenField != null){
+            hiddenField.addTextChangedListener(textWatcher());
+            hiddenField.requestFocus();
+        }
 
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(getActivity());
         isReaderConnected = usbDevices != null && usbDevices.size() > 0;
@@ -280,7 +279,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         }
 
         // start scanner
-        invisibleSearchMain.setText("");
         if (posLinkScanner == null) {
             paxScanError("Error Starting Scanner.");
             return;
@@ -288,7 +286,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         posLinkScanner.start(new POSLinkScanner.ScannerListener() {
             @Override
             public void onRead(String s) {
-                invisibleSearchMain.setText(String.format("%s\n", s));
+                hiddenField.setText(String.format("%s\n", s));
             }
 
             @Override
