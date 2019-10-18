@@ -22,10 +22,12 @@ import com.google.gson.Gson;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import plaintext.EMSPlainTextHelper;
 import util.json.JsonUtils;
 
 public class Order implements Cloneable, Serializable {
@@ -91,6 +93,8 @@ public class Order implements Cloneable, Serializable {
     private List<DataTaxes> listOrderTaxes;
     private List<OrderProduct> orderProducts = new ArrayList<>();
     private boolean retailTaxes;
+    private BigDecimal subTotal = new BigDecimal(0);
+
 
     public Order() {
         ord_issync = "0";
@@ -434,5 +438,55 @@ public class Order implements Cloneable, Serializable {
             }
             return count;
         }
+    }
+    public BigDecimal getSubTotal() {
+        BigDecimal itemDiscTotal = new BigDecimal(0);
+        try{
+            if(orderProducts != null) {
+                for (OrderProduct orderProduct : orderProducts) {
+                    itemDiscTotal = itemDiscTotal.add(Global.getBigDecimalNum(orderProduct.getDiscount_value()));
+                }
+            }
+        }catch (Exception x){
+            x.printStackTrace();
+        }
+        subTotal = Global.getBigDecimalNum(this.ord_subtotal).add(itemDiscTotal);
+        return subTotal;
+    }
+    public String getGratuityLines(String gratuityTitle,String gratuityOne,String gratuityTwo,String gratuityThree,
+                                   int lineWidth){
+        return getGratuityLines(gratuityTitle, gratuityOne, gratuityTwo, gratuityThree, lineWidth,null);
+    }
+    public String getGratuityLines(String gratuityTitle,String gratuityOne,String gratuityTwo,String gratuityThree,
+                                    int lineWidth,Charset encoding){
+        this.subTotal = getSubTotal();
+        StringBuilder sb = new StringBuilder("");
+        if(encoding == null) {
+            encoding = Charset.forName("UTF-8");
+        }
+        // Gratuity title
+        EMSPlainTextHelper emsPlainTextHelper = new EMSPlainTextHelper();
+        if(subTotal!= null) {
+            String title = gratuityTitle;
+            title = emsPlainTextHelper.centeredString(title,lineWidth);
+            if (title != null) {
+                sb.append(title);
+            }
+            String line = "";
+            line = gratuityOne + "%:$" + (getGratuity(new BigDecimal(gratuityOne),subTotal));
+            line = emsPlainTextHelper.centeredString(line, lineWidth);
+            sb.append(line);
+            line = gratuityTwo + "%:$" + (getGratuity(new BigDecimal(gratuityTwo),subTotal));
+            line = emsPlainTextHelper.centeredString(line, lineWidth);
+            sb.append(line);
+            line = gratuityThree + "%:$" + (getGratuity(new BigDecimal(gratuityThree),subTotal));
+            line = emsPlainTextHelper.centeredString(line, lineWidth);
+            sb.append(line);
+        }
+        return sb.toString();
+    }
+    private BigDecimal getGratuity(BigDecimal gratuity, BigDecimal subTotal){
+        BigDecimal oneHundred = new BigDecimal(100);
+        return subTotal.multiply((gratuity.divide(oneHundred).setScale(2,BigDecimal.ROUND_DOWN))).setScale(2, BigDecimal.ROUND_DOWN);
     }
 }

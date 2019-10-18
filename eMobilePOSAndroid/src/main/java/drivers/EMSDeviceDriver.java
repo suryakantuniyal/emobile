@@ -96,6 +96,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1389,6 +1390,20 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.getCurrencyFormat(granTotal), lineWidth, 0));
             sb.append("\n");
+            // Gratuities line
+            if (myPref.isGratuitySelected() && myPref.getGratuityOne() != null
+                    && myPref.getGratuityTwo() != null
+                    && myPref.getGratuityThree() != null) {
+                String title = getString(R.string.suggested_gratuity_title);
+                String gratuityLine = anOrder.getGratuityLines(title,
+                        myPref.getGratuityOne(),
+                        myPref.getGratuityTwo(),
+                        myPref.getGratuityThree(),
+                        lineWidth);
+                print(gratuityLine, FORMAT);
+                sb.setLength(0);
+            }
+            // End of gratuity
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(anOrder.ord_id);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {

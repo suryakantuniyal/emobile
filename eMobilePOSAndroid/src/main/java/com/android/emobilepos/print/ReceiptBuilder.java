@@ -472,8 +472,6 @@ public class ReceiptBuilder {
             receipt.setSubTotal(new BigDecimal(order.ord_subtotal));
             sb.setLength(0);
 
-            receipt.setGratuityTitle(context.getString(R.string.suggested_gratuity_title));
-
             EMSPlainTextHelper emsPlainTextHelper = new EMSPlainTextHelper();
             if(myPref.getGratuityOne() != null && !myPref.getGratuityOne().trim().equals(""))
                 sb.append(emsPlainTextHelper.centeredString(myPref.getGratuityOne()+"%:",lineWidth));

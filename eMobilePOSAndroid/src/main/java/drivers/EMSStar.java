@@ -325,21 +325,24 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
                 && myPref.getGratuityThree() != null) {
             // Gratuity title
             EMSPlainTextHelper emsPlainTextHelper = new EMSPlainTextHelper();
-            String title = getString(R.string.suggested_gratuity_title);
-            title = emsPlainTextHelper.centeredString(title,LINE_WIDTH);
-            if (title != null) {
-                builder.append(title.getBytes(encoding));
+
+            if(receipt.getSubTotal()!= null) {
+                String title = getString(R.string.suggested_gratuity_title);
+                title = emsPlainTextHelper.centeredString(title,LINE_WIDTH);
+                if (title != null) {
+                    builder.append(title.getBytes(encoding));
+                }
+                String line = "";
+                line = myPref.getGratuityOne() + "%:$" + (getGratuity(new BigDecimal(myPref.getGratuityOne()),receipt.getSubTotal()));
+                line = emsPlainTextHelper.centeredString(line, LINE_WIDTH);
+                builder.append(line.getBytes(encoding));
+                line = myPref.getGratuityTwo() + "%:$" + (getGratuity(new BigDecimal(myPref.getGratuityTwo()),receipt.getSubTotal()));
+                line = emsPlainTextHelper.centeredString(line, LINE_WIDTH);
+                builder.append(line.getBytes(encoding));
+                line = myPref.getGratuityThree() + "%:$" + (getGratuity(new BigDecimal(myPref.getGratuityThree()),receipt.getSubTotal()));
+                line = emsPlainTextHelper.centeredString(line, LINE_WIDTH);
+                builder.append(line.getBytes(encoding));
             }
-            String line = "" ;
-            line = myPref.getGratuityOne()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityOne()),receipt.getSubTotal()));
-            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
-            builder.append(line.getBytes(encoding));
-            line = myPref.getGratuityTwo()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityTwo()),receipt.getSubTotal()));
-            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
-            builder.append(line.getBytes(encoding));
-            line = myPref.getGratuityThree()+"%:$" + (getGratuity(new BigDecimal(myPref.getGratuityThree()),receipt.getSubTotal()));
-            line = emsPlainTextHelper.centeredString(line,LINE_WIDTH);
-            builder.append(line.getBytes(encoding));
         }
         if (receipt.getYouSave() != null)
             builder.append((receipt.getYouSave()).getBytes(encoding));
@@ -537,7 +540,8 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             builder.appendBitmap(bitmapFromText, false);
         }
         // Gratuities line
-        if (myPref.isGratuitySelected() && myPref.getGratuityOne() != null
+        if (receipt.getSubTotal() != null &&
+                myPref.isGratuitySelected() && myPref.getGratuityOne() != null
                 && myPref.getGratuityTwo() != null
                 && myPref.getGratuityThree() != null) {
             // Gratuity title
