@@ -85,6 +85,8 @@ public class DeviceUtils {
                                 printer = Global.EPSON;
                             } else if (device.getType().equalsIgnoreCase("star")) {
                                 printer = Global.STAR;
+                            } else if (device.getType().equalsIgnoreCase("KitchenGo")) {
+                                printer = Global.KDS;
                             }
                         }catch(Exception e ){
                             e.printStackTrace();

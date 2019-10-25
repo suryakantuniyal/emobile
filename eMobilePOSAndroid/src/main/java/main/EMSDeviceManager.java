@@ -51,6 +51,7 @@ import drivers.EMSStar;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSmePOS;
 import drivers.EMSsnbc;
+import drivers.EMSKDS;
 import interfaces.EMSConnectionDelegate;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import interfaces.EMSPrintingDelegate;
@@ -184,6 +185,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSEpson();
                 aDevice.connect(activity, -1, false, this);
                 break;
+            case Global.KDS:
+
+                break;
         }
     }
 
@@ -269,6 +273,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.EPSON:
                 aDevice = new EMSEpson();
+                break;
+            case Global.KDS:
+                aDevice = new EMSKDS();
                 break;
         }
         return aDevice != null && aDevice.autoConnect(activity, this, paperSize, isPOSPrinter, portName, portNumber);
