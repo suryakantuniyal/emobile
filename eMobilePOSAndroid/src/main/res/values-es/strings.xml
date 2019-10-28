@@ -919,6 +919,7 @@
     <string name="config_pay_with_boloro">"Pago con Boloro"</string>
     <string name="config_use_pax">"Usar SecurePay (PAX)"</string>
     <string name="config_use_sound_payments">"Usar SecurePay (SP)"</string>
+    <string name="config_setup_device_ip">"Ingrese la dirección IP:"</string>
 
     <string name="config_customer_display">"Terminal de visualización de clientes"</string>
 
@@ -1474,4 +1475,5 @@
     <string name="config_backup_settings_local">Backup Settings</string>
     <string name="config_restore_settings_global">Restore Settings From Global</string>
     <string name="config_restore_settings_lcoal">Restore Settings</string>
+    <string name="dlog_title_pax">PAX</string>
 </resources>

@@ -598,7 +598,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             final EditText ip = promptDialog.findViewById(R.id.dlogEditText);
             viewTitle.setText(R.string.dlog_title_conn_payment_device);
 //            viewMsg.setText(R.string.dlog_msg_confirm_force_upload);
-            viewMsg.setText("Enter Device IP Address:");
+            viewMsg.setText(R.string.config_setup_device_ip);
             promptDialog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
             Button btnYes = promptDialog.findViewById(R.id.btnDlogLeft);
@@ -2127,7 +2127,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 progressDialog = new ProgressDialog(activity);
                 progressDialog.setCancelable(true);
                 progressDialog.setCanceledOnTouchOutside(true);
-                progressDialog.setTitle("PAX");
+                progressDialog.setTitle(R.string.dlog_title_pax);
                 progressDialog.setMessage(getResources().getString(R.string.sync_saving_settings));
                 progressDialog.show();
             }

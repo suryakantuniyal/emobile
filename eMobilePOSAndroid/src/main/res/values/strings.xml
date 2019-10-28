@@ -929,6 +929,7 @@
     <string name="config_pay_with_boloro">Pay with Boloro</string>
     <string name="config_use_pax">Use SecurePay (PAX)</string>
     <string name="config_use_sound_payments">Use SecurePay (SP)</string>
+    <string name="config_setup_device_ip">Enter Device IP Address:</string>
 
     <string name="config_customer_display">Customer Display Terminal</string>
 
@@ -1511,4 +1512,5 @@
     <string name="handlingmsg_err_battery_real_end">Please connect AC adapter or change the battery.\nBattery of printer is almost empty.\n</string>
     <string name="handlingmsg_err_offline">Printer is offline.\n</string>
     <string name="config_use_pax_device_list">Select Pax Device</string>
+    <string name="dlog_title_pax">PAX</string>
 </resources>
