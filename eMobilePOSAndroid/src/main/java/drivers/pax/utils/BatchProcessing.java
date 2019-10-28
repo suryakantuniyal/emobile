@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.support.MyPreferences;
 import com.pax.poslink.BatchRequest;
 import com.pax.poslink.BatchResponse;
 import com.pax.poslink.POSLinkAndroid;
@@ -29,14 +30,17 @@ public class BatchProcessing {
     private PosLink poslink;
     private static ProcessTransResult ptr;
     private OnBatchProcessedCallback callback;
+    private MyPreferences mPref;
 
     public BatchProcessing(OnBatchProcessedCallback callback, Activity activity) {
         this.callback = callback;
         this.activity = activity;
+        mPref = new MyPreferences(activity);
     }
     public BatchProcessing(OnBatchProcessedCallback callback, Context context) {
         this.callback = callback;
         this.context = context;
+        mPref = new MyPreferences(context);
     }
     public interface OnBatchProcessedCallback {
         void onBatchProcessedDone(String result);
@@ -44,17 +48,17 @@ public class BatchProcessing {
 
     public void close() {
         if(activity != null){
-            POSLinkAndroid.init(activity, PosLinkHelper.getCommSetting());
+            POSLinkAndroid.init(activity, PosLinkHelper.getCommSetting(mPref.getPaymentDevice(),mPref.getPaymentDeviceIP()));
             poslink = POSLinkCreator.createPoslink(activity);
         } else if(context != null){
-            POSLinkAndroid.init(context, PosLinkHelper.getCommSetting());
+            POSLinkAndroid.init(context, PosLinkHelper.getCommSetting(mPref.getPaymentDevice(),mPref.getPaymentDeviceIP()));
             poslink = POSLinkCreator.createPoslink(context);
         }
         BatchRequest batchrequest = new BatchRequest();
         batchrequest.EDCType = 0;
         batchrequest.TransType = 1;
         poslink.BatchRequest = batchrequest;
-        poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+        poslink.SetCommSetting(PosLinkHelper.getCommSetting(mPref.getPaymentDevice(),mPref.getPaymentDeviceIP()));
 
         // as processTrans is blocked, we must run it in an async task
         new Thread(new Runnable() {

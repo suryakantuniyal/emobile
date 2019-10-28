@@ -660,7 +660,7 @@ public class EMSDeviceDriver {
             printDataFormatter.addLeftAlign().addContent(stringToPrint);
             POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
                     POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                    PosLinkHelper.getCommSetting(),
+                    PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()),
                     new POSLinkPrinter.PrintListener() {
                         @Override
                         public void onSuccess() {

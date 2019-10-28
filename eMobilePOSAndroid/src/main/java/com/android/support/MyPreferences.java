@@ -85,6 +85,8 @@ public class MyPreferences {
     public static final String pref_show_tips_for_cash = "pref_show_tips_for_cash";
     public static final String pref_audio_card_reader = "pref_audio_card_reader";
     public static final String pref_pax_close_batch_hour = "pref_pax_close_batch_hour";
+    public static final String pref_payment_device = "pref_payment_device";
+    public static final String pref_payment_device_ip = "pref_payment_device_ip";
 
     public static final String pref_use_store_and_forward = "pref_use_store_and_forward";
     public static final String pref_return_require_refund = "pref_return_require_refund";
@@ -266,6 +268,26 @@ public class MyPreferences {
 
     public void setCacheDir(String path) {
         prefEditor.putString("cache_dir", path);
+        prefEditor.commit();
+    }
+
+    public String getPaymentDevice(){
+        return getPreferencesValue(pref_payment_device);
+    }
+
+    public void setPaymentDevice(String device){
+        setPreferencesValue(pref_payment_device,device);
+        prefEditor.putString(pref_payment_device, device);
+        prefEditor.commit();
+    }
+
+    public String getPaymentDeviceIP(){
+        return getPreferencesValue(pref_payment_device_ip);
+    }
+
+    public void setPaymentDeviceIP(String ip){
+        setPreferencesValue(pref_payment_device_ip,ip);
+        prefEditor.putString(pref_payment_device_ip, ip);
         prefEditor.commit();
     }
 
