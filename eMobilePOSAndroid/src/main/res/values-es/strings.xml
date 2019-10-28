@@ -1468,4 +1468,10 @@
     <string name="handlingmsg_err_offline">La impresora está desconectado.\n</string>
     <string name="config_use_pax_device_list">Seleccionar Dispositivo Pax</string>
 
+    <string name="config_backup_settings">BackUp</string>
+    <string name="config_restore_settings">Restore</string>
+    <string name="config_backup_settings_global">Backup Settings to Global</string>
+    <string name="config_backup_settings_local">Backup Settings</string>
+    <string name="config_restore_settings_global">Restore Settings From Global</string>
+    <string name="config_restore_settings_lcoal">Restore Settings</string>
 </resources>

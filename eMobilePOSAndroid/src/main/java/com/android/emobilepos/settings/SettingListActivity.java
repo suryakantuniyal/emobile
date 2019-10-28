@@ -417,6 +417,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case ACCOUNT:
                     prefManager.findPreference("pref_change_password").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_backup_settings_global").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_backup_settings").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_restore_settings_global").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_restore_settings").setOnPreferenceClickListener(this);
                     break;
                 case CASH_DRAWER:
                     prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
@@ -721,6 +725,18 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_change_password:
                     changePassword(false, null);
                     break;
+                case R.string.config_backup_settings_global:
+                    backupSettings(true);
+                    break;
+                case R.string.config_backup_settings_local:
+                    backupSettings(false);
+                    break;
+                case R.string.config_restore_settings_global:
+                    restoreSettings(true);
+                    break;
+                case R.string.config_restore_settings_lcoal:
+                    restoreSettings(false);
+                    break;
                 case R.string.config_open_cash_drawer:
                     new Thread(new Runnable() {
                         @Override
@@ -827,7 +843,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         @Override
                         public void onSelectCountry(String name, String code) {
                             myPref.setDefaultCountryCode(code);
-                            myPref.setDefaultCountryCode(name);
+                            myPref.setDefaultCountryName(name);
                             CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
                             newFrag.dismiss();
@@ -888,6 +904,28 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public void onBatchProcessedDone(String result) {
             Global.dismissDialog(getActivity(), myProgressDialog);
             Global.showPrompt(getActivity(), R.string.config_batch_pax, result);
+        }
+
+        private void restoreSettings(boolean isFromGlobal) {
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+            if(isFromGlobal){
+                sm.restoreSettings(getActivity(),"0");
+            }else{
+                sm.restoreSettings(getActivity(),String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()));
+            }
+        }
+
+        private void backupSettings(boolean isToGlobal){
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+            String regID = myPref.getAcctNumber();
+            String empID = String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId());
+            if(isToGlobal){
+                sm.backupSettings(getActivity(),"0", regID);
+            }else{
+                sm.backupSettings(getActivity(), empID, regID);
+            }
         }
 
         private void openBixolonSetting() {

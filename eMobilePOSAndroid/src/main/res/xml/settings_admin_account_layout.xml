@@ -11,6 +11,30 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_backup_settings">
+        <Preference
+            android:key="pref_backup_settings_global"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_backup_settings_global" />
+        <Preference
+            android:key="pref_backup_settings"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_backup_settings_local" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_restore_settings">
+        <Preference
+            android:key="pref_restore_settings_global"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_restore_settings_global" />
+        <Preference
+            android:key="pref_restore_settings"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_restore_settings_lcoal" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
         android:title="@string/config_session_settings">
         <CheckBoxPreference
             android:key="pref_expire_session"
