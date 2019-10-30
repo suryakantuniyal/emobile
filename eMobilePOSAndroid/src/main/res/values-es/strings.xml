@@ -326,7 +326,7 @@
     <string name="admin_enable_retail_taxes">"Habilitar los impuestos minoristas"</string>
     <string name="admin_skip_email_phone">"Omitir en la comprobación - Add eMail \ Phone"</string>
     <string name="admin_skip_want_add_more_products">"Saltar a la salida - Adicionar más productos "</string>
-    <string name="admin_show_confirmation_screen">"Mostrar pantalla de confirmación"</string>
+    <string name="admin_show_confirmation_screen">"Mostrar pantalla de propina"</string>
     <string name="admin_quick_customer_selection">"Selección rápida de clientes"</string>
     <string name="admin_require_customer">"Requerir Cliente"</string>
     <string name="admin_use_clerks">"Uso de Empleados de servicio"</string>
@@ -899,7 +899,7 @@
     <string name="config_show_only_group_taxes">"Mostrar sólo impuestos de grupo"</string>
     <string name="config_retail_taxes">"Impuestos Basado en Productos"</string>
     <string name="config_require_customer">"Requerir Cliente"</string>
-    <string name="config_show_confirmation_screen">"Mostrar pantalla de confirmación"</string>
+    <string name="config_show_confirmation_screen">"Mostrar pantalla de propina"</string>
     <string name="config_ask_order_comments">"Solicitar comentarios del pedido"</string>
     <string name="config_direct_customer_selection">"Selección directa de clientes"</string>
     <string name="config_display_customer_account_number">"Mostrar número de cuenta del cliente"</string>
