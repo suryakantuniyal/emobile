@@ -57,6 +57,7 @@ import java.util.Locale;
 import drivers.pax.utils.PosLinkHelper;
 import main.EMSDeviceManager;
 import util.MoneyUtils;
+import util.NumberUtil;
 import util.XmlUtils;
 
 import static drivers.pax.utils.Constant.CARD_EXPIRED;
@@ -192,17 +193,16 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         payment.setPay_expyear("2000");// dummy
         payment.setOriginalTotalAmount("0");
         payment.setPay_type("0");
-        if (myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
-            payment.setPay_tip(Global.formatDoubleToCurrency(amountToTip));
-            payment.setPay_dueamount(Global.formatDoubleToCurrency(grandTotalAmount));
-            payment.setPay_amount(Global.formatDoubleToCurrency(grandTotalAmount));
-        }else{
-            payment.setPay_tip("0.00");
-            payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(
-                    amountTextView.getText().toString()));
-            payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(
-                    amountTextView.getText().toString()));
+        if(myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
+            payment.setPay_tip(NumberUtils.cleanCurrencyFormatedNumber(Global.formatDoubleToCurrency(amountToTip)));
         }
+        else {
+            payment.setPay_tip("0.00");
+        }
+//        payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(String.valueOf(grandTotalAmount)));
+//        payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(String.valueOf(grandTotalAmount)));
+        payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
+        payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
 
         if (isRefund) {
             payment.setIs_refund("1");
@@ -234,15 +234,12 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payrequest.TransType = REQUEST_TRANSACTION_TYPE_RETURN;
         }
 
-        if(myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)){
-            payrequest.Amount = String.valueOf(MoneyUtils.convertDollarsToCents(
-                    NumberUtils.cleanCurrencyFormatedNumber(
-                            Global.formatDoubleToCurrency(grandTotalAmount))));
-        }else {
-            payrequest.Amount = String.valueOf(
-                    MoneyUtils.convertDollarsToCents(
-                            NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
-        }
+//        if(myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)){
+//            payrequest.TipAmt = String.valueOf(MoneyUtils.convertDollarsToCents(
+//                    NumberUtils.cleanCurrencyFormatedNumber(Global.formatDoubleToCurrency(amountToTip))));
+//        }
+        payrequest.Amount = String.valueOf(MoneyUtils.convertDollarsToCents(
+                NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
 
         payrequest.ECRRefNum = DateUtils.getEpochTime();
         poslink.PaymentRequest = payrequest;
