@@ -43,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
@@ -73,6 +74,7 @@ import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.salesassociates.Template;
@@ -104,6 +106,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import drivers.EMSKDS;
 import interfaces.PayWithLoyalty;
 import main.EMSDeviceManager;
 import util.StringUtil;
@@ -2192,65 +2195,94 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         @Override
         protected String doInBackground(Boolean... params) {
-            isPrintStationPrinter = params[0];
-            if (!isPrintStationPrinter) {
-                publishProgress();
-                Global.OrderType type = Global.ord_type;
-                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
-                if (emsDeviceManager != null
-                        && emsDeviceManager.getCurrentDevice() != null) {
-                    printSuccessful = emsDeviceManager.getCurrentDevice()
-                            .printTransaction(orderId, type, false,
-                                    false);
-                }
-            } else {
-                OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
-                        getActivity());
-                HashMap<String, List<Orders>> orderProductsByCategories = orderProductsHandler
-                        .getStationPrinterProducts(orderId);
-
-                // fill items to be printed on remote stations
-                for (EMSDeviceManager emsDeviceManager : Global.remoteStationsPrinters) {
-                    for (Map.Entry opBycat : orderProductsByCategories.entrySet()) {
-                        if (emsDeviceManager.getRemoteStationQueue().containsKey(opBycat.getKey())) {
-                            emsDeviceManager.getRemoteStationQueue().get(opBycat.getKey())
-                                    .addAll((List<Orders>) opBycat.getValue());
-                        }
+            try{
+                isPrintStationPrinter = params[0];
+                if (!isPrintStationPrinter) {
+                    publishProgress();
+                    Global.OrderType type = Global.ord_type;
+                    EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
+                    if (emsDeviceManager != null
+                            && emsDeviceManager.getCurrentDevice() != null) {
+                        printSuccessful = emsDeviceManager.getCurrentDevice()
+                                .printTransaction(orderId, type, false,
+                                        false);
                     }
-                }
+                } else {
+                    OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
+                            getActivity());
+                    HashMap<String, List<Orders>> orderProductsByCategories = orderProductsHandler
+                            .getStationPrinterProducts(orderId);
 
-                boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
-                List<Orders> queueAccum = new ArrayList<>();
-
-                // print on remote stations
-                for (EMSDeviceManager emsDeviceManager : Global.remoteStationsPrinters) {
-                    for (Map.Entry queue : emsDeviceManager.getRemoteStationQueue().entrySet()) {
-                        List<Orders> ordersList = (List<Orders>) queue.getValue();
-                        if (ordersList.size() > 0) {
-                            if (!splitByCat) {
-                                queueAccum.addAll(ordersList);
-                            } else {
-                                if(emsDeviceManager.getCurrentDevice() != null) {
-                                    emsDeviceManager.getCurrentDevice().printRemoteStation(
-                                            ordersList, orderId);
-                                }
+                    // fill items to be printed on remote stations
+                    for (EMSDeviceManager emsDeviceManager : Global.remoteStationsPrinters) {
+                        for (Map.Entry opBycat : orderProductsByCategories.entrySet()) {
+                            if (emsDeviceManager.getRemoteStationQueue().containsKey(opBycat.getKey())) {
+                                emsDeviceManager.getRemoteStationQueue().get(opBycat.getKey())
+                                        .addAll((List<Orders>) opBycat.getValue());
                             }
                         }
-                        ordersList.clear(); // empty queue
                     }
-                    if (!splitByCat && queueAccum.size() > 0) {
-                        if(emsDeviceManager.getCurrentDevice() != null) {
-                            emsDeviceManager.getCurrentDevice().printRemoteStation(
-                                    queueAccum, orderId);
-                        }
-                        queueAccum.clear(); // empty accum queue
-                    }
-                }
 
-                // mark all as printed (todo: improve this loop)
-                for (OrderProduct op : getOrderingMainFa().global.order.getOrderProducts()) {
-                    op.setPrinted(true);
+                    boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
+                    List<Orders> queueAccum = new ArrayList<>();
+                    // print on remote stations
+                    for (EMSDeviceManager emsDeviceManager : Global.remoteStationsPrinters) {
+                        for (Map.Entry queue : emsDeviceManager.getRemoteStationQueue().entrySet()) {
+                            List<Orders> ordersList = (List<Orders>) queue.getValue();
+                            if (ordersList.size() > 0) {
+                                if (!splitByCat) {
+                                    queueAccum.addAll(ordersList);
+                                } else {
+                                    if(emsDeviceManager.getCurrentDevice() != null) {
+                                        if(emsDeviceManager.getCurrentDevice() instanceof EMSKDS){
+                                            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+                                            String empName = clerk.getEmpName();
+                                            String tableName = ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber();
+                                            List<OrderAttributes> orderAttributes = ((OrderingMain_FA) getActivity()).getOrderAttributes();
+                                            String comment = "";
+                                            String category = queue.getKey().toString();
+                                            if(orderAttributes != null && orderAttributes.get(4) != null)
+                                            {
+                                                comment = orderAttributes.get(4).getInputValue();
+                                            }
+                                            ((EMSKDS)emsDeviceManager.getCurrentDevice()).printRemoteStation(ordersList, orderId,Global.isFromOnHold,empName,tableName, comment,category);
+                                        }else {
+                                            emsDeviceManager.getCurrentDevice().printRemoteStation(ordersList, orderId);
+                                        }
+                                    }
+                                }
+                            }
+                            ordersList.clear(); // empty queue
+                        }
+                        if (!splitByCat && queueAccum.size() > 0) {
+                            if(emsDeviceManager.getCurrentDevice() != null) {
+                                if(emsDeviceManager.getCurrentDevice() instanceof EMSKDS){
+                                    Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+                                    String empName = clerk.getEmpName();
+                                    String tableName = ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber();
+                                    List<OrderAttributes> orderAttributes = ((OrderingMain_FA) getActivity()).getOrderAttributes();
+                                    String comment = "";
+                                    String category = "";
+                                    //String category = emsDeviceManager.getRemoteStationQueue().enm.getKey().toString();
+                                    if(orderAttributes != null && orderAttributes.get(4) != null)
+                                    {
+                                        comment = orderAttributes.get(4).getInputValue();
+                                    }
+                                    ((EMSKDS)emsDeviceManager.getCurrentDevice()).printRemoteStation(queueAccum, orderId,Global.isFromOnHold,empName,tableName, comment, category);
+                                }else {
+                                    emsDeviceManager.getCurrentDevice().printRemoteStation(queueAccum, orderId);
+                                }
+                            }
+                            queueAccum.clear(); // empty accum queue
+                        }
+                    }
+                    // mark all as printed (todo: improve this loop)
+                    for (OrderProduct op : getOrderingMainFa().global.order.getOrderProducts()) {
+                        op.setPrinted(true);
+                    }
                 }
+            }catch (Exception x){
+                x.printStackTrace();
             }
             return null;
         }

@@ -185,9 +185,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSEpson();
                 aDevice.connect(activity, -1, false, this);
                 break;
-            case Global.KDS:
-
-                break;
         }
     }
 
@@ -275,7 +272,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSEpson();
                 break;
             case Global.KDS:
-                aDevice = new EMSKDS();
+                aDevice = new EMSKDS(portName,Integer.valueOf(portNumber));
                 break;
         }
         return aDevice != null && aDevice.autoConnect(activity, this, paperSize, isPOSPrinter, portName, portNumber);
