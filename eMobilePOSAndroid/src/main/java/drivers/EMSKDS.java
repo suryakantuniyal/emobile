@@ -13,6 +13,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
+import com.android.emobilepos.models.EMSCategory;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
@@ -38,6 +39,7 @@ import java.io.StringWriter;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,6 +58,7 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private String portName;
     private int port = 0;
     private String host = "";
+    private String kdsStation = "";
 
     private EMSDeviceManager edm;
     private EMSDeviceDriver thisInstance;
@@ -72,7 +75,14 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     String transType = "1";
     // End of Order mapping
     public EMSKDS(String portName,int port){
-        this.host = getIP(portName);
+        String[] vals = portName.split("_");
+        if(vals != null && vals.length == 2){
+            this.host = getIP(vals[0]);
+            this.kdsStation = vals[1];
+        }else{
+            this.host = getIP(portName);
+            this.kdsStation = "";
+        }
         this.port = port;
     }
     public static void main1(String[] args){
@@ -227,7 +237,7 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         try{
             // Use order list to create message for the kitchengo printer
             startConnection();
-            String msg = getOrderString(ordersList,ordID,false,"","","", "");
+            String msg = getOrderString(ordersList,ordID,false,"","","", "",new ArrayList<EMSCategory>());
             String response = sendMessage(msg);
         }catch (Exception x){
             x.printStackTrace();
@@ -242,11 +252,11 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
         return true;
     }
-    public boolean printRemoteStation(List<Orders> ordersList, String ordID, boolean isFromHold, String serverName, String guestTable, String comment, String category ) {
+    public boolean printRemoteStation(List<Orders> ordersList, String ordID, boolean isFromHold, String serverName, String guestTable, String comment, String category, List<EMSCategory> emsCategoryList ) {
         try{
             // Use order list to create message for the kitchengo printer
             startConnection();
-            String msg = getOrderString(ordersList, ordID, isFromHold, serverName, guestTable, comment, category);
+            String msg = getOrderString(ordersList, ordID, isFromHold, serverName, guestTable, comment, category,emsCategoryList);
             String response = sendMessage(msg);
         }catch (Exception x){
             x.printStackTrace();
@@ -261,7 +271,18 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
         return true;
     }
-    public String getOrderString(List<Orders> ordersList,String orderId,boolean isFromHold, String serverName, String guestTable, String comment, String category) {
+    private EMSCategory getEMSCategoryById(List<EMSCategory> emsCategoryList, String categoryId){
+        if(emsCategoryList != null && categoryId != null){
+            for(EMSCategory emsCategory: emsCategoryList){
+                if(emsCategory.getCategoryId().equals(categoryId) ){
+                    System.out.println("category:"+emsCategory.getCategoryName());
+                    return emsCategory;
+                }
+            }
+        }
+        return null;
+    }
+    public String getOrderString(List<Orders> ordersList, String orderId, boolean isFromHold, String serverName, String guestTable, String comment, String category, List<EMSCategory> emsCategoryList) {
         String namespace = "";
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
@@ -277,11 +298,11 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         String posTerminal = ""+assignEmployee.getEmpId();
 
-        String itemKDSStation = "1:0";
         String itemPreModifierCount = "1";
 
         String orderStatus = "0";
         try {
+
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
             serializer.startTag(namespace,"Transaction");
@@ -357,6 +378,12 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                     serializer.text(order.getName());
                     serializer.endTag(namespace,"Name");
 
+
+                    EMSCategory cat =getEMSCategoryById( emsCategoryList,  order.getCatID());
+                    //category = itemKDSStation = getKDSStationByCategory(category);
+                    //category = itemKDSStation = kdsStation;
+                    
+
                     serializer.startTag(namespace,"Category");
                     serializer.text(category);
                     serializer.endTag(namespace,"Category");
@@ -366,7 +393,7 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                     serializer.endTag(namespace,"Quantity");
 
                     serializer.startTag(namespace,"KDSStation");
-                    serializer.text(itemKDSStation);
+                    serializer.text(kdsStation);
                     serializer.endTag(namespace,"KDSStation");
                     /**
                      * PreModifiers for Item
@@ -640,6 +667,10 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 String portNumber   = params[1];
                 Socket clientSocket = null;
                 try{
+                    String[] vals = portName.split("_");
+                    if(vals != null && vals.length == 2){
+                        portName = getIP(vals[0]);
+                    }
                     clientSocket = new Socket(getIP(portName), Integer.valueOf(portNumber));
                     didConnect = clientSocket.isConnected();
                 }catch (Exception x){
@@ -694,6 +725,11 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         this.edm = edm;
         Socket clientSocket = null;
         try{
+            String[] vals = portName.split("_");
+            if(vals != null && vals.length == 2){
+                portName = vals[0];
+                this.host = getIP(vals[0]);
+            }
             clientSocket = new Socket(getIP(portName), Integer.valueOf(_portNumber));
             didConnect = clientSocket.isConnected();
         }catch (Exception x){

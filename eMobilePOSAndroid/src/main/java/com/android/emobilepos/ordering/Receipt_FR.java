@@ -46,6 +46,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.dao.ShiftDAO;
+import com.android.database.CategoriesHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.EmpInvHandler;
@@ -68,6 +69,7 @@ import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.EMSCategory;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
@@ -2225,6 +2227,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                     boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
                     List<Orders> queueAccum = new ArrayList<>();
+                    CategoriesHandler categoriesHandler = new CategoriesHandler(getActivity());
+                    List<EMSCategory> emsCategoryList = categoriesHandler.getMainCategories();
                     // print on remote stations
                     for (EMSDeviceManager emsDeviceManager : Global.remoteStationsPrinters) {
                         for (Map.Entry queue : emsDeviceManager.getRemoteStationQueue().entrySet()) {
@@ -2245,7 +2249,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                             {
                                                 comment = orderAttributes.get(4).getInputValue();
                                             }
-                                            ((EMSKDS)emsDeviceManager.getCurrentDevice()).printRemoteStation(ordersList, orderId,Global.isFromOnHold,empName,tableName, comment,category);
+                                            ((EMSKDS)emsDeviceManager.getCurrentDevice()).printRemoteStation(ordersList, orderId,Global.isFromOnHold,empName,tableName, comment,category,emsCategoryList);
                                         }else {
                                             emsDeviceManager.getCurrentDevice().printRemoteStation(ordersList, orderId);
                                         }
@@ -2268,7 +2272,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     {
                                         comment = orderAttributes.get(4).getInputValue();
                                     }
-                                    ((EMSKDS)emsDeviceManager.getCurrentDevice()).printRemoteStation(queueAccum, orderId,Global.isFromOnHold,empName,tableName, comment, category);
+                                    ((EMSKDS)emsDeviceManager.getCurrentDevice()).printRemoteStation(queueAccum, orderId,Global.isFromOnHold,empName,tableName, comment, category, emsCategoryList);
                                 }else {
                                     emsDeviceManager.getCurrentDevice().printRemoteStation(queueAccum, orderId);
                                 }
