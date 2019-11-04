@@ -1084,7 +1084,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void onClick(View v) {
                 dlog.dismiss();
                 if (isFromOnHold)
+                {
                     leftFragment.voidCancelOnHold(1);
+                    Intent intent = new Intent(OrderingMain_FA.this, MainMenu_FA.class);
+                    startActivity(intent);
+                }
                 else {
 
                     if (mTransType == Global.TransactionType.SALE_RECEIPT) // is sales receipt
