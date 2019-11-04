@@ -275,7 +275,6 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         if(emsCategoryList != null && categoryId != null){
             for(EMSCategory emsCategory: emsCategoryList){
                 if(emsCategory.getCategoryId().equals(categoryId) ){
-                    System.out.println("category:"+emsCategory.getCategoryName());
                     return emsCategory;
                 }
             }
@@ -382,7 +381,6 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                     EMSCategory cat =getEMSCategoryById( emsCategoryList,  order.getCatID());
                     //category = itemKDSStation = getKDSStationByCategory(category);
                     //category = itemKDSStation = kdsStation;
-                    
 
                     serializer.startTag(namespace,"Category");
                     serializer.text(category);
