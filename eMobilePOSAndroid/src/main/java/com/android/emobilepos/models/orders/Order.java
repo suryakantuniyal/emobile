@@ -192,7 +192,7 @@ public class Order implements Cloneable, Serializable {
                     totalDetails.setTax(totalDetails.getTax()
                             .add(orderProduct.getProd_taxValue()).setScale(6, RoundingMode.HALF_UP));
                     totalDetails.setGranTotal(totalDetails.getGranTotal()
-                            .add(orderProduct.getGranTotalCalculated()).setScale(6, RoundingMode.HALF_UP));
+                            .add(orderProduct.getGranTotalCalculated(discount)).setScale(6, RoundingMode.HALF_UP));
                 } else {
                     // voided
                     orderProduct.setOverwrite_price(BigDecimal.ZERO);
@@ -216,6 +216,12 @@ public class Order implements Cloneable, Serializable {
                             .multiply(Global.getBigDecimalNum(discount.getProductPrice())
                                     .divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP));
                     totalDetails.setGlobalDiscount(disAmout);
+                    if(discount.getTaxCodeIsTaxable().equals("1")){
+                        //get tax - ivu
+                        BigDecimal taxBD = totalDetails.getTax();
+                        BigDecimal discountingFactor = (new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()))).divide(new BigDecimal(100));
+                        totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                    }
                     totalDetails.setGranTotal(totalDetails.getGranTotal()
                             .subtract(disAmout).setScale(6, RoundingMode.HALF_UP));
                 }
