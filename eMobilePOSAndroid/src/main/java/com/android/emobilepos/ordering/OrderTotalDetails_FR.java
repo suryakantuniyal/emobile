@@ -63,7 +63,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private Spinner taxSpinner, discountSpinner;
     private List<Tax> taxList;
     private List<Discount> discountList;
-    private int taxSelected, discountSelected;
+    private int taxSelected;
+    private int discountSelected;
     private EditText globalDiscount, globalTax, subTotal;
     private TextView granTotal;
     private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
@@ -805,5 +806,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             }
             return 2;
         }
+    }
+    public List<Discount> getDiscountList() {
+        return discountList;
+    }
+    public int getDiscountSelected() {
+        return discountSelected;
     }
 }

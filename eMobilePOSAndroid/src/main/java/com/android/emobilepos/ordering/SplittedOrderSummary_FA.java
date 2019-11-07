@@ -678,7 +678,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         }
 
     }
-
     public void calculateSplitedOrder(List<SplittedOrder> splitedOrders) {
         for (SplittedOrder splitedOrder : splitedOrders) {
             List<OrderProduct> products = splitedOrder.getOrderProducts();
@@ -695,7 +694,18 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         .multiply(getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
                 itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
                 if (getTax() != null) {
-                    orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                    if(discount.isFixed()) {
+                        orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                    }else{
+                        if(discount != null && discount.getTaxCodeIsTaxable().equals("1")){
+                            BigDecimal taxBD = product.getProd_taxValue();
+                            BigDecimal discountingFactor = (new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()))).divide(new BigDecimal(100));
+                            product.setProd_taxValue(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                            orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                        }else{
+                            orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                        }
+                    }
                 }
             }
             orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
