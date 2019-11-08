@@ -684,6 +684,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 discount_amount = totalDetails.getGlobalDiscount();
             } catch (Exception e) {
                 Crashlytics.logException(e);
+                e.printStackTrace();
             }
             return totalDetails;
         }

@@ -192,7 +192,7 @@ public class Order implements Cloneable, Serializable {
                     totalDetails.setTax(totalDetails.getTax()
                             .add(orderProduct.getProd_taxValue()).setScale(6, RoundingMode.HALF_UP));
                     totalDetails.setGranTotal(totalDetails.getGranTotal()
-                            .add(orderProduct.getGranTotalCalculated(discount)).setScale(6, RoundingMode.HALF_UP));
+                            .add(orderProduct.getGranTotalCalculated()).setScale(6, RoundingMode.HALF_UP));
                 } else {
                     // voided
                     orderProduct.setOverwrite_price(BigDecimal.ZERO);
@@ -210,6 +210,22 @@ public class Order implements Cloneable, Serializable {
                         discAmount = totalDetails.getGranTotal();
                     }
                     totalDetails.setGlobalDiscount(discAmount);
+                    if(discount.getTaxCodeIsTaxable().equals("1")){
+                        BigDecimal subtotal = totalDetails.getSubtotal();
+                        if(totalDetails != null && subtotal != null && discAmount != null){
+                            totalDetails.setGranTotal(BigDecimal.ZERO);
+                            for (OrderProduct orderProduct : orderProducts) {
+                                if (!orderProduct.isVoid()) {
+                                    totalDetails.setGranTotal(totalDetails.getGranTotal()
+                                            .add(orderProduct.getGranTotalCalculated(discount,discAmount.divide(subtotal,6, RoundingMode.HALF_UP))));
+                                }
+                            }
+                        }
+                        //get tax - ivu
+                        BigDecimal taxBD = totalDetails.getTax();
+                        BigDecimal discountingFactor = discAmount.divide(totalDetails.getSubtotal(),6, RoundingMode.HALF_UP);
+                        totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                    }
                     totalDetails.setGranTotal(totalDetails.getGranTotal().subtract(discAmount).setScale(6, RoundingMode.HALF_UP));
                 } else {
                     BigDecimal disAmout = totalDetails.getSubtotal()

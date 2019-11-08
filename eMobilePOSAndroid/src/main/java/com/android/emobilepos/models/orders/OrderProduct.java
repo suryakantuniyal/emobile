@@ -885,11 +885,10 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
                 .setScale(6, RoundingMode.HALF_UP);
         return granTotal;
     }
-    public BigDecimal getGranTotalCalculated(Discount discount) {
+    public BigDecimal getGranTotalCalculated(Discount discount,BigDecimal discountingFactor) {
         BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getProd_taxValue();
-        if (discount != null && !discount.isFixed() && discount.getTaxCodeIsTaxable().equals("1")){
+        if (discount != null && discount.getTaxCodeIsTaxable().equals("1")){
             BigDecimal taxBD = taxAmount;
-            BigDecimal discountingFactor = (new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()))).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
             taxAmount = taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP);
         }
         BigDecimal subtotalCalculated = getItemSubtotalCalculated();
