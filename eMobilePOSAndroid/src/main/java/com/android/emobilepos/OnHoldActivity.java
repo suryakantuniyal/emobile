@@ -181,7 +181,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     }
 
     public void printOnHoldTransaction() {
-        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void showPrintDlg() {
@@ -208,7 +208,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
         });
@@ -399,7 +399,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 dlog.dismiss();
                 if (myCursor.getString(myCursor.getColumnIndex("ord_issync")).equals("0")) {
                     Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
                     new ExecuteOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                 }
@@ -638,7 +638,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    private class printAsync extends AsyncTask<Void, Void, Void> {
+    private class PrintAsync extends AsyncTask<Void, Void, Void> {
         private boolean printSuccessful = true;
         private ProgressDialog myProgressDialog;
 

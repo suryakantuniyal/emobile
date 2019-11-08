@@ -56,10 +56,10 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.initialization_select_employee);
         preferences = new MyPreferences(this);
-        new validateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+        new ValidateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
     }
 
-    public class validateEmployeesAsync extends AsyncTask<String, String, String> {
+    public class ValidateEmployeesAsync extends AsyncTask<String, String, String> {
         boolean succeeded = false;
         String errorMsg = "";
 
@@ -127,7 +127,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
                     @Override
                     public void onClick(View v) {
-                        new validateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+                        new ValidateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                     }
                 });
 
@@ -149,7 +149,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         }
     }
 
-    private class selectEmployeesAsync extends AsyncTask<String, String, String> {
+    private class SelectEmployeesAsync extends AsyncTask<String, String, String> {
         boolean succeeded = false;
 
         @Override
@@ -357,7 +357,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                     e.printStackTrace();
                     Crashlytics.logException(e);
                 }
-                new selectEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+                new SelectEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
 
             }
         });

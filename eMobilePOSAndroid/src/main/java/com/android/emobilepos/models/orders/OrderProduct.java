@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
+import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.Tax;
@@ -879,6 +880,17 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public BigDecimal getGranTotalCalculated() {
         BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getProd_taxValue();
+        BigDecimal subtotalCalculated = getItemSubtotalCalculated();
+        BigDecimal granTotal = subtotalCalculated.add(taxAmount)
+                .setScale(6, RoundingMode.HALF_UP);
+        return granTotal;
+    }
+    public BigDecimal getGranTotalCalculated(Discount discount,BigDecimal discountingFactor) {
+        BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getProd_taxValue();
+        if (discount != null && discount.getTaxCodeIsTaxable().equals("1")){
+            BigDecimal taxBD = taxAmount;
+            taxAmount = taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP);
+        }
         BigDecimal subtotalCalculated = getItemSubtotalCalculated();
         BigDecimal granTotal = subtotalCalculated.add(taxAmount)
                 .setScale(6, RoundingMode.HALF_UP);

@@ -27,6 +27,14 @@ public class Orders {
     String _overwritePrice;
     String _prodDescription;
 
+    public String toString(){
+        StringBuffer sb = new StringBuffer(" Orders: ");
+        sb.append("ordprodID:"+getOrdprodID());
+        sb.append(" getAddon:"+getAddon());
+        sb.append(" isAddon:"+isAddon());
+        sb.append(" isAdded:"+isAdded());
+        return sb.toString();
+    }
     public Orders() {
         _qty = "";
         _name = "";

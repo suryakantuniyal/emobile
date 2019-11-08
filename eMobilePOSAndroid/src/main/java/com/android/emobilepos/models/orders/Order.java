@@ -210,12 +210,34 @@ public class Order implements Cloneable, Serializable {
                         discAmount = totalDetails.getGranTotal();
                     }
                     totalDetails.setGlobalDiscount(discAmount);
+                    if(discount.getTaxCodeIsTaxable().equals("1")){
+                        BigDecimal subtotal = totalDetails.getSubtotal();
+                        if(totalDetails != null && subtotal != null && discAmount != null){
+                            totalDetails.setGranTotal(BigDecimal.ZERO);
+                            for (OrderProduct orderProduct : orderProducts) {
+                                if (!orderProduct.isVoid()) {
+                                    totalDetails.setGranTotal(totalDetails.getGranTotal()
+                                            .add(orderProduct.getGranTotalCalculated(discount,discAmount.divide(subtotal,6, RoundingMode.HALF_UP))));
+                                }
+                            }
+                        }
+                        //get tax - ivu
+                        BigDecimal taxBD = totalDetails.getTax();
+                        BigDecimal discountingFactor = discAmount.divide(totalDetails.getSubtotal(),6, RoundingMode.HALF_UP);
+                        totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                    }
                     totalDetails.setGranTotal(totalDetails.getGranTotal().subtract(discAmount).setScale(6, RoundingMode.HALF_UP));
                 } else {
                     BigDecimal disAmout = totalDetails.getSubtotal()
                             .multiply(Global.getBigDecimalNum(discount.getProductPrice())
                                     .divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP));
                     totalDetails.setGlobalDiscount(disAmout);
+                    if(discount.getTaxCodeIsTaxable().equals("1")){
+                        //get tax - ivu
+                        BigDecimal taxBD = totalDetails.getTax();
+                        BigDecimal discountingFactor = (new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()))).divide(new BigDecimal(100));
+                        totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                    }
                     totalDetails.setGranTotal(totalDetails.getGranTotal()
                             .subtract(disAmout).setScale(6, RoundingMode.HALF_UP));
                 }

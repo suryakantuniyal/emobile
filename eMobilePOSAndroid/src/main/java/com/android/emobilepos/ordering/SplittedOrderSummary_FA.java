@@ -678,36 +678,66 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         }
 
     }
-
     public void calculateSplitedOrder(List<SplittedOrder> splitedOrders) {
-        for (SplittedOrder splitedOrder : splitedOrders) {
-            List<OrderProduct> products = splitedOrder.getOrderProducts();
-            BigDecimal orderSubtotal = new BigDecimal(0);
-            BigDecimal orderTaxes = new BigDecimal(0);
-            BigDecimal orderGranTotal;
-            BigDecimal itemDiscountTotal = new BigDecimal(0);
-            BigDecimal globalDiscountTotal = new BigDecimal(0);
-            BigDecimal qty;
-            for (OrderProduct product : products) {
-                qty = Global.getBigDecimalNum(product.getOrdprod_qty());
-                orderSubtotal = orderSubtotal.add(product.getAddonsTotalPrice()).add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
-                globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getFinalPrice()).setScale(4, RoundingMode.HALF_UP)
-                        .multiply(getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
-                itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
-                if (getTax() != null) {
-                    orderTaxes = orderTaxes.add(product.getProd_taxValue());
+        try{
+            for (SplittedOrder splitedOrder : splitedOrders) {
+                List<OrderProduct> products = splitedOrder.getOrderProducts();
+                BigDecimal orderSubtotal = new BigDecimal(0);
+                BigDecimal orderTaxes = new BigDecimal(0);
+                BigDecimal orderGranTotal;
+                BigDecimal itemDiscountTotal = new BigDecimal(0);
+                BigDecimal globalDiscountTotal = new BigDecimal(0);
+                BigDecimal qty;
+                for (OrderProduct product : products) {
+                    qty = Global.getBigDecimalNum(product.getOrdprod_qty());
+                    orderSubtotal = orderSubtotal.add(product.getAddonsTotalPrice()).add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
+                    globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getFinalPrice()).setScale(4, RoundingMode.HALF_UP)
+                            .multiply(getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
+                    itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
+                    if (getTax() != null) {
+                        if (!discount.isFixed()){
+                            if (discount != null && discount.getTaxCodeIsTaxable().equals("1")) {
+                                BigDecimal taxBD = product.getProd_taxValue();
+                                BigDecimal discountingFactor = (new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()))).divide(new BigDecimal(100));
+                                product.setProd_taxValue(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                                orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                            } else {
+                                orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                            }
+                        }
+                    }
                 }
+                if (discount.isFixed()) {
+                    orderTaxes = BigDecimal.ZERO;
+                    for (OrderProduct product : products) {
+                        if (discount.isFixed()) {
+                            if (discount != null && discount.getTaxCodeIsTaxable().equals("1")) {
+                                BigDecimal taxBD = product.getProd_taxValue();
+                                BigDecimal discountingFactor = new BigDecimal(discount.getProductPrice()).divide(orderSubtotal, 6, RoundingMode.HALF_UP);
+                                product.setProd_taxValue(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                                orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                            } else {
+                                orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                            }
+                        }
+                    }
+                }
+
+                orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
+                        .subtract(globalDiscountTotal).setScale(6, RoundingMode.HALF_UP).add(orderTaxes)
+                        .setScale(6, RoundingMode.HALF_UP);
+                splitedOrder.ord_total = orderGranTotal.toString();
+                splitedOrder.gran_total = orderGranTotal.toString();
+                splitedOrder.ord_subtotal = orderSubtotal.toString();
+                splitedOrder.ord_taxamount = orderTaxes.toString();
+                splitedOrder.ord_discount = globalDiscountTotal.toString();
+                splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
+                TaxesCalculator.calculateOrderTaxesAmount(splitedOrder);
             }
-            orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
-                    .subtract(globalDiscountTotal).setScale(6, RoundingMode.HALF_UP).add(orderTaxes)
-                    .setScale(6, RoundingMode.HALF_UP);
-            splitedOrder.ord_total = orderGranTotal.toString();
-            splitedOrder.gran_total = orderGranTotal.toString();
-            splitedOrder.ord_subtotal = orderSubtotal.toString();
-            splitedOrder.ord_taxamount = orderTaxes.toString();
-            splitedOrder.ord_discount = globalDiscountTotal.toString();
-            splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
-            TaxesCalculator.calculateOrderTaxesAmount(splitedOrder);
+
+    }catch (Exception x)
+        {
+            x.printStackTrace();
         }
     }
 }
