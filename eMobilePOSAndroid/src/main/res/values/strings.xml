@@ -1504,4 +1504,10 @@
     <string name="handlingmsg_err_wrong_paper">Please set correct roll paper.\n</string>
     <string name="handlingmsg_err_battery_real_end">Please connect AC adapter or change the battery.\nBattery of printer is almost empty.\n</string>
     <string name="handlingmsg_err_offline">Printer is offline.\n</string>
+
+    <!-- Open discount -->
+    <string name="enter_open_discount">Set Open Discount</string>
+    <string name="invalid_open_discount">Invalid value. Please enter integer number.</string>
+    <string name="config_manager_password_required">Require Manager Password for Open Discount</string>
+
 </resources>

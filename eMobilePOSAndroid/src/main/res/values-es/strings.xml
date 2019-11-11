@@ -1467,4 +1467,8 @@
     <string name="handlingmsg_err_battery_real_end">Conecte el cargador o cambie la batería.\nLa batería de la impresora está casi agotada.\n</string>
     <string name="handlingmsg_err_offline">La impresora está desconectado.\n</string>
 
+    <!-- Open discount -->
+    <string name="enter_open_discount">"Entrar valor para descuento"</string>
+    <string name="invalid_open_discount">"Valor inválido. Por favor entre un número entero"</string>
+    <string name="config_manager_password_required">"Requerir Contraseña de Gerente para Descuento Configurable"</string>
 </resources>
