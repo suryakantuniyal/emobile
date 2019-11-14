@@ -23,6 +23,16 @@ public class Discount {
         discount.setProductName("");
         return discount;
     }
+    public Discount(){
+
+    }
+    public Discount(String[] arr){
+        setProductId(arr[4]);
+        setTaxCodeIsTaxable(arr[3]);
+        setProductPrice(arr[2]);
+        setProductDiscountType(arr[1]);
+        setProductName(arr[0]);
+    }
 
     public String getProductName() {
         return productName;

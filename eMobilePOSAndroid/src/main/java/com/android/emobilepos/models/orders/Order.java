@@ -237,6 +237,13 @@ public class Order implements Cloneable, Serializable {
                         BigDecimal taxBD = totalDetails.getTax();
                         BigDecimal discountingFactor = (new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()))).divide(new BigDecimal(100));
                         totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                        totalDetails.setGranTotal(BigDecimal.ZERO);
+                        for (OrderProduct orderProduct : orderProducts) {
+                            if (!orderProduct.isVoid()) {
+                                totalDetails.setGranTotal(totalDetails.getGranTotal()
+                                        .add(orderProduct.getGranTotalCalculated(discount,discountingFactor)));
+                            }
+                        }
                     }
                     totalDetails.setGranTotal(totalDetails.getGranTotal()
                             .subtract(disAmout).setScale(6, RoundingMode.HALF_UP));
