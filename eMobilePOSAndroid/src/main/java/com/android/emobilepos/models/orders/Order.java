@@ -206,25 +206,27 @@ public class Order implements Cloneable, Serializable {
             if (discount != null) {
                 if (discount.isFixed()) {
                     BigDecimal discAmount = Global.getBigDecimalNum(discount.getProductPrice());
-                    if (discAmount.compareTo(totalDetails.getGranTotal()) > -1) {
-                        discAmount = totalDetails.getGranTotal();
+                    if (discAmount.compareTo(totalDetails.getSubtotal()) > -1) {
+                        discAmount = totalDetails.getSubtotal();
                     }
                     totalDetails.setGlobalDiscount(discAmount);
                     if(discount.getTaxCodeIsTaxable().equals("1")){
                         BigDecimal subtotal = totalDetails.getSubtotal();
                         if(totalDetails != null && subtotal != null && discAmount != null){
+                            //get tax - ivu
+                            BigDecimal taxBD = totalDetails.getTax();
+                            //BigDecimal discountingFactor = new BigDecimal(100).subtract(discAmount.divide(totalDetails.getSubtotal(),6, RoundingMode.HALF_UP)).divide(new BigDecimal(100)) ;
+                            BigDecimal discountingFactor = new BigDecimal(1).subtract( (discAmount.divide(totalDetails.getSubtotal(),6, RoundingMode.HALF_UP)) );
+                            totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
                             totalDetails.setGranTotal(BigDecimal.ZERO);
                             for (OrderProduct orderProduct : orderProducts) {
                                 if (!orderProduct.isVoid()) {
                                     totalDetails.setGranTotal(totalDetails.getGranTotal()
-                                            .add(orderProduct.getGranTotalCalculated(discount,discAmount.divide(subtotal,6, RoundingMode.HALF_UP))));
+                                            .add(orderProduct.getGranTotalCalculated(discount,discountingFactor)));
                                 }
                             }
                         }
-                        //get tax - ivu
-                        BigDecimal taxBD = totalDetails.getTax();
-                        BigDecimal discountingFactor = discAmount.divide(totalDetails.getSubtotal(),6, RoundingMode.HALF_UP);
-                        totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+
                     }
                     totalDetails.setGranTotal(totalDetails.getGranTotal().subtract(discAmount).setScale(6, RoundingMode.HALF_UP));
                 } else {
