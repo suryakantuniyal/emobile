@@ -764,7 +764,7 @@ public class OrderProductsHandler {
             if (endDate != null) sqlDateFunction = "datetime";
 
             query.append(
-                    "SELECT o.clerk_id, count(o.ord_id) AS 'ordprod_qty', \n" +
+                    "SELECT o.clerk_id AS 'clerk_id', count(o.ord_id) AS 'ordprod_qty', \n" +
                             "sum(o.ord_subtotal) as 'overwrite_price', ");
             query.append(sqlDateFunction);
             query.append("(o.ord_timecreated) as 'date'" +
@@ -800,7 +800,7 @@ public class OrderProductsHandler {
             c = DBManager.getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));
 
             if (c.moveToFirst()) {
-                int clerkId = c.getColumnIndex("o.clerk_id");
+                int clerkId = c.getColumnIndex("clerk_id");
                 int i_ordprod_qty = c.getColumnIndex(ordprod_qty); // total items
                 int i_overwrite_price = c.getColumnIndex(overwrite_price); // total
 
