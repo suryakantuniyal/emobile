@@ -121,8 +121,23 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                     }
                 }
             });
-            checkLocationPermissions();
+            checkPermissions();
         }
+    }
+
+    private void checkPermissions() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            requestPermissions(Global.permissions, 42);
+                        }
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -135,83 +150,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (PermissionType.getByCode(requestCode)) {
-            case ACCESS_COARSE_LOCATION:
-            case ACCESS_FINE_LOCATION:
-                checkWritePermissions();
-                break;
-            case CAMERA:
-                checkPhoneStatePermissions();
-                break;
-            case WRITE_EXTERNAL_STORAGE:
-                checkCameraPermissions();
-                break;
-            case READ_PHONE_STATE:
-                checkMicrophonePermissions();
-                break;
-        }
-    }
-
-    public void checkLocationPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            PermissionType.ACCESS_FINE_LOCATION.ordinal());
-                }
-
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                            PermissionType.ACCESS_COARSE_LOCATION.ordinal());
-                }
-            }
-        }
-    }
-
-    public void checkWritePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PermissionType.WRITE_EXTERNAL_STORAGE.ordinal());
-                }
-            }
-        }
-    }
-
-    public void checkCameraPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA},
-                            PermissionType.CAMERA.ordinal());
-                }
-            }
-        }
-    }
-
-    public void checkPhoneStatePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-                    requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
-                            PermissionType.READ_PHONE_STATE.ordinal());
-                }
-            }
-        }
-    }
-
-    public void checkMicrophonePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.MODIFY_AUDIO_SETTINGS)) {
-                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},
-                            PermissionType.ACCESS_MICROPHONE.ordinal());
-                }
-            }
-        }
     }
 
     public enum PermissionType {

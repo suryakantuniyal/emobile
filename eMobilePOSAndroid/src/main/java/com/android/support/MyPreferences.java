@@ -17,6 +17,8 @@ import java.security.Guard;
 import java.security.GuardedObject;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
@@ -85,6 +87,8 @@ public class MyPreferences {
     public static final String pref_show_tips_for_cash = "pref_show_tips_for_cash";
     public static final String pref_audio_card_reader = "pref_audio_card_reader";
     public static final String pref_pax_close_batch_hour = "pref_pax_close_batch_hour";
+    public static final String pref_payment_device = "pref_payment_device";
+    public static final String pref_payment_device_ip = "pref_payment_device_ip";
 
     public static final String pref_use_store_and_forward = "pref_use_store_and_forward";
     public static final String pref_return_require_refund = "pref_return_require_refund";
@@ -266,6 +270,26 @@ public class MyPreferences {
 
     public void setCacheDir(String path) {
         prefEditor.putString("cache_dir", path);
+        prefEditor.commit();
+    }
+
+    public String getPaymentDevice(){
+        return getPreferencesValue(pref_payment_device);
+    }
+
+    public void setPaymentDevice(String device){
+        setPreferencesValue(pref_payment_device,device);
+        prefEditor.putString(pref_payment_device, device);
+        prefEditor.commit();
+    }
+
+    public String getPaymentDeviceIP(){
+        return getPreferencesValue(pref_payment_device_ip);
+    }
+
+    public void setPaymentDeviceIP(String ip){
+        setPreferencesValue(pref_payment_device_ip,ip);
+        prefEditor.putString(pref_payment_device_ip, ip);
         prefEditor.commit();
     }
 
@@ -1182,19 +1206,20 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    // public void setMainMenuSettings(boolean[] values)
-    // {
-    // global.initSalesMenuTab(this.context);
-    // String[] mainMenuList = global.getSalesMainMenuList();
-    //
-    // int size = values.length;
-    //
-    // for(int i = 0 ; i < size ;i++)
-    // {
-    // prefEditor.putBoolean(mainMenuList[i], values[i]);
-    // }
-    // prefEditor.commit();
-    // }
+    public void setMainMenuSettings(Collection<String> values) {
+//        global.initSalesMenuTab(this.context);
+//        String[] mainMenuList = global.getSalesMainMenuList();
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Set<String> mValues = new HashSet<>();
+//        String[] mainMenuList = context.getResources().getStringArray(R.array.mainMenuArray);
+//        for (int i = 0; i < values.size(); i++) {
+//        }
+        if(values.size() > 0){
+            mValues.addAll(values);
+            editor.putStringSet("pref_configure_home_menu", mValues);
+        }
+        editor.commit();
+    }
 
     public boolean[] getMainMenuPreference() {
         int NUM_OF_ITEMS = 17;
@@ -1221,6 +1246,10 @@ public class MyPreferences {
         Set<String> selections = sharedPref.getStringSet("pref_set_printing_preferences", null);
         List<String> list = Arrays.asList(selections.toArray(new String[]{}));
         return list;
+    }
+
+    public void setPrintingPreferences(Set<String> selections) {
+         sharedPref.getStringSet("pref_set_printing_preferences", selections);
     }
 
     public boolean loginAdmin(String password) {

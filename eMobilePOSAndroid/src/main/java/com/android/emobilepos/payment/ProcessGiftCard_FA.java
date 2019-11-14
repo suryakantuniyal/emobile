@@ -823,7 +823,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void processPaxSwipe() {
-        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
+        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
         poslink = POSLinkCreator.createPoslink(getApplicationContext());
         ManageRequest manageRequest = new ManageRequest();
         manageRequest.EDCType = 6;
@@ -853,7 +853,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         manageRequest.TagList = "";
         manageRequest.TimeOut = "300";
         poslink.ManageRequest = manageRequest;
-        poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+        poslink.SetCommSetting(PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
 
         // as processTrans is blocked, we must run it in an async task
         new Thread(new Runnable() {

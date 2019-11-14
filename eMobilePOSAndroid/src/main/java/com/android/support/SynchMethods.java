@@ -67,6 +67,7 @@ import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.response.BackupSettings;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.models.xml.EMSPayment;
@@ -130,6 +131,9 @@ import interfaces.InventoryLocationSyncCallback;
 import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
+
+import com.android.emobilepos.models.response.BuildSettings;
+
 import util.XmlUtils;
 import util.json.JsonUtils;
 
@@ -219,6 +223,29 @@ public class SynchMethods {
         OAuthClient authClient = OAuthManager.getOAuthClient(context);
 
         new AsyncRequestInventoryLocations(context, authClient, listener, url.toString()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void restoreSettings(Context context, String empID) {
+        String requestString;
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        requestString = context.getString(R.string.account_settings_restore);
+        String url = String.format(requestString, empID);
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+
+        new AsyncRestoreSettings(context, authClient, url, preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void backupSettings(Context context, String empID, String regID) {
+        String url;
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        url = context.getString(R.string.account_settings_backup);
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+
+        new AsyncBackupSettings(context, authClient, url, empID, regID, preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
@@ -580,14 +607,14 @@ public class SynchMethods {
      ************************************/
 
     private void sendReverse(Object task) {
-        Cursor c=null;
+        Cursor c = null;
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             HashMap<String, String> parsedMap;
 
             PaymentsXML_DB _paymentsXML_DB = new PaymentsXML_DB(context);
-             c = _paymentsXML_DB.getReversePayments();
+            c = _paymentsXML_DB.getReversePayments();
             int size = c.getCount();
             if (size > 0) {
                 if (Global.isForceUpload)
@@ -636,10 +663,8 @@ public class SynchMethods {
             c.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if(c!=null && !c.isClosed())
-            {
+        } finally {
+            if (c != null && !c.isClosed()) {
                 c.close();
             }
         }
@@ -1937,12 +1962,12 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            Cursor c=null;
+            Cursor c = null;
             try {
                 updateProgress(context.getString(R.string.sync_dload_ordersonhold));
 //                synchOrdersOnHoldDetails(context, params[0]);
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(context);
-                 c = orderProdHandler.getOrderProductsOnHold(params[0]);
+                c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
 //                    if (type == 0)
@@ -1954,10 +1979,8 @@ public class SynchMethods {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-            finally {
-                if(c!=null && !c.isClosed())
-                {
+            } finally {
+                if (c != null && !c.isClosed()) {
                     c.close();
                 }
             }
@@ -2130,7 +2153,7 @@ public class SynchMethods {
         private ProgressDialog progressDialog;
         private List<InventoryItem> mList = new ArrayList<>();
 
-        public  AsyncRequestInventoryLocations(Context context,OAuthClient oAuthClient, InventoryLocationSyncCallback listener, String url) {
+        public AsyncRequestInventoryLocations(Context context, OAuthClient oAuthClient, InventoryLocationSyncCallback listener, String url) {
             this.oauth = oAuthClient;
             this.listener = listener;
             this.context = context;
@@ -2189,4 +2212,146 @@ public class SynchMethods {
             listener.inventoryLocationsSynched(mList);
         }
     }
+
+    public class AsyncRestoreSettings extends AsyncTask<Void, Void, BuildSettings[]> {
+
+        private String url;
+        private OAuthClient oauth;
+        private ProgressDialog progressDialog;
+        private BuildSettings[] mSettings;
+        private MyPreferences preferences;
+
+        public AsyncRestoreSettings(Context context, OAuthClient oAuthClient, String url, MyPreferences preferences) {
+            this.oauth = oAuthClient;
+            this.url = url;
+            this.preferences = preferences;
+            progressDialog = new ProgressDialog(context);
+//            path = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/rset.json";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Restoring Your Settings...");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected BuildSettings[] doInBackground(Void... params) {
+            try {
+                String response = oauthclient.HttpClient.getString(url, oauth, true);
+                Gson gson = JsonUtils.getInstance();
+                mSettings = gson.fromJson(response, BuildSettings[].class);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                return null;
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+                return null;
+            }
+            return mSettings;
+        }
+
+        @Override
+        protected void onPostExecute(BuildSettings[] mSettings) {
+            progressDialog.dismiss();
+            new ApplySettings(mSettings, preferences).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    public class AsyncBackupSettings extends AsyncTask<Void, Void, Void> {
+
+        private String url;
+        private String empID;
+        private String regID;
+        private OAuthClient oauth;
+        private Context context;
+        private ProgressDialog progressDialog;
+        private BackupSettings backupSettings;
+        private MyPreferences preferences;
+        private oauthclient.HttpClient httpClient;
+
+        public AsyncBackupSettings(Context context, OAuthClient oAuthClient, String url, String empID, String regID, MyPreferences preferences) {
+            this.oauth = oAuthClient;
+            this.url = url;
+            this.empID = empID;
+            this.regID = regID;
+            this.preferences = preferences;
+            this.context = context;
+            progressDialog = new ProgressDialog(context);
+//            path = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/rset.json";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Backing Up Your Settings");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            backupSettings = new BackupSettings(preferences,context);
+            String json = backupSettings.backupMySettings(empID,regID);
+            httpClient = new oauthclient.HttpClient();
+            try {
+                httpClient.post(context.getString(R.string.account_settings_backup),json,oauth,true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
+        }
+    }
+
+    private class ApplySettings extends AsyncTask<Void, Void, Void> {
+
+        private ProgressDialog progressDialog;
+        private BuildSettings[] mSettings;
+        private BackupSettings backupSettings;
+        private MyPreferences preferences;
+
+        public ApplySettings(BuildSettings[] mSettings, MyPreferences preferences) {
+            this.mSettings = mSettings;
+            progressDialog = new ProgressDialog(context);
+            this.preferences = preferences;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Applying Your Settings...");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            backupSettings = new BackupSettings(preferences,context);
+            if(mSettings!=null)
+                backupSettings.restoreMySettings(mSettings);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressDialog.dismiss();
+        }
+    }
+
 }

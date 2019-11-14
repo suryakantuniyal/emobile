@@ -363,7 +363,20 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_pay_with_card_on_file").setOnPreferenceClickListener(this);
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
-
+                    prefManager.findPreference("pref_use_pax").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_use_pax_device_list").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            return checkPaxDevices(newValue);
+                        }
+                    });
+                    if(((CheckBoxPreference)prefManager.findPreference("pref_use_pax")).isChecked() &&
+                            !myPref.getPaymentDevice().isEmpty() &&
+                            myPref.getPaymentDevice() != null){
+                        prefManager.findPreference("pref_use_pax_device_list").setEnabled(true);
+                    }else{
+                        prefManager.findPreference("pref_use_pax_device_list").setEnabled(false);
+                    }
                     break;
                 case PAYMENT_PROCESSING:
                     if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
@@ -404,6 +417,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case ACCOUNT:
                     prefManager.findPreference("pref_change_password").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_backup_settings_global").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_backup_settings").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_restore_settings_global").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_restore_settings").setOnPreferenceClickListener(this);
                     break;
                 case CASH_DRAWER:
                     prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
@@ -557,6 +574,57 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     .unregisterOnSharedPreferenceChangeListener(this);
         }
 
+        private boolean checkPaxDevices(Object newValue){
+            boolean result = false;
+            if(newValue.equals("D220")){
+                promptPaxSetup(newValue);
+                result = true;
+            }else if(newValue.equals("A920")){
+                Log.e("PAX","A920");
+                result = true;
+            }
+            return result;
+        }
+
+        private void promptPaxSetup(Object value){
+            final String deviceModel = (String) value;
+            promptDialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+            promptDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            promptDialog.setCancelable(false);
+            promptDialog.setContentView(R.layout.dlog_pax_connect_selected_device_layout);
+
+            TextView viewTitle = promptDialog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = promptDialog.findViewById(R.id.dlogMessage);
+            final EditText ip = promptDialog.findViewById(R.id.dlogEditText);
+            viewTitle.setText(R.string.dlog_title_conn_payment_device);
+//            viewMsg.setText(R.string.dlog_msg_confirm_force_upload);
+            viewMsg.setText(R.string.config_setup_device_ip);
+            promptDialog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
+            Button btnYes = promptDialog.findViewById(R.id.btnDlogLeft);
+            Button btnNo = promptDialog.findViewById(R.id.btnDlogRight);
+            btnYes.setText(R.string.button_save);
+            btnNo.setText(R.string.button_cancel);
+
+            btnYes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new FindPaxDevice(getActivity()).executeOnExecutor(
+                            AsyncTask.THREAD_POOL_EXECUTOR,
+                            ip.getText().toString(),
+                            deviceModel);
+                    promptDialog.dismiss();
+                }
+            });
+            btnNo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    promptDialog.dismiss();
+                }
+            });
+            promptDialog.show();
+        }
+
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             updatePrefSummary(findPreference(key));
             try {
@@ -623,6 +691,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         PayMethodsDAO.delete("Wallet");
                     }
                     break;
+                case R.string.config_use_pax:
+                    checkBoxPreference = (CheckBoxPreference) preference;
+                    if (checkBoxPreference.isChecked()) {
+                        findPreference("pref_use_pax_device_list").setEnabled(true);
+                    } else {
+                        findPreference("pref_use_pax_device_list").setEnabled(false);
+                    }
+                    break;
                 case R.string.config_pay_with_card_on_file:
                     checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
@@ -648,6 +724,18 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_change_password:
                     changePassword(false, null);
+                    break;
+                case R.string.config_backup_settings_global:
+                    backupSettings(true);
+                    break;
+                case R.string.config_backup_settings_local:
+                    backupSettings(false);
+                    break;
+                case R.string.config_restore_settings_global:
+                    restoreSettings(true);
+                    break;
+                case R.string.config_restore_settings_lcoal:
+                    restoreSettings(false);
                     break;
                 case R.string.config_open_cash_drawer:
                     new Thread(new Runnable() {
@@ -755,7 +843,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         @Override
                         public void onSelectCountry(String name, String code) {
                             myPref.setDefaultCountryCode(code);
-                            myPref.setDefaultCountryCode(name);
+                            myPref.setDefaultCountryName(name);
                             CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
                             newFrag.dismiss();
@@ -816,6 +904,28 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public void onBatchProcessedDone(String result) {
             Global.dismissDialog(getActivity(), myProgressDialog);
             Global.showPrompt(getActivity(), R.string.config_batch_pax, result);
+        }
+
+        private void restoreSettings(boolean isFromGlobal) {
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+            if(isFromGlobal){
+                sm.restoreSettings(getActivity(),"0");
+            }else{
+                sm.restoreSettings(getActivity(),String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()));
+            }
+        }
+
+        private void backupSettings(boolean isToGlobal){
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+            String regID = myPref.getAcctNumber();
+            String empID = String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId());
+            if(isToGlobal){
+                sm.backupSettings(getActivity(),"0", regID);
+            }else{
+                sm.backupSettings(getActivity(), empID, regID);
+            }
         }
 
         private void openBixolonSetting() {
@@ -2001,6 +2111,40 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 super.onPostExecute(aVoid);
                 progressDialog.dismiss();
                 loadEpsonDlogSetup(activity);
+            }
+        }
+
+        private class FindPaxDevice extends AsyncTask<String,Void,Void>{
+            private Activity activity;
+            private ProgressDialog progressDialog;
+
+            public FindPaxDevice(Activity activity){
+                this.activity = activity;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog = new ProgressDialog(activity);
+                progressDialog.setCancelable(true);
+                progressDialog.setCanceledOnTouchOutside(true);
+                progressDialog.setTitle(R.string.dlog_title_pax);
+                progressDialog.setMessage(getResources().getString(R.string.sync_saving_settings));
+                progressDialog.show();
+            }
+
+            @Override
+            protected Void doInBackground(String... strings) {
+                String ip = (String) strings[0];
+                String deviceModel = (String) strings[1];
+                myPref.setPaymentDevice(deviceModel);
+                myPref.setPaymentDeviceIP(ip);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                progressDialog.dismiss();
             }
         }
     }

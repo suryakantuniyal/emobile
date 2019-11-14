@@ -412,7 +412,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar
         myProgressDialog.setCancelable(false);
         myProgressDialog.show();
 
-        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
+        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
         poslink = POSLinkCreator.createPoslink(getApplicationContext());
         PaymentRequest payrequest = new PaymentRequest();
         payrequest.ECRRefNum = "1";
@@ -421,7 +421,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar
         payrequest.TransType = REQUEST_TRANSACTION_TYPE_VOID;
 
         poslink.PaymentRequest = payrequest;
-        poslink.SetCommSetting(PosLinkHelper.getCommSetting());
+        poslink.SetCommSetting(PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
 
         // as processTrans is blocked, we must run it in an async task
         new Thread(new Runnable() {
