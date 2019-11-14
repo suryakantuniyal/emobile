@@ -359,6 +359,13 @@ public class Global extends MultiDexApplication {
     private String selectedPO;
     private Dialog globalDlog;
     private MyPreferences preferences;
+    public final static String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.RECORD_AUDIO
+    };
 
     public static void lockOrientation(Activity activity) {
         if (activity != null) {

@@ -308,11 +308,18 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
     }
 
     private void checkPermissions() {
-        checkCameraPermissions();
-        checkLocationPermissions();
-        checkMicrophonePermissions();
-        checkPhoneStatePermissions();
-        checkWritePermissions();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            requestPermissions(Global.permissions, 42);
+                        }
+                    }
+                }
+            }
+        }).start();
     }
 
     public void setCustName() {
@@ -1383,83 +1390,21 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (SelectAccount_FA.PermissionType.getByCode(requestCode)) {
-            case ACCESS_COARSE_LOCATION:
-            case ACCESS_FINE_LOCATION:
-                checkWritePermissions();
-                break;
-            case CAMERA:
-                checkPhoneStatePermissions();
-                break;
-            case WRITE_EXTERNAL_STORAGE:
-                checkCameraPermissions();
-                break;
-            case READ_PHONE_STATE:
-                checkMicrophonePermissions();
-                break;
-        }
-    }
-
-    public void checkLocationPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            SelectAccount_FA.PermissionType.ACCESS_FINE_LOCATION.ordinal());
-                }
-
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                            SelectAccount_FA.PermissionType.ACCESS_COARSE_LOCATION.ordinal());
-                }
-            }
-        }
-    }
-
-    public void checkWritePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            SelectAccount_FA.PermissionType.WRITE_EXTERNAL_STORAGE.ordinal());
-                }
-            }
-        }
-    }
-
-    public void checkCameraPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA},
-                            SelectAccount_FA.PermissionType.CAMERA.ordinal());
-                }
-            }
-        }
-    }
-
-    public void checkPhoneStatePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (getActivity().checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-                    requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
-                            SelectAccount_FA.PermissionType.READ_PHONE_STATE.ordinal());
-                }
-            }
-        }
-    }
-
-    public void checkMicrophonePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (getActivity().checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.MODIFY_AUDIO_SETTINGS)) {
-                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},
-                            SelectAccount_FA.PermissionType.ACCESS_MICROPHONE.ordinal());
-                }
-            }
-        }
+//        switch (SelectAccount_FA.PermissionType.getByCode(requestCode)) {
+//            case ACCESS_COARSE_LOCATION:
+//            case ACCESS_FINE_LOCATION:
+//                checkWritePermissions();
+//                break;
+//            case CAMERA:
+//                checkPhoneStatePermissions();
+//                break;
+//            case WRITE_EXTERNAL_STORAGE:
+//                checkCameraPermissions();
+//                break;
+//            case READ_PHONE_STATE:
+//                checkMicrophonePermissions();
+//                break;
+//        }
     }
 
     public class MyListener implements AdapterView.OnItemClickListener {
