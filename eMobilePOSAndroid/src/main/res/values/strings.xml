@@ -929,6 +929,7 @@
     <string name="config_pay_with_boloro">Pay with Boloro</string>
     <string name="config_use_pax">Use SecurePay (PAX)</string>
     <string name="config_use_sound_payments">Use SecurePay (SP)</string>
+    <string name="config_setup_device_ip">Enter Device IP Address:</string>
 
     <string name="config_customer_display">Customer Display Terminal</string>
 
@@ -1486,6 +1487,12 @@
     <string name="sales_product_details_Invetory_locations_dlog_header_text">On Hand</string>
     <string name="dlog_sales_item_check_inventory_location_text">Location</string>
     <string name="dlog_sales_item_check_inventory_quantity_text">Quantity</string>
+    <string name="config_backup_settings">BackUp</string>
+    <string name="config_restore_settings">Restore</string>
+    <string name="config_backup_settings_global">Backup Settings to Global</string>
+    <string name="config_backup_settings_local">Backup Settings</string>
+    <string name="config_restore_settings_global">Restore Settings From Global</string>
+    <string name="config_restore_settings_lcoal">Restore Settings</string>
 
     <!--EPSON STRING VALUES-->
     <string name="handlingmsg_warn_receipt_near_end">Roll paper is nearly end.\n</string>
@@ -1504,7 +1511,8 @@
     <string name="handlingmsg_err_wrong_paper">Please set correct roll paper.\n</string>
     <string name="handlingmsg_err_battery_real_end">Please connect AC adapter or change the battery.\nBattery of printer is almost empty.\n</string>
     <string name="handlingmsg_err_offline">Printer is offline.\n</string>
-
+    <string name="config_use_pax_device_list">Select Pax Device</string>
+    <string name="dlog_title_pax">PAX</string>
     <!-- Open discount -->
     <string name="enter_open_discount">Set Open Discount</string>
     <string name="invalid_open_discount">Invalid value. Please enter integer number.</string>

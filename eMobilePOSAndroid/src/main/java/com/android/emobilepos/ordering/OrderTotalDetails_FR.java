@@ -890,7 +890,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     String value = viewField.getText().toString().trim();
                     DecimalFormat frmt = new DecimalFormat("0.00");
                     try{
-                        myPref.setOpenDiscount(Integer.valueOf(value));
                         updateDiscount(value,discountSpinner.getSelectedItemPosition());
                     }catch (Exception x){
                         Toast.makeText(activity,x.getMessage(), Toast.LENGTH_LONG).show();

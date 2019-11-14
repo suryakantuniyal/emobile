@@ -713,7 +713,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         if (discount.isFixed()) {
                             if (discount != null && discount.getTaxCodeIsTaxable().equals("1")) {
                                 BigDecimal taxBD = product.getProd_taxValue();
-                                BigDecimal discountingFactor = new BigDecimal(discount.getProductPrice()).divide(orderSubtotal, 6, RoundingMode.HALF_UP);
+                                BigDecimal discountingFactor = new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()).divide(orderSubtotal, 6, RoundingMode.HALF_UP));
                                 product.setProd_taxValue(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
                                 orderTaxes = orderTaxes.add(product.getProd_taxValue());
                             } else {
