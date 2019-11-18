@@ -576,7 +576,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
         private boolean checkPaxDevices(Object newValue){
             boolean result = false;
-            if(newValue.equals("D220")){
+            if(newValue.equals("D220 / S300")){
                 promptPaxSetup(newValue);
                 result = true;
             }else if(newValue.equals("A920")){

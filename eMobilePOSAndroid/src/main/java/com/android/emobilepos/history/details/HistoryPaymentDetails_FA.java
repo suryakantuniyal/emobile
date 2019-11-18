@@ -469,6 +469,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar
                 case CARD_EXPIRED:
                     showErrorDlog("Card is invalid or expired!");
                     break;
+                default:
+                    showErrorDlog("Error "+response.ResultCode+":"+response.ResultTxt);
             }
         } else if (ptr.Code == ProcessTransResult.ProcessTransResultCode.TimeOut) {
             showErrorDlog("Transaction TimeOut!\n" + ptr.Msg);
