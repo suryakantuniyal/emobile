@@ -12,6 +12,7 @@ import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.ProductAttribute;
+import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -20,6 +21,7 @@ import com.android.support.TaxesCalculator;
 import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.Charset;
@@ -95,6 +97,7 @@ public class Order implements Cloneable, Serializable {
     private boolean retailTaxes;
     private BigDecimal subTotal = new BigDecimal(0);
 
+    private BigDecimal applicableFactor = new BigDecimal(1);
 
     public Order() {
         ord_issync = "0";
@@ -215,14 +218,29 @@ public class Order implements Cloneable, Serializable {
                         if(totalDetails != null && subtotal != null && discAmount != null){
                             //get tax - ivu
                             BigDecimal taxBD = totalDetails.getTax();
-                            //BigDecimal discountingFactor = new BigDecimal(100).subtract(discAmount.divide(totalDetails.getSubtotal(),6, RoundingMode.HALF_UP)).divide(new BigDecimal(100)) ;
-                            BigDecimal discountingFactor = new BigDecimal(1).subtract( (discAmount.divide(totalDetails.getSubtotal(),6, RoundingMode.HALF_UP)) );
-                            totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                            applicableFactor = new BigDecimal(1).subtract( (discAmount.divide(totalDetails.getSubtotal(),6, RoundingMode.HALF_UP)) );
+                            ArrayList<OrderProduct> updatedOrderProductList = new ArrayList<OrderProduct>();
+                            List<Tax> taxList = new ArrayList<Tax>();
+                            for (OrderProduct orderProduct : orderProducts) {
+                                orderProduct.setTaxAmount(""+(new BigDecimal(orderProduct.getTaxAmount()).multiply(applicableFactor)));
+                                orderProduct.setTaxTotal(""+(new BigDecimal( orderProduct.getTaxTotal()).multiply(applicableFactor)));
+                                for(Tax t: orderProduct.getTaxes()){
+                                    t.setTaxAmount(t.getTaxAmount().multiply(applicableFactor).setScale(6,RoundingMode.HALF_UP));
+                                    taxList.add(t);
+                                }
+                                orderProduct.setTaxes(taxList);
+                                updatedOrderProductList.add(orderProduct);
+                            }
+                            orderProducts.clear();
+                            orderProducts.addAll(updatedOrderProductList);
+                            OrderingMain_FA orderingMainFa = (OrderingMain_FA) context;
+                            orderingMainFa.global.order.setOrderProducts(orderProducts);
+                            totalDetails.setTax(taxBD.multiply(applicableFactor).setScale(6, RoundingMode.HALF_UP));
                             totalDetails.setGranTotal(BigDecimal.ZERO);
                             for (OrderProduct orderProduct : orderProducts) {
                                 if (!orderProduct.isVoid()) {
                                     totalDetails.setGranTotal(totalDetails.getGranTotal()
-                                            .add(orderProduct.getGranTotalCalculated(discount,discountingFactor)));
+                                            .add(orderProduct.getGranTotalCalculated(discount, applicableFactor)));
                                 }
                             }
                         }
@@ -237,13 +255,29 @@ public class Order implements Cloneable, Serializable {
                     if(discount.getTaxCodeIsTaxable().equals("1")){
                         //get tax - ivu
                         BigDecimal taxBD = totalDetails.getTax();
-                        BigDecimal discountingFactor = (new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()))).divide(new BigDecimal(100));
-                        totalDetails.setTax(taxBD.multiply(discountingFactor).setScale(6, RoundingMode.HALF_UP));
+                        applicableFactor = (new BigDecimal(100).subtract(new BigDecimal(discount.getProductPrice()))).divide(new BigDecimal(100));
+                        ArrayList<OrderProduct> updatedOrderProductList = new ArrayList<OrderProduct>();
+                        List<Tax> taxList = new ArrayList<Tax>();
+                        for (OrderProduct orderProduct : orderProducts) {
+                            orderProduct.setTaxAmount(""+(new BigDecimal(orderProduct.getTaxAmount()).multiply(applicableFactor)));
+                            orderProduct.setTaxTotal(""+(new BigDecimal( orderProduct.getTaxTotal()).multiply(applicableFactor)));
+                            for(Tax t: orderProduct.getTaxes()){
+                                t.setTaxAmount(t.getTaxAmount().multiply(applicableFactor).setScale(6,RoundingMode.HALF_UP));
+                                taxList.add(t);
+                            }
+                            orderProduct.setTaxes(taxList);
+                            updatedOrderProductList.add(orderProduct);
+                        }
+                        orderProducts.clear();
+                        orderProducts.addAll(updatedOrderProductList);
+                        OrderingMain_FA orderingMainFa = (OrderingMain_FA) context;
+                        orderingMainFa.global.order.setOrderProducts(orderProducts);
+                        totalDetails.setTax(taxBD.multiply(applicableFactor).setScale(6, RoundingMode.HALF_UP));
                         totalDetails.setGranTotal(BigDecimal.ZERO);
                         for (OrderProduct orderProduct : orderProducts) {
                             if (!orderProduct.isVoid()) {
                                 totalDetails.setGranTotal(totalDetails.getGranTotal()
-                                        .add(orderProduct.getGranTotalCalculated(discount,discountingFactor)));
+                                        .add(orderProduct.getGranTotalCalculated(discount, applicableFactor)));
                             }
                         }
                     }
@@ -519,5 +553,11 @@ public class Order implements Cloneable, Serializable {
     private BigDecimal getGratuity(BigDecimal gratuity, BigDecimal subTotal){
         BigDecimal oneHundred = new BigDecimal(100);
         return subTotal.multiply((gratuity.divide(oneHundred).setScale(2,BigDecimal.ROUND_DOWN))).setScale(2, BigDecimal.ROUND_DOWN);
+    }
+    public BigDecimal getApplicableFactor() {
+        return applicableFactor;
+    }
+    public void setApplicableFactor(BigDecimal applicableFactor) {
+        this.applicableFactor = applicableFactor;
     }
 }
