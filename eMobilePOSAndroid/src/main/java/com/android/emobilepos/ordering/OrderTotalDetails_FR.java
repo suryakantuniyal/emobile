@@ -29,7 +29,6 @@ import com.android.dao.MixMatchDAO;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
-import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
@@ -41,13 +40,10 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.orders.OrderTotalDetails;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.MixMatch;
-import com.android.emobilepos.models.realms.Payment;
-import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -961,6 +957,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 arr[0] = disc.getProductName();
                 arr[1] = disc.getProductDiscountType();
                 if(count == pos){
+                    disc.setProductPrice(discountPercent);
+                    arr[0] = disc.getDiscountName();
                     arr[2] = discountPercent;
                 }else{
                     arr[2] = disc.getProductPrice();
@@ -976,7 +974,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     false);
             discountSpinner.setAdapter(discountAdapter);
             discountSpinner.setOnItemSelectedListener(setSpinnerListener(true));
-            discountSpinner.setSelection(0);
+            discountSpinner.setSelection(0);// This selects the first item in the discount spinner
             discountSpinner.setSelection(pos);
         }catch (Exception x){
             x.printStackTrace();
