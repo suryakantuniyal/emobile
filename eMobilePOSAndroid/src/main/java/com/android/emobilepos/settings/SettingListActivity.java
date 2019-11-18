@@ -596,6 +596,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             TextView viewTitle = promptDialog.findViewById(R.id.dlogTitle);
             TextView viewMsg = promptDialog.findViewById(R.id.dlogMessage);
             final EditText ip = promptDialog.findViewById(R.id.dlogEditText);
+            ip.setText(myPref.getPaymentDeviceIP());
             viewTitle.setText(R.string.dlog_title_conn_payment_device);
 //            viewMsg.setText(R.string.dlog_msg_confirm_force_upload);
             viewMsg.setText(R.string.config_setup_device_ip);
