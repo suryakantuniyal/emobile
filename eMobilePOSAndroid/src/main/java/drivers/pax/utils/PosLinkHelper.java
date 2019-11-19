@@ -9,7 +9,7 @@ public class PosLinkHelper {
 
     public static CommSetting getCommSetting(String paymentDevice, String paxDeviceIP) {
         CommSetting commsetting = new CommSetting();
-        if (paymentDevice != null && paymentDevice.equalsIgnoreCase("D220")) {
+        if (paymentDevice != null && paymentDevice.contains("D220 / S300")) {
             commsetting.setTimeOut("60000");
             commsetting.setSerialPort("COM1");
             commsetting.setBaudRate("9600");
