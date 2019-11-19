@@ -153,18 +153,22 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     protected void onResume() {
-        if (BuildConfig.DEBUG) {
-            int count = 0;
-            if (Realm.getDefaultConfiguration() != null) {
-                count = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
+        try {
+            if (BuildConfig.DEBUG) {
+                int count = 0;
+                if (Realm.getDefaultConfiguration() != null) {
+                    count = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
 
-                Toast.makeText(this, "Realms count: " + String.valueOf(count), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Realms count: " + String.valueOf(count), Toast.LENGTH_LONG).show();
 
+                }
             }
+            invalidateOptionsMenu();
+            DeviceUtils.registerFingerPrintReader(this);
+            super.onResume();
+        }catch (Exception x){
+            x.printStackTrace();
         }
-        invalidateOptionsMenu();
-        DeviceUtils.registerFingerPrintReader(this);
-        super.onResume();
     }
 
     @Override
@@ -181,54 +185,69 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
         @Override
         protected void onPreExecute() {
-            setRequestedOrientation(Global.getScreenOrientation(BaseFragmentActivityActionBar.this));
-            loadMultiPrinter = (Global.remoteStationsPrinters == null
-                    || Global.remoteStationsPrinters.size() == 0)
-                    && (Global.mainPrinterManager == null
-                    || Global.mainPrinterManager.getCurrentDevice() == null)
-                    && (Global.btSwiper == null || Global.btSwiper.getCurrentDevice() == null);
+            try {
+                setRequestedOrientation(Global.getScreenOrientation(BaseFragmentActivityActionBar.this));
+                loadMultiPrinter = (Global.remoteStationsPrinters == null
+                        || Global.remoteStationsPrinters.size() == 0)
+                        && (Global.mainPrinterManager == null
+                        || Global.mainPrinterManager.getCurrentDevice() == null)
+                        && (Global.btSwiper == null || Global.btSwiper.getCurrentDevice() == null);
 
-            if (loadMultiPrinter) {
-                showProgressDialog();
+                if (loadMultiPrinter) {
+                    showProgressDialog();
+                }
+            }catch (Exception x){
+                x.printStackTrace();
             }
         }
 
         @Override
         protected String doInBackground(String... params) {
-            String autoConnect;
-            autoConnect = DeviceUtils.autoConnect(BaseFragmentActivityActionBar.this, loadMultiPrinter);
-            if (myPref.getPrinterType() == Global.POWA ||
-                    myPref.getPrinterType() == Global.MEPOS ||
-                    myPref.getPrinterType() == Global.ELOPAYPOINT ||
-                    myPref.getPrinterType() == Global.SNBC ||
-                    myPref.getPrinterType() == Global.HP_EONEPRIME ||
-                    myPref.getPrinterType() == Global.EPSON) {
-                isUSB = true;
-            }
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
-                    Global.mainPrinterManager.getCurrentDevice() instanceof EMSsnbc) {
-                ((EMSsnbc) Global.mainPrinterManager.getCurrentDevice()).closeUsbInterface();
+
+            String autoConnect = "";
+            try{
+                autoConnect = DeviceUtils.autoConnect(BaseFragmentActivityActionBar.this, loadMultiPrinter);
+                if (myPref.getPrinterType() == Global.POWA ||
+                        myPref.getPrinterType() == Global.MEPOS ||
+                        myPref.getPrinterType() == Global.ELOPAYPOINT ||
+                        myPref.getPrinterType() == Global.SNBC ||
+                        myPref.getPrinterType() == Global.HP_EONEPRIME ||
+                        myPref.getPrinterType() == Global.EPSON) {
+                    isUSB = true;
+                }
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
+                        Global.mainPrinterManager.getCurrentDevice() instanceof EMSsnbc) {
+                    ((EMSsnbc) Global.mainPrinterManager.getCurrentDevice()).closeUsbInterface();
+                }
+            }catch (Exception x){
+                x.printStackTrace();
             }
             return autoConnect;
+
         }
 
         @Override
         protected void onPostExecute(String result) {
-            if (!isUSB && result.toString().length() > 0)
-                Toast.makeText(BaseFragmentActivityActionBar.this, result.toString(), Toast.LENGTH_LONG).show();
-            else if (isUSB && (Global.mainPrinterManager == null ||
-                    Global.mainPrinterManager.getCurrentDevice() == null)) {
-//                if (global.getGlobalDlog() != null)
-//                    global.getGlobalDlog().dismiss();
-                EMSDeviceManager edm = new EMSDeviceManager();
-                Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadMultiDriver(BaseFragmentActivityActionBar.this, myPref.getPrinterType(), 0, true, "", "");
+            try{
+                if (!isUSB && result.toString().length() > 0)
+                    Toast.makeText(BaseFragmentActivityActionBar.this, result.toString(), Toast.LENGTH_LONG).show();
+                else if (isUSB && (Global.mainPrinterManager == null ||
+                        Global.mainPrinterManager.getCurrentDevice() == null)) {
+    //                if (global.getGlobalDlog() != null)
+    //                    global.getGlobalDlog().dismiss();
+                    EMSDeviceManager edm = new EMSDeviceManager();
+                    Global.mainPrinterManager = edm.getManager();
+                    Global.mainPrinterManager.loadMultiDriver(BaseFragmentActivityActionBar.this, myPref.getPrinterType(), 0, true, "", "");
+                }
+                Global.dismissDialog(BaseFragmentActivityActionBar.this, driversProgressDialog);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            }catch (Exception x){
+                x.printStackTrace();
             }
-            Global.dismissDialog(BaseFragmentActivityActionBar.this, driversProgressDialog);
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
         private void showProgressDialog() {
+            try{
             if (driversProgressDialog == null) {
                 driversProgressDialog = new ProgressDialog(BaseFragmentActivityActionBar.this);
                 driversProgressDialog.setMessage(getString(R.string.connecting_devices));
@@ -236,7 +255,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 driversProgressDialog.setCancelable(true);
             }
             driversProgressDialog.show();
-
+        }catch (Exception x){
+                x.printStackTrace();
+            }
         }
     }
 

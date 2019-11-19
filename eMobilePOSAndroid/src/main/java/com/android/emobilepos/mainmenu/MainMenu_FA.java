@@ -199,17 +199,19 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         forceTabs();
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getBoolean("unsynched_items", false))
-            myBar.setSelectedNavigationItem(2);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Global.getCurrLocation(MainMenu_FA.this, true);
-            }
-        }).start();
-
+        try {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null && extras.getBoolean("unsynched_items", false))
+                myBar.setSelectedNavigationItem(2);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Global.getCurrLocation(MainMenu_FA.this, true);
+                }
+            }).start();
+        }catch (Exception x){
+            x.printStackTrace();
+        }
         hasBeenCreated = true;
 
         if (!myPref.isRestaurantMode()) {

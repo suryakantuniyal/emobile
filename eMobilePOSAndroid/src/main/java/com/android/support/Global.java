@@ -456,64 +456,65 @@ public class Global extends MultiDexApplication {
     }
 
     public static Location getCurrLocation(final Context activity, boolean reload) {
-        final Global global = (Global) activity.getApplicationContext();
-        if (global.locationServices == null) {
-            global.locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
-                @Override
-                public void onConnected(@Nullable Bundle bundle) {
-                    if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        FusedLocationProviderClient lastLocation = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(activity);
-                        lastLocation.getLastLocation().addOnSuccessListener((Activity) activity, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                if (location == null) {
-                                    LocationServices.mLastLocation = new Location("");
-                                } else {
-                                    LocationServices.mLastLocation = location;
-                                }
-                                global.locationServices.disconnect();
-                                synchronized (global.locationServices) {
-                                    global.locationServices.notifyAll();
-                                }
+        try {
+            final Global global = (Global) activity.getApplicationContext();
+            if (global.locationServices == null) {
+                global.locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle) {
+                        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            FusedLocationProviderClient lastLocation = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(activity);
+                            lastLocation.getLastLocation().addOnSuccessListener((Activity) activity, new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    if (location == null) {
+                                        LocationServices.mLastLocation = new Location("");
+                                    } else {
+                                        LocationServices.mLastLocation = location;
+                                    }
+                                    global.locationServices.disconnect();
+                                    synchronized (global.locationServices) {
+                                        global.locationServices.notifyAll();
+                                    }
 
-                            }
-                        });
+                                }
+                            });
+
+                        }
+
 
                     }
 
+                    @Override
+                    public void onConnectionSuspended(int i) {
 
-                }
+                    }
+                }, new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-                @Override
-                public void onConnectionSuspended(int i) {
+                    }
+                });
 
-                }
-            }, new GoogleApiClient.OnConnectionFailedListener() {
-                @Override
-                public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            }
 
-                }
-            });
-
-        }
-
-        synchronized (global.locationServices) {
-            if (LocationServices.mLastLocation == null || reload) {
-                global.locationServices.connect();
-                try {
-                    global.locationServices.wait(15000);
-                } catch (InterruptedException e) {
-                    Crashlytics.logException(e);
+            synchronized (global.locationServices) {
+                if (LocationServices.mLastLocation == null || reload) {
+                    global.locationServices.connect();
+                    try {
+                        global.locationServices.wait(15000);
+                    } catch (InterruptedException e) {
+                        Crashlytics.logException(e);
+                    }
                 }
             }
+
+            if (LocationServices.mLastLocation == null) {
+                LocationServices.mLastLocation = new Location("");
+            }
+        }catch (Exception x){
+            x.printStackTrace();
         }
-
-        if (LocationServices.mLastLocation == null)
-
-        {
-            LocationServices.mLastLocation = new Location("");
-        }
-
         return LocationServices.mLastLocation;
     }
 

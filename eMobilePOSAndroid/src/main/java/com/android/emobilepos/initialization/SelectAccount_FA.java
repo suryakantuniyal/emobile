@@ -51,77 +51,81 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
-        final MyPreferences myPref = new MyPreferences(this);
-        if (myPref.getLogIn()) {
-            dbManager = new DBManager(this, Global.FROM_LOGIN_ACTIVITTY);
-            if (dbManager.isNewDBVersion()) {
-                dbManager.alterTables();
-                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-                if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
-                    assignEmployee = new AssignEmployee();
-                    assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
-                    List<AssignEmployee> assignEmployees = new ArrayList<>();
-                    assignEmployees.add(assignEmployee);
-                    try {
-                        AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
-                    } catch (Exception e) {
-                        Crashlytics.logException(e);
+        try {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            super.onCreate(savedInstanceState);
+            Fabric.with(this, new Crashlytics());
+            final MyPreferences myPref = new MyPreferences(this);
+            if (myPref.getLogIn()) {
+                dbManager = new DBManager(this, Global.FROM_LOGIN_ACTIVITTY);
+                if (dbManager.isNewDBVersion()) {
+                    dbManager.alterTables();
+                    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                    if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
+                        assignEmployee = new AssignEmployee();
+                        assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
+                        List<AssignEmployee> assignEmployees = new ArrayList<>();
+                        assignEmployees.add(assignEmployee);
+                        try {
+                            AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+                        } catch (Exception e) {
+                            Crashlytics.logException(e);
+                        }
                     }
-                }
-                if (dbManager.unsynchItemsLeft()) {
-                    //there are unsynch item left...
-                    Intent intent = new Intent(this, MainMenu_FA.class);
-                    Bundle extras = new Bundle();
-                    extras.putBoolean("unsynched_items", true);
-                    intent.putExtras(extras);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    AlertDialog.Builder alertDlogBuilder = new AlertDialog.Builder(this);
-                    promptDialog = alertDlogBuilder.setTitle("Urgent").setCancelable(false)
-                            .setMessage("A new Database version must be installed...").
-                                    setPositiveButton("Install", new DialogInterface.OnClickListener() {
+                    if (dbManager.unsynchItemsLeft()) {
+                        //there are unsynch item left...
+                        Intent intent = new Intent(this, MainMenu_FA.class);
+                        Bundle extras = new Bundle();
+                        extras.putBoolean("unsynched_items", true);
+                        intent.putExtras(extras);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        AlertDialog.Builder alertDlogBuilder = new AlertDialog.Builder(this);
+                        promptDialog = alertDlogBuilder.setTitle("Urgent").setCancelable(false)
+                                .setMessage("A new Database version must be installed...").
+                                        setPositiveButton("Install", new DialogInterface.OnClickListener() {
 
-                                        @Override
-                                        public void onClick(DialogInterface thisDialog, int which) {
-                                            dbManager.updateDB();
+                                            @Override
+                                            public void onClick(DialogInterface thisDialog, int which) {
+                                                dbManager.updateDB();
 //                                            SynchMethods sm = new SynchMethods(dbManager);
 //                                            sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
-                                            promptDialog.dismiss();
-                                            new SyncReceiveTask().execute(dbManager);
-                                        }
-                                    }).create();
-                    promptDialog.show();
-                }
-
-            } else {
-                Intent intent = new Intent(this, MainMenu_FA.class);
-                startActivityForResult(intent, 0);
-                finish();
-            }
-        } else {
-            setContentView(R.layout.initialization_layout);
-            final EditText acctNumber = (EditText) findViewById(R.id.initAccountNumber);
-            final EditText acctPassword = (EditText) findViewById(R.id.initPassword);
-            Button login = (Button) findViewById(R.id.loginButton);
-            thisContext = this;
-            login.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    if (!myPref.getLogIn()) {
-                        myPref.setAcctNumber(acctNumber.getText().toString());
-                        myPref.setAcctPassword(acctPassword.getText().toString());
-                        String android_id = Secure.getString(thisContext.getContentResolver(), Secure.ANDROID_ID);
-                        myPref.setDeviceID(android_id);
-                        new ValidateLoginAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+                                                promptDialog.dismiss();
+                                                new SyncReceiveTask().execute(dbManager);
+                                            }
+                                        }).create();
+                        promptDialog.show();
                     }
+
+                } else {
+                    Intent intent = new Intent(this, MainMenu_FA.class);
+                    startActivityForResult(intent, 0);
+                    finish();
                 }
-            });
-            checkPermissions();
+            } else {
+                setContentView(R.layout.initialization_layout);
+                final EditText acctNumber = (EditText) findViewById(R.id.initAccountNumber);
+                final EditText acctPassword = (EditText) findViewById(R.id.initPassword);
+                Button login = (Button) findViewById(R.id.loginButton);
+                thisContext = this;
+                login.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        if (!myPref.getLogIn()) {
+                            myPref.setAcctNumber(acctNumber.getText().toString());
+                            myPref.setAcctPassword(acctPassword.getText().toString());
+                            String android_id = Secure.getString(thisContext.getContentResolver(), Secure.ANDROID_ID);
+                            myPref.setDeviceID(android_id);
+                            new ValidateLoginAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+                        }
+                    }
+                });
+                checkPermissions();
+            }
+        }catch (Throwable x){
+            x.printStackTrace();
         }
     }
 
