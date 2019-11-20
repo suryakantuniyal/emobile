@@ -1024,7 +1024,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     getOrderingMainFa().global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
-                    new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
+                    String ord_id = getOrderingMainFa().global.order.ord_id;
+                    new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold, ord_id);
                 }
             } else {
                 if (getOrderingMainFa().global.order.getOrderProducts().size() > 0 ||
@@ -2139,7 +2140,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         break;
                     case CHECK_OUT_HOLD:
                         try {
-                            OnHoldsManager.checkoutOnHold(Global.lastOrdID, getActivity());
+                            String orderId = arg0[2].toString();
+                            OnHoldsManager.checkoutOnHold(orderId, getActivity());
                         } catch (Exception e) {
                             e.printStackTrace();
                             Crashlytics.logException(e);
@@ -2157,11 +2159,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             if (Global.isFromOnHold) {
                 if (caseSelected != Global.TransactionType.SALE_RECEIPT &&
                         caseSelected != Global.TransactionType.RETURN &&
-                        caseSelected != Global.TransactionType.INVOICE) {
+                        caseSelected != Global.TransactionType.INVOICE
+                && getActivity() != null) {
                     getActivity().finish();
                 }
             } else if (caseSelected != Global.TransactionType.RETURN &&
-                    caseSelected != Global.TransactionType.INVOICE) {
+                    caseSelected != Global.TransactionType.INVOICE
+                    && getActivity() != null) {
                 getActivity().finish();
             }
         }

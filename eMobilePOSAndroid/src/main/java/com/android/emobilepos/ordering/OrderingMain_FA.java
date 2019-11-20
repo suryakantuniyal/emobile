@@ -1086,6 +1086,24 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 if (isFromOnHold)
                 {
                     leftFragment.voidCancelOnHold(1);
+                    if (mTransType == Global.TransactionType.SALE_RECEIPT) // is sales receipt
+                        voidTransaction(OrderingMain_FA.this, global.order, global.ordProdAttr);
+                    else if (mTransType == Global.TransactionType.CONSIGNMENT) {
+                        if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.consignment_order.ord_id);
+                        }
+                        if (Global.cons_return_order != null && !Global.cons_return_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.cons_return_order.ord_id);
+                        }
+                        if (Global.cons_fillup_order != null && !Global.cons_fillup_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.cons_fillup_order.ord_id);
+                        }
+                        if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.consignment_order.ord_id);
+                        }
+                    } else {
+                        OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.order.ord_id);
+                    }
                     Intent intent = new Intent(OrderingMain_FA.this, MainMenu_FA.class);
                     startActivity(intent);
                 }
