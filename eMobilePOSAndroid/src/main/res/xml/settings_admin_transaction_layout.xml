@@ -13,6 +13,9 @@
             android:key="pref_default_country"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_default_country" />
+        <CheckBoxPreference
+            android:key="manager_password_required_for_open_discount"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_manager_password_required" />
     </PreferenceCategory>
-
 </PreferenceScreen>

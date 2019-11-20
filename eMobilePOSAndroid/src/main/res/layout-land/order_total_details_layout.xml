@@ -60,23 +60,39 @@
                 android:background="@drawable/blue_btn_selector" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/globalDiscountField"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"
-            android:background="@drawable/txt_field_default"
-            android:ellipsize="start"
-            android:ems="10"
-            android:enabled="false"
-            android:gravity="right|center_vertical"
-            android:hint="@string/add_main_hint2"
-            android:inputType="textNoSuggestions"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textColor="#000000"
-            android:textSize="@dimen/add_orders_total_field_text_size" >
-        </EditText>
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1" >
+
+            <Button
+                android:id="@+id/discountBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="%"
+                android:background="@drawable/blue_btn_selector"
+                />
+
+
+            <EditText
+                android:id="@+id/globalDiscountField"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/txt_field_default"
+                android:ellipsize="start"
+                android:ems="10"
+                android:enabled="false"
+                android:gravity="right|center_vertical"
+                android:hint="@string/add_main_hint2"
+                android:inputType="textNoSuggestions"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/add_orders_total_field_text_size" >
+            </EditText>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
