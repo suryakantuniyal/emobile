@@ -23,6 +23,16 @@ public class Discount {
         discount.setProductName("");
         return discount;
     }
+    public Discount(){
+
+    }
+    public Discount(String[] arr){
+        setProductId(arr[4]);
+        setTaxCodeIsTaxable(arr[3]);
+        setProductPrice(arr[2]);
+        setProductDiscountType(arr[1]);
+        setProductName(arr[0]);
+    }
 
     public String getProductName() {
         return productName;
@@ -66,5 +76,29 @@ public class Discount {
 
     public boolean isFixed() {
         return getProductDiscountType().equals("Fixed");
+    }
+    public String getDiscountName(){
+        String discountName = "";
+        if(getProductDiscountType() != null &&
+                !getProductDiscountType().trim().equalsIgnoreCase("Fixed")){
+            discountName = getProductPrice() + " " + getDiscountTypeDesc(getProductDiscountType()) + getTaxableDesc(getTaxCodeIsTaxable()) +" Discount ";
+        }else{
+            discountName = getDiscountTypeDesc(getProductDiscountType()) + getProductPrice() + " " + getTaxableDesc(getTaxCodeIsTaxable()) +" Discount ";
+        }
+        return discountName;
+    }
+    private String getTaxableDesc(String taxCodeIsTaxable){
+        if(taxCodeIsTaxable != null && taxCodeIsTaxable.trim().equals("1")){
+            return "Taxable";
+        }else{
+            return "Non Taxable";
+        }
+    }
+    private String getDiscountTypeDesc(String discountType){
+        if(discountType != null && discountType.trim().equalsIgnoreCase("Fixed")){
+            return "$";
+        }else{
+            return "%";
+        }
     }
 }

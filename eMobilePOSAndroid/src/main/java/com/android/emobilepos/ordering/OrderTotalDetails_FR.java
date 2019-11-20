@@ -1,23 +1,28 @@
 package com.android.emobilepos.ordering;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.MixMatchDAO;
@@ -66,6 +71,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private int taxSelected;
     private int discountSelected;
     private EditText globalDiscount, globalTax, subTotal;
+    private Button discountBtn;
     private TextView granTotal;
     private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
     private Activity activity;
@@ -74,6 +80,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private TaxesGroupHandler taxGroupHandler;
     private AssignEmployee assignEmployee;
     private boolean isToGo;
+    boolean validPassword = false;
 
     public static OrderTotalDetails_FR init(int val) {
         OrderTotalDetails_FR frag = new OrderTotalDetails_FR();
@@ -412,9 +419,25 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         globalTax = view.findViewById(R.id.globalTaxField);
         discountSpinner = view.findViewById(R.id.globalDiscountSpinner);
         globalDiscount = view.findViewById(R.id.globalDiscountField);
+        discountBtn     = view.findViewById(R.id.discountBtn);
+        if(discountBtn != null)
+            discountBtn.setEnabled(false);
         granTotal = view.findViewById(R.id.grandTotalValue);
         activity = getActivity();
         myPref = new MyPreferences(activity);
+        discountBtn.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //Check if manager password is required from preferences
+                        if(myPref.isManagerPasswordRequiredForOpenDiscount()){
+                            askForManagerPassDlg();
+                        }else{
+                            showDiscountDlog();
+                        }
+                    }
+                }
+        );
         return view;
     }
 
@@ -564,14 +587,29 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     public void setDiscountValue(int position) {
-        DecimalFormat frmt = new DecimalFormat("0.00");
-        if (position == 0) {
-            if (getOrderingMainFa().global.order == null || getOrderingMainFa().global.order.ord_discount_id.isEmpty()) {
-                discount_rate = new BigDecimal("0");
-                discount_amount = new BigDecimal("0");
-                discountID = "";
-            } else {
-                discountSelected = ((MySpinnerAdapter) discountSpinner.getAdapter()).getDiscountIdPosition(getOrderingMainFa().global.order.ord_discount_id) + 1;
+        try{
+            DecimalFormat frmt = new DecimalFormat("0.00");
+            if (position == 0) {
+                discountBtn.setEnabled(false);
+                if (getOrderingMainFa().global.order == null || getOrderingMainFa().global.order.ord_discount_id.isEmpty()) {
+                    discount_rate = new BigDecimal("0");
+                    discount_amount = new BigDecimal("0");
+                    discountID = "";
+                } else {
+                    discountSelected = ((MySpinnerAdapter) discountSpinner.getAdapter()).getDiscountIdPosition(getOrderingMainFa().global.order.ord_discount_id) + 1;
+                    discountID = discountList.get(discountSelected - 1).getProductId();
+                    if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
+                        discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+                        discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+                    } else {
+                        discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice())
+                                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                        BigDecimal total = discountable_sub_total.subtract(itemsDiscountTotal);
+                        discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
+                    }
+                }
+            } else if (discountList != null && discountSelected > 0) {
+                discountBtn.setEnabled(true);
                 discountID = discountList.get(discountSelected - 1).getProductId();
                 if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
                     discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
@@ -584,25 +622,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
                 }
             }
-        } else if (discountList != null && discountSelected > 0) {
-            discountID = discountList.get(discountSelected - 1).getProductId();
-            if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
-                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
-                discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
-
-            } else {
-                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice())
-                        .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                BigDecimal total = discountable_sub_total.subtract(itemsDiscountTotal);
-                discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
-            }
+            globalDiscount.setText(Global.getCurrencyFormat(frmt.format(discount_amount)));
+            Global.discountPosition = position;
+            Global.discountAmount = discount_amount;
+        }catch (Exception x){
+            x.printStackTrace();
         }
-
-
-        globalDiscount.setText(Global.getCurrencyFormat(frmt.format(discount_amount)));
-
-        Global.discountPosition = position;
-        Global.discountAmount = discount_amount;
     }
 
     private OrderingMain_FA getOrderingMainFa() {
@@ -714,7 +739,16 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private class MySpinnerAdapter extends ArrayAdapter<String> {
+        public List<String> getLeftData() {
+            return leftData;
+        }
+
         List<String> leftData = null;
+
+        public List<String[]> getRightData() {
+            return rightData;
+        }
+
         List<String[]> rightData = null;
         boolean isTax = false;
         private Activity context;
@@ -813,5 +847,137 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
     public int getDiscountSelected() {
         return discountSelected;
+    }
+    private void showDiscountDlog() {
+        try{
+            final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            globalDlog.setCancelable(true);
+            globalDlog.setCanceledOnTouchOutside(true);
+            globalDlog.setContentView(R.layout.dlog_field_single_layout);
+
+            final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT);
+            try{
+                if (myPref.getOpenDiscount() != null) {
+                    viewField.setText(""+myPref.getOpenDiscount());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewTitle.setText(R.string.enter_open_discount);
+            viewMsg.setVisibility(View.GONE);
+            Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    String value = viewField.getText().toString().trim();
+                    DecimalFormat frmt = new DecimalFormat("0.00");
+                    try{
+                        updateDiscount(value,discountSpinner.getSelectedItemPosition());
+                    }catch (Exception x){
+                        Toast.makeText(activity,x.getMessage(), Toast.LENGTH_LONG).show();
+                        x.printStackTrace();
+                    }
+                }
+            });
+            globalDlog.show();
+        }catch (Exception x){
+            x.printStackTrace();
+        }
+    }
+    private void askForManagerPassDlg()        //type 0 = Change Password, type 1 = Configure Home Menu
+    {
+        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        globalDlog.setCancelable(true);
+        globalDlog.setCanceledOnTouchOutside(true);
+        globalDlog.setContentView(R.layout.dlog_field_single_layout);
+
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+//        if (!validPassword)
+//            viewMsg.setText(R.string.invalid_password);
+//        else
+            viewMsg.setText(R.string.dlog_title_enter_manager_password);
+        Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
+
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+                String value = viewField.getText().toString();
+                if (myPref.loginManager(value)) // validate manager password
+                {
+                    validPassword = true;
+                    showDiscountDlog();
+                } else {
+                    validPassword = false;
+//                    askForManagerPassDlg();
+                }
+            }
+        });
+        globalDlog.show();
+    }
+    private void updateDiscount(String discountPercent,int pos){
+        try{
+            List<Discount> newDiscountList = new ArrayList<Discount>();
+            List<String> discList = ((MySpinnerAdapter) discountSpinner.getAdapter()).getLeftData();
+            List<String> leftDiscList = new ArrayList<String>();
+            List<String[]> discountArr = new ArrayList<>();
+            int count = 0;
+            leftDiscList.add(discList.get(0));
+            for (Discount disc : discountList) {
+                count++;
+                String[] arr = new String[5];
+                arr[0] = disc.getProductName();
+                arr[1] = disc.getProductDiscountType();
+                if(count == pos){
+                    disc.setProductPrice(discountPercent);
+                    arr[0] = disc.getDiscountName();
+                    arr[2] = discountPercent;
+                }else{
+                    arr[2] = disc.getProductPrice();
+                }
+                arr[3] = disc.getTaxCodeIsTaxable();
+                arr[4] = disc.getProductId();
+                leftDiscList.add(arr[0]);
+                discountArr.add(arr);
+                newDiscountList.add(new Discount(arr));
+            }
+            discountList = newDiscountList;
+            MySpinnerAdapter discountAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, leftDiscList, discountArr,
+                    false);
+            discountSpinner.setAdapter(discountAdapter);
+            discountSpinner.setOnItemSelectedListener(setSpinnerListener(true));
+            discountSpinner.setSelection(0);// This selects the first item in the discount spinner
+            discountSpinner.setSelection(pos);
+        }catch (Exception x){
+            x.printStackTrace();
+        }
     }
 }

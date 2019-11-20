@@ -314,7 +314,6 @@ public class MyPreferences {
         prefEditor.putString(key, val);
         prefEditor.commit();
     }
-
 //    public String getZoneID() {
 //        // return "1";
 //        return (prefs.getString(zone_id, ""));
@@ -1672,4 +1671,28 @@ public class MyPreferences {
     public boolean isGratuitySelected(){
         return getPreferences(suggested_gratuity) ;
     }
+    public Integer getOpenDiscount() {
+        String key = "open_discount";
+        return prefs.getInt(key, 0);
+    }
+
+    public void setOpenDiscount(Integer openDiscount) {
+        String key = "open_discount";
+        prefEditor.putInt(key, openDiscount);
+        prefEditor.commit();
+    }
+    public boolean isManagerPasswordRequiredForOpenDiscount(){
+        String key = "manager_password_required_for_open_discount";
+        return getPreferences(key, false);
+    }
+//    public void setManagerPasswordRequiredForOpenDiscount(int isRequiredForOpenDiscount){
+//        String key = "manager_password_for_open_discount";
+//        prefEditor.putInt(key, isRequiredForOpenDiscount);
+//        prefEditor.commit();
+//    }
+
+
+
+
+
 }
