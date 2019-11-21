@@ -400,8 +400,10 @@ public class BackupSettings {
             mOther.setHomeMenuConfig(home);
 
             String transaction = myPreferences.getPreferencesValue("pref_default_transaction");
-            mOther.setDefaultTransaction(transaction.equals("-1") ? "" :
-                    (transaction.equals("0")) ? "startcheck" : "return");
+            if(transaction == null || transaction.trim().equals("")){
+                transaction = "-1";
+            }
+            mOther.setDefaultTransaction(transaction);
             mOther.setBlockPriceLevelChange(myPreferences.getPreferences("pref_block_price_level_change"));
             mOther.setRequireAddress(myPreferences.getPreferences("pref_require_address"));
             mOther.setRequirePO(myPreferences.getPreferences("pref_require_po"));
