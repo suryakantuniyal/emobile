@@ -11,6 +11,7 @@ import android.util.Base64;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
+import com.android.dao.PaymentMethodDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.dao.TermsNConditionsDAO;
@@ -36,6 +37,7 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.models.realms.TermsNConditions;
@@ -484,8 +486,12 @@ public class ReceiptBuilder {
 
             receipt.setGratuity(sb.toString());
             sb.setLength(0);
-
+            String paymentMethodType = "";
             PaymentsHandler payHandler = new PaymentsHandler(context);
+            List<Payment> paymentList = payHandler.getOrderPayments(order.ord_id);
+            for(Payment payment:paymentList){
+                paymentMethodType = payment.getPaymentMethod().getPaymentmethod_type();
+            }
             List<PaymentDetails> detailsList = payHandler
                     .getPaymentForPrintingTransactions(order.ord_id);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
@@ -521,8 +527,6 @@ public class ReceiptBuilder {
 
                 StringBuilder tempSB = new StringBuilder();
                 for (int i = 0; i < size; i++) {
-                    String _pay_type = detailsList.get(i).getPaymethod_name().toUpperCase(
-                            Locale.getDefault()).trim();
                     tempAmount = tempAmount + formatStrToDouble(
                             detailsList.get(i).getPay_amount());
                     if (Payment.PaymentType.getPaymentTypeByCode(
@@ -536,9 +540,9 @@ public class ReceiptBuilder {
                             .oneColumnLineWithLeftAlignedText(
                                     Global.getCurrencyFormat(
                                             detailsList.get(i).getPay_amount())
-                                            + "[" + detailsList.get(i).getPaymethod_name() + "]",
+                                            + "[" + paymentMethodType + "]",
                                     lineWidth, 1));
-                    if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
+                    if (!paymentMethodType.equalsIgnoreCase("CASH") && !paymentMethodType.equalsIgnoreCase("CHECK")) {
                         tempSB.append(textHandler.oneColumnLineWithLeftAlignedText(
                                 "TransID: " + StringUtil.nullStringToEmpty(
                                         detailsList.get(i).getPay_transid()),
@@ -565,7 +569,7 @@ public class ReceiptBuilder {
                 }
                 if (type == Global.OrderType.ORDER) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                            context.getString(R.string.receipt_amountreturned),
+                            context.getString(R.string.receipt_change_due),
                             Global.formatDoubleToCurrency(tempAmount), lineWidth, 0));
                 } else {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
@@ -620,7 +624,10 @@ public class ReceiptBuilder {
                         }
                     }
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                            context.getString(R.string.receipt_amountreturned),
+                            context.getString(R.string.receipt_total_tendered),
+                            Global.formatDoubleToCurrency(totalAmountTendered), lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.receipt_change_due),
                             Global.getCurrencyFormat(Double.toString(tempAmount)),
                             lineWidth, 0));
                 }
@@ -839,7 +846,6 @@ public class ReceiptBuilder {
                               boolean isReprint, EMVContainer emvContainer) {
 
         Receipt receipt = new Receipt();
-
         try {
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             PaymentsHandler payHandler = new PaymentsHandler(context);

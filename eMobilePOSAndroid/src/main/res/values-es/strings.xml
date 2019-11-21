@@ -759,6 +759,8 @@
     <string name="receipt_grandtotal">"Gran total:"</string>
     <string name="receipt_amountpaid">"Cantidad pagada:"</string>
     <string name="receipt_amountreturned">"Cantidad devuelta:"</string>
+    <string name="receipt_change_due">"Cantidad a devolver"</string>
+    <string name="receipt_total_tendered">"Cantidad pagada:"</string>
     <string name="receipt_total_tip_paid">"Total de puntos pagados:"</string>
     <string name="receipt_tip">"Propina:"</string>
     <string name="receipt_balance_due">"Saldo adeudado:"</string>
