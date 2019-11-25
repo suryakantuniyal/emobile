@@ -1074,6 +1074,18 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     payTypeList.add(paymentMethod);
                 }
 
+                if (myPref.getPreferences(MyPreferences.pref_pay_with_card_on_file)) {
+                    paymentMethod = new PaymentMethod();
+                    paymentMethod.setOriginalTransid("true");
+                    paymentMethod.setIsactive("1");
+                    paymentMethod.setPaymentmethod_type("CardOnFile");
+                    paymentMethod.setPaymethod_id("CardOnFile");
+                    paymentMethod.setPaymethod_name("CardOnFile");
+                    paymentMethod.setPaymethod_showOnline("0");
+                    paymentMethod.setPriority(0);
+                    payTypeList.add(paymentMethod);
+                }
+
                 if (myPref.getPreferences(MyPreferences.pref_use_sound_payments)) {
                     paymentMethod = new PaymentMethod();
                     paymentMethod.setOriginalTransid("true");
