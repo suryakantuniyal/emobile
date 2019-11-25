@@ -234,10 +234,10 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payrequest.TransType = REQUEST_TRANSACTION_TYPE_RETURN;
         }
 
-//        if(myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)){
-//            payrequest.TipAmt = String.valueOf(MoneyUtils.convertDollarsToCents(
-//                    NumberUtils.cleanCurrencyFormatedNumber(Global.formatDoubleToCurrency(amountToTip))));
-//        }
+        if(myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)){
+            payrequest.TipAmt = String.valueOf(MoneyUtils.convertDollarsToCents(
+                    NumberUtils.cleanCurrencyFormatedNumber(Global.formatDoubleToCurrency(amountToTip))));
+        }
         payrequest.Amount = String.valueOf(MoneyUtils.convertDollarsToCents(
                 NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
 
