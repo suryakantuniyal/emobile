@@ -522,7 +522,7 @@
     </string-array>
 
     <string-array name="pax_devices">
-        <item name="a920">A920</item>
+        <item name="a920">A920/Aries</item>
         <item name="d220">D220</item>
     </string-array>
 </resources>
