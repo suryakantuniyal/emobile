@@ -1476,4 +1476,5 @@
     <string name="config_restore_settings_global">Restore Settings From Global</string>
     <string name="config_restore_settings_lcoal">Restore Settings</string>
     <string name="dlog_title_pax">PAX</string>
+    <string name="dlog_pax_use_signatures">¿Le gustaría usar firmas?</string>
 </resources>

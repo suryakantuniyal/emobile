@@ -1513,4 +1513,5 @@
     <string name="handlingmsg_err_offline">Printer is offline.\n</string>
     <string name="config_use_pax_device_list">Select Pax Device</string>
     <string name="dlog_title_pax">PAX</string>
+    <string name="dlog_pax_use_signatures">Would you like to use signatures?</string>
 </resources>

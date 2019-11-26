@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -26,6 +27,7 @@ import com.android.dao.ShiftDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
+import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.genius.AdditionalParameters;
@@ -89,6 +91,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     private static ProcessTransResult ptr;
     private Button btnProcess;
     private TextView dlogGrandTotal;
+    private String paid_amount;
     double grandTotalAmount;
     double amountToTip;
 
@@ -329,20 +332,27 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             switch (response.ResultCode) {
                 case TRANSACTION_SUCCESS:
                     payHandler.insert(payment);
-                    String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
+                    paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
                             amountTextView.getText().toString());
 
                     payment.getEmvContainer().getGeniusResponse().setStatus(APPROVED);
 
-                    result.putExtra("total_amount", paid_amount);
-                    result.putExtra("emvcontainer",
-                            new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
-                    setResult(-2, result);
+                    if(myPref.getPreferences(MyPreferences.pref_use_pax_signature))
+                    {
+                        Intent intent = new Intent(this, DrawReceiptActivity.class);
+                        intent.putExtra("isFromPayment", true);
+                        startActivityForResult(intent, 0);
+                    }else {
+                        result.putExtra("total_amount", paid_amount);
+                        result.putExtra("emvcontainer",
+                                new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+                        setResult(-2, result);
 
-                    if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-                        showPrintDlg();
-                    else {
-                        finish();
+                        if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+                            showPrintDlg();
+                        else {
+                            finish();
+                        }
                     }
                     break;
                 case TRANSACTION_DECLINED:
@@ -364,6 +374,23 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             showErrorDlog("Transaction TimeOut!\n" + ptr.Msg);
         } else {
             showErrorDlog("Transaction Error!\n" + ptr.Msg);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == -1){
+            Intent result = new Intent();
+            result.putExtra("total_amount", paid_amount);
+            result.putExtra("emvcontainer", new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+            setResult(-2, result);
+            if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+               showPrintDlg();
+            else {
+                finish();
+            }
         }
     }
 

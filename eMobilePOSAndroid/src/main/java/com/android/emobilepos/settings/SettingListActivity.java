@@ -625,6 +625,28 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             promptDialog.show();
         }
 
+        private void promptForSignature(){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setMessage(R.string.dlog_pax_use_signatures)
+                    .setTitle(R.string.dlog_title_pax);
+            builder.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    myPref.setPreferences(MyPreferences.pref_use_pax_signature,true);
+                }
+            });
+            builder.setNegativeButton(R.string.button_no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    myPref.setPreferences(MyPreferences.pref_use_pax_signature,false);
+                }
+            });
+
+            builder.create();
+            builder.show();
+        }
+
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             updatePrefSummary(findPreference(key));
             try {
@@ -694,6 +716,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_use_pax:
                     checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
+                        promptForSignature();
                         findPreference("pref_use_pax_device_list").setEnabled(true);
                     } else {
                         findPreference("pref_use_pax_device_list").setEnabled(false);

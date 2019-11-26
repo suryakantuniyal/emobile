@@ -655,6 +655,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             if (!TextUtils.isEmpty(job_id)) {
                 ordersHandler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
             }
+            if(myPref.getPreferences(MyPreferences.pref_use_pax_signature)){
+                PaymentsHandler payHandler = new PaymentsHandler(this);
+                Global.amountPaid = payHandler.updateSignaturePayment(pay_id, global.encodedImage);
+            }
 
             Global.overallPaidAmount += Double.parseDouble(Global.amountPaid);
             tipPaidAmount += Double.parseDouble(Global.tipPaid);
