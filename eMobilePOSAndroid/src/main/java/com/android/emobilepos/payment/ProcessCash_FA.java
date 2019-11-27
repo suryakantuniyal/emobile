@@ -489,6 +489,13 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         Button tenPercent = dialogLayout.findViewById(R.id.tenPercent);
         Button fifteenPercent = dialogLayout.findViewById(R.id.fifteenPercent);
         Button twentyPercent = dialogLayout.findViewById(R.id.twentyPercent);
+        if(!(myPref.getGratuityOne().isEmpty()))
+            tenPercent.setText(((Double.valueOf(myPref.getGratuityOne())*100)+"%"));
+        if(!(myPref.getGratuityTwo().isEmpty()))
+            fifteenPercent.setText(((Double.valueOf(myPref.getGratuityTwo())*100)+"%"));
+        if(!(myPref.getGratuityThree().isEmpty()))
+            twentyPercent.setText(((Double.valueOf(myPref.getGratuityThree())*100)+"%"));
+
         dlogGrandTotal = dialogLayout.findViewById(R.id.grandTotalView);
         dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
 
@@ -540,8 +547,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (subTotal * (0.1));
+                amountToTip = (float)(subTotal * ((Double.valueOf(tenPercent.getText().toString().replace("%",""))) / 100));
                 grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
@@ -554,8 +560,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (subTotal * (0.15));
+                amountToTip = (float)(subTotal * ((Double.valueOf(fifteenPercent.getText().toString().replace("%",""))) / 100));
                 grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
@@ -568,8 +573,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (subTotal * (0.2));
+                amountToTip = (float)(subTotal * ((Double.valueOf(twentyPercent.getText().toString().replace("%",""))) / 100));
                 grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");

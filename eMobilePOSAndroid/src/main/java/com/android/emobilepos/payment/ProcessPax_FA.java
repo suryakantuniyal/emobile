@@ -53,6 +53,8 @@ import com.pax.poslink.ProcessTransResult;
 import com.pax.poslink.ProcessTransResult.ProcessTransResultCode;
 import com.pax.poslink.poslink.POSLinkCreator;
 
+import org.kxml2.kdom.Document;
+
 import java.math.BigDecimal;
 import java.util.Locale;
 
@@ -466,6 +468,13 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         Button saveTip = dialogLayout.findViewById(R.id.acceptTipButton);
         Button noneButton = dialogLayout.findViewById(R.id.noneButton);
 
+        if(!(myPref.getGratuityOne().isEmpty()))
+            tenPercent.setText(((Double.valueOf(myPref.getGratuityOne())*100)+"%"));
+        if(!(myPref.getGratuityTwo().isEmpty()))
+            fifteenPercent.setText(((Double.valueOf(myPref.getGratuityTwo())*100)+"%"));
+        if(!(myPref.getGratuityThree().isEmpty()))
+            twentyPercent.setText(((Double.valueOf(myPref.getGratuityThree())*100)+"%"));
+
         promptTipField.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
             }
@@ -500,7 +509,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
             @Override
             public void onClick(View v) {
-                amountToTip = (float) (subTotal * 0.1);
+                amountToTip = Double.valueOf(tenPercent.getText().toString().replace("%","")) / 100;
                 grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
@@ -513,7 +522,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
             @Override
             public void onClick(View v) {
-                amountToTip = (float) (subTotal * 0.15);
+                amountToTip = Double.valueOf(fifteenPercent.getText().toString().replace("%","")) / 100;
                 grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
@@ -526,7 +535,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
             @Override
             public void onClick(View v) {
-                amountToTip = (float) (subTotal * 0.2);
+                amountToTip = Double.valueOf(twentyPercent.getText().toString().replace("%","")) / 100;
                 grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");

@@ -115,17 +115,14 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_print_set_suggested_gratuity" />
         <Preference
-            android:dependency="suggested_gratuity"
             android:key="gratuity_one"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/enter_gratuity_one" />
         <Preference
-            android:dependency="suggested_gratuity"
             android:key="gratuity_two"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/enter_gratuity_two" />
         <Preference
-            android:dependency="suggested_gratuity"
             android:key="gratuity_three"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/enter_gratuity_three" />
