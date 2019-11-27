@@ -1012,10 +1012,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     orderProductsHandler.deleteAllOrdProd(getOrderingMainFa().global.order.ord_id);
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
-
+                    String ord_id = getOrderingMainFa().global.order.ord_id;
                     if (myPref.isRestaurantMode())
                         new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
-                    new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
+                    new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold,ord_id);
                 } else {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     getOrderingMainFa().global.order.isVoid = "1";
