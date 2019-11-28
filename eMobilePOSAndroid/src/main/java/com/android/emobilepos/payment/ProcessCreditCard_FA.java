@@ -105,6 +105,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.ingenico.utils.MobilePosSdkHelper;
 import interfaces.EMSCallBack;
+import interfaces.TipsCallback;
 import main.EMSDeviceManager;
 import util.MoneyUtils;
 import util.json.UIUtils;
@@ -118,7 +119,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         OnClickListener,
         TextWatcherCallback,
         CompoundButton.OnCheckedChangeListener,
-        MobilePosSdkHelper.OnIngenicoTransactionCallback {
+        MobilePosSdkHelper.OnIngenicoTransactionCallback,
+        TipsCallback {
 
     public static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
@@ -1245,8 +1247,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
     }
 
     private void promptTipConfirmation() {
-        SelectPayMethod_FA.GratuityManager gm = new SelectPayMethod_FA.GratuityManager(activity,myPref,global,isFromMainMenu);
-        gm.showTipsForCreditCardPayments(amountDueField,amountPaidField,orderSubTotal,amountToTip);
+        SelectPayMethod_FA.GratuityManager gm = new SelectPayMethod_FA.GratuityManager(this,activity,myPref,global,isFromMainMenu);
+        gm.showTipsForCreditCardPayments(amountDueField,amountPaidField,orderSubTotal);
     }
 
     private void promptAmountConfirmation() {
@@ -1994,6 +1996,42 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
             enableManualCreditCard();
         } else {
             setHandopintUIFields();
+        }
+    }
+
+    @Override
+    public void noneTipGratuityWasPressed(TextView totalAmountView, TextView dlogGrandTotal, double subTotal) {
+        amountToTip = 0;
+        grandTotalAmount = subTotal;
+        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+        totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
+    }
+
+    @Override
+    public void cancelTipGratuityWasPressed(AlertDialog dialog) {
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+        amountToTip = 0;
+        grandTotalAmount = amountToBePaid;
+        btnProcess.setEnabled(true);
+        dialog.dismiss();
+    }
+
+    @Override
+    public void saveTipGratuityWasPressed(AlertDialog dialog, double amountToTip) {
+        this.amountToTip = amountToTip;
+        if (myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
+            dialog.dismiss();
+
+            if (!extras.getBoolean("histinvoices") || (isOpenInvoice && !isMultiInvoice))
+                processPayment();
+            else
+                processMultiInvoicePayment();
+        } else {
+            if (tipAmount != null)
+                tipAmount.setText(Global.getCurrencyFormat(
+                        Global.formatNumToLocale(Double.parseDouble(Double.toString(amountToTip)))));
+            dialog.dismiss();
         }
     }
 

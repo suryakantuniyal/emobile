@@ -49,10 +49,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import interfaces.TipsCallback;
 import main.EMSDeviceManager;
 import util.json.UIUtils;
 
-public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
+public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener, TipsCallback {
     String orderSubTotal;
     //    private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
@@ -462,7 +463,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     }
 
     private void promptTipConfirmation() {
-        SelectPayMethod_FA.GratuityManager gm = new SelectPayMethod_FA.GratuityManager(activity,myPref,global,isFromMainMenu);
+        SelectPayMethod_FA.GratuityManager gm = new SelectPayMethod_FA.GratuityManager(this,activity,myPref,global,isFromMainMenu);
         gm.showTipsForCashPayments(amountDue, promptTipField, paid, orderSubTotal);
     }
 
@@ -860,6 +861,30 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         amountToBePaid += temp;
         grandTotalAmount = amountToBePaid + amountToTip;
         paid.setText(Global.formatDoubleToCurrency(amountToBePaid));
+    }
+
+    @Override
+    public void noneTipGratuityWasPressed(TextView totalAmountView, TextView dlogGrandTotal, double subTotal) {
+        amountToTip = 0;
+        grandTotalAmount = subTotal;
+        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+        totalAmountView.setText(String.format(Locale.getDefault(), activity.getString(R.string.total_plus_tip),
+                Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
+    }
+
+    @Override
+    public void cancelTipGratuityWasPressed(AlertDialog dialog) {
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+        amountToTip = 0;
+        grandTotalAmount = amountToBePaid;
+        dialog.dismiss();
+    }
+
+    @Override
+    public void saveTipGratuityWasPressed(AlertDialog dialog, double amountToTip) {
+        if (tipAmount != null)
+            tipAmount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(Double.toString(amountToTip)))));
+        dialog.dismiss();
     }
 
     private class processPaymentAsync extends AsyncTask<Boolean, String, Payment> {
