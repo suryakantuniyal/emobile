@@ -980,15 +980,15 @@ public class OrdersHandler {
 
             if (startDate != null && !startDate.isEmpty()) {
                 if (endDate != null && !endDate.isEmpty()) {
-                    query.append(" AND date >= datetime(?, 'utc') ");
+                    query.append(" AND datetime(date,'utc') >= datetime(?, 'utc') ");
                     where_values.add(startDate);
                 } else {
-                    query.append(" AND date = ? ");
+                    query.append(" AND datetime(date,'utc') = datetime(?, 'utc') ");
                     where_values.add(startDate);
                 }
             }
             if (endDate != null && !endDate.isEmpty()) {
-                query.append(" AND date <= datetime(?, 'utc') ");
+                query.append(" AND datetime(date,'utc') <= datetime(?, 'utc') ");
                 where_values.add(endDate + ":59");
             }
 
@@ -1049,15 +1049,15 @@ public class OrdersHandler {
 
             if (startDate != null && !startDate.isEmpty()) {
                 if (endDate != null && !endDate.isEmpty()) {
-                    query.append(" AND date >= datetime(?, 'utc') ");
+                    query.append(" AND datetime(date,'utc') >= datetime(?, 'utc') ");
                     where_values.add(startDate);
                 } else {
-                    query.append(" AND date = ? ");
+                    query.append(" AND datetime(date,'utc') = datetime(?, 'utc') ");
                     where_values.add(startDate);
                 }
             }
             if (endDate != null && !endDate.isEmpty()) {
-                query.append(" AND date <= datetime(?, 'utc') ");
+                query.append(" AND datetime(date,'utc') <= datetime(?, 'utc') ");
                 where_values.add(endDate + ":59");
             }
 
