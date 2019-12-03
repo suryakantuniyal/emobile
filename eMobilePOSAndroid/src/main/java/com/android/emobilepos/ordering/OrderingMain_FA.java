@@ -1249,17 +1249,24 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
         String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
+        String quantity = null;
+        String price    = null;
         EmbeddedBarcode embeddedBarcode = new EmbeddedBarcode(upc);
         embeddedBarcode.setBarcodeType(myPref.getPrefEmbeddedBarcodeType());
         if(embeddedBarcode.isEmbeddedBarcode()){
             upc = embeddedBarcode.getSKU();
+            if(embeddedBarcode.getBarcodeType().equalsIgnoreCase("weight")){
+                quantity = embeddedBarcode.getPriceOrWeight();
+            }if(embeddedBarcode.getBarcodeType().equalsIgnoreCase("price")){
+                price = embeddedBarcode.getPriceOrWeight();
+            }
         }
-//      upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
         if (!upc.isEmpty()) {
             if (myPref.isRemoveLeadingZerosFromUPC()) {
                 upc = NumberUtils.removeLeadingZeros(upc);
             }
             Product product = handler.getUPCProducts(upc, false);
+
             if (product.getId() != null) {
                 if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                     if (validAutomaticAddQty(product)) {
@@ -1269,9 +1276,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                             {
                                 global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                             } else
-                                getCatalogFr().automaticAddOrder(product,embeddedBarcode.getPriceOrWeight(),null);
+                                getCatalogFr().automaticAddOrder(product,quantity,price);
                         } else
-                            getCatalogFr().automaticAddOrder(product,embeddedBarcode.getPriceOrWeight(),null);
+                            getCatalogFr().automaticAddOrder(product,quantity,price);
                         refreshView();
                         if (OrderingMain_FA.returnItem) {
                             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
