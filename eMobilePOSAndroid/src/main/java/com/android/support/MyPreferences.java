@@ -211,6 +211,10 @@ public class MyPreferences {
     public static final String gratuity_two     = "gratuity_two";
     public static final String gratuity_three   = "gratuity_three";
 
+    // Embedded Barcode
+    private static final String pref_embedded_barcodes = "pref_embedded_barcodes";
+    private static final String pref_embedded_barcode_type = "pref_embedded_barcode_type";
+
     public MyPreferences(Context context) {
         this.context = context;
         // prefEditor =
@@ -1690,9 +1694,10 @@ public class MyPreferences {
 //        prefEditor.putInt(key, isRequiredForOpenDiscount);
 //        prefEditor.commit();
 //    }
-
-
-
-
-
+    public boolean isEmbeddedBarcodeEnabled(){
+        return getPreferences(pref_embedded_barcodes,false);
+    }
+    public String getPrefEmbeddedBarcodeType(){
+        return getPreferencesValue(pref_embedded_barcode_type);
+    }
 }

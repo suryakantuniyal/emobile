@@ -275,5 +275,8 @@
         <item name="fullName">fullName</item>
         <item name="companyName">CompanyName</item>
     </string-array>
-
+    <string-array name="embedded_barcode_type">
+        <item name="price">Precio</item>
+        <item name="weight">Peso</item>
+    </string-array>
 </resources>

@@ -775,7 +775,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             list.addAll(global.order.getOrderProducts());
             for (OrderProduct orderProduct : list) {
                 Product product = productsHandler.getUPCProducts(orderProduct.getProd_id(), true);
-                getCatalogFr().automaticAddOrder(product);
+                getCatalogFr().automaticAddOrder(product,null,null);
                 toRemove.add(orderProduct);
             }
             global.order.getOrderProducts().removeAll(toRemove);
@@ -1036,9 +1036,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                 {
                                     global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                 } else
-                                    getCatalogFr().automaticAddOrder(product);
+                                    getCatalogFr().automaticAddOrder(product,null,null);
                             } else
-                                getCatalogFr().automaticAddOrder(product);
+                                getCatalogFr().automaticAddOrder(product,null,null);
                             refreshView();
                         } else {
                             Global.showPrompt(this, R.string.dlog_title_error,
@@ -1177,6 +1177,69 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         };
     }
+    public enum EmbeddedCode{
+        UPCA,EAN13
+    }
+    private class EmbeddedBarcode{
+        String barcode = "";
+        private String barcodeType = "";
+        public String getSKU(){
+            if(isUPCA()){
+                return ""+ Integer.parseInt(barcode.substring(1,6));
+            }else if(isEAN13()){
+                return ""+ Integer.parseInt(barcode.substring(2,7));
+            }
+            return "";
+        }
+        public String getPriceOrWeight(){
+
+            if(isUPCA()){
+                String entero = barcode.substring(6,9);
+                String decimal= barcode.substring(9,11);
+                return new BigDecimal(""+entero+"."+decimal).toString();
+            }else if(isEAN13()){
+                String entero = barcode.substring(2,5);
+                String decimal= barcode.substring(5,7);
+                return new BigDecimal(""+entero+"."+decimal).toString();
+            }
+            return "1.0";
+        }
+        EmbeddedCode embeddedCode = null;
+        public EmbeddedBarcode(String barcode){
+            // The barcode determines the format
+            this.barcode = barcode;
+            if(isUPCA()){
+                embeddedCode = EmbeddedCode.UPCA;
+            }else if(isEAN13()){
+                embeddedCode = EmbeddedCode.EAN13;
+            }
+        }
+        public boolean isUPCA(){
+            String barcodeType = barcode.substring(0,1);
+            if(barcodeType.equals("2"))// Embedded Barcodes start with 2.
+                return true;
+            else
+                return false;
+        }
+        public boolean isEAN13(){
+            String barcodeType = barcode.substring(0,2);
+            if(barcodeType.equals("02"))// Embedded Barcodes start with 02.
+                return true;
+            else
+                return false;
+        }
+        public boolean isEmbeddedBarcode(){
+            return isUPCA() || isEAN13();
+        }
+
+        public String getBarcodeType() {
+            return barcodeType;
+        }
+
+        public void setBarcodeType(String barcodeType) {
+            this.barcodeType = barcodeType;
+        }
+    }
 
     private void processScan() {
         if (EMSELO.isEloPaypoint2()) {
@@ -1186,7 +1249,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
         String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
-//                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
+        EmbeddedBarcode embeddedBarcode = new EmbeddedBarcode(upc);
+        embeddedBarcode.setBarcodeType(myPref.getPrefEmbeddedBarcodeType());
+        if(embeddedBarcode.isEmbeddedBarcode()){
+            upc = embeddedBarcode.getSKU();
+        }
+//      upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
         if (!upc.isEmpty()) {
             if (myPref.isRemoveLeadingZerosFromUPC()) {
                 upc = NumberUtils.removeLeadingZeros(upc);
@@ -1201,9 +1269,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                             {
                                 global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                             } else
-                                getCatalogFr().automaticAddOrder(product);
+                                getCatalogFr().automaticAddOrder(product,embeddedBarcode.getPriceOrWeight(),null);
                         } else
-                            getCatalogFr().automaticAddOrder(product);
+                            getCatalogFr().automaticAddOrder(product,embeddedBarcode.getPriceOrWeight(),null);
                         refreshView();
                         if (OrderingMain_FA.returnItem) {
                             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
@@ -1303,6 +1371,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         ProductsHandler handler = new ProductsHandler(this);
         Product product = handler.getUPCProducts(upc, false);
         if (product.getId() != null) {
+            String quantity = "1";
+            String price    = "2";
             if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                 if (validAutomaticAddQty(product)) {
                     if (myPref.isGroupReceiptBySku(isToGo)) {
@@ -1310,9 +1380,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         if (foundPosition != -1) {
                             global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                         } else
-                            getCatalogFr().automaticAddOrder(product);
+                            getCatalogFr().automaticAddOrder(product, quantity, price);
                     } else
-                        getCatalogFr().automaticAddOrder(product);
+                        getCatalogFr().automaticAddOrder(product, quantity, price);
                     refreshView();
                 } else {
                     Global.showPrompt(this, R.string.dlog_title_error, this.getString(R.string.limit_onhand));
