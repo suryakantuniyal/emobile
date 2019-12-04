@@ -963,12 +963,12 @@ public class OrdersHandler {
             List<Order> listOrder = new ArrayList<>();
             StringBuilder query = new StringBuilder();
             query.append("SELECT ");
-            query.append("sum(ord_subtotal) as 'ord_subtotal', ");
+            query.append("round(sum(ord_subtotal),2) as 'ord_subtotal', ");
             query.append("ord_type, ");
             query.append("sum(ord_discount) as 'ord_discount', ");
             query.append("sum(ord_taxamount) as 'ord_taxamount', ");
             query.append("sum(ord_total) as 'ord_total', ");
-            query.append("datetime(ord_timecreated) AS 'date' ");
+            query.append("ord_timecreated ");
             query.append("FROM Orders ");
             query.append("WHERE isVoid = '0' AND processed != '10' ");
 
@@ -978,18 +978,22 @@ public class OrdersHandler {
                 where_values.add(clerk_id);
             }
 
-            if (startDate != null && !startDate.isEmpty()) {
-                if (endDate != null && !endDate.isEmpty()) {
-                    query.append(" AND datetime(date,'utc') >= datetime(?, 'utc') ");
+            boolean hasStartDate = (startDate != null && !startDate.isEmpty())?true:false;
+            boolean hasEndDate = (endDate != null && !endDate.isEmpty())?true:false;
+
+            if (hasStartDate && hasEndDate) {
+                query.append(" AND datetime(ord_timecreated,'utc') BETWEEN datetime(?,'utc')  ");
+                query.append(" and datetime(?,'utc')");
+                where_values.add(startDate);
+                where_values.add(endDate + ":59");
+            }else if(hasStartDate || hasEndDate) {
+                if (hasStartDate) {
+                    query.append(" AND datetime(ord_timecreated,'utc') >= datetime(?, 'utc')");
                     where_values.add(startDate);
                 } else {
-                    query.append(" AND datetime(date,'utc') = datetime(?, 'utc') ");
-                    where_values.add(startDate);
+                    query.append(" AND datetime(ord_timecreated,'utc') <= datetime(?, 'utc') ");
+                    where_values.add(endDate + ":59");
                 }
-            }
-            if (endDate != null && !endDate.isEmpty()) {
-                query.append(" AND datetime(date,'utc') <= datetime(?, 'utc') ");
-                where_values.add(endDate + ":59");
             }
 
             query.append(" GROUP BY ord_type");
@@ -1036,7 +1040,7 @@ public class OrdersHandler {
             query.append("tax_id, ");
             query.append("tax_name, ");
             query.append("sum(tax_amount) AS 'tax_amount' , ");
-            query.append("datetime(ord_timecreated) AS 'date' ");
+            query.append("ord_timecreated ");
             query.append("FROM Orders ");
             query.append("INNER JOIN OrderTaxes ON Orders.ord_id = OrderTaxes.ord_id ");
             query.append("WHERE isVoid = '0' ");
@@ -1047,18 +1051,22 @@ public class OrdersHandler {
                 where_values.add(clerk_id);
             }
 
-            if (startDate != null && !startDate.isEmpty()) {
-                if (endDate != null && !endDate.isEmpty()) {
-                    query.append(" AND datetime(date,'utc') >= datetime(?, 'utc') ");
+            boolean hasStartDate = (startDate != null && !startDate.isEmpty())?true:false;
+            boolean hasEndDate = (endDate != null && !endDate.isEmpty())?true:false;
+
+            if (hasStartDate && hasEndDate) {
+                query.append(" AND datetime(ord_timecreated,'utc') BETWEEN datetime(?,'utc')  ");
+                query.append(" and datetime(?,'utc')");
+                where_values.add(startDate);
+                where_values.add(endDate + ":59");
+            }else if(hasStartDate || hasEndDate) {
+                if (hasStartDate) {
+                    query.append(" AND datetime(ord_timecreated,'utc') >= datetime(?, 'utc')");
                     where_values.add(startDate);
                 } else {
-                    query.append(" AND datetime(date,'utc') = datetime(?, 'utc') ");
-                    where_values.add(startDate);
+                    query.append(" AND datetime(ord_timecreated,'utc') <= datetime(?, 'utc') ");
+                    where_values.add(endDate + ":59");
                 }
-            }
-            if (endDate != null && !endDate.isEmpty()) {
-                query.append(" AND datetime(date,'utc') <= datetime(?, 'utc') ");
-                where_values.add(endDate + ":59");
             }
 
             query.append(

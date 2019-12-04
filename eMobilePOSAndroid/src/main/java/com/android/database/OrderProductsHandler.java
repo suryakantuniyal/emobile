@@ -679,16 +679,13 @@ public class OrderProductsHandler {
             StringBuilder query = new StringBuilder();
             List<OrderProduct> listOrdProd = new ArrayList<>();
 
-            String sqlDateFunction = "date";
-            if (endDate != null) sqlDateFunction = "datetime";
-
             query.append(
                     "SELECT prod_price as 'prod_price', case when op.cat_name = '' THEN 'Other' else  " +
                             "op.cat_name end as cat_name, op.cat_id, sum(ordprod_qty) as 'ordprod_qty', " +
-                            "sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
-                            "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty  END) as 'overwrite_price', ");
-            query.append(sqlDateFunction);
-            query.append("(o.ord_timecreated) as 'date'" +
+                            "round(sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
+                            "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty  END),2) as 'overwrite_price', ");
+
+            query.append("o.ord_timecreated " +
                     "FROM " + table_name + " op ");
             query.append(
                     "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
@@ -705,18 +702,23 @@ public class OrderProductsHandler {
                 query.append(" AND o.clerk_id = ? ");
                 where_values.add(clerk_id);
             }
-            if (startDate != null && !startDate.isEmpty()) {
-                if (endDate != null && !endDate.isEmpty()) {
-                    query.append(" AND datetime(date,'utc') >= datetime(?, 'utc') ");
+
+            boolean hasStartDate = (startDate != null && !startDate.isEmpty())?true:false;
+            boolean hasEndDate = (endDate != null && !endDate.isEmpty())?true:false;
+
+            if (hasStartDate && hasEndDate) {
+                query.append(" AND datetime(o.ord_timecreated,'utc') BETWEEN datetime(?,'utc')  ");
+                query.append(" and datetime(?,'utc')");
+                where_values.add(startDate);
+                where_values.add(endDate + ":59");
+            }else if(hasStartDate || hasEndDate) {
+                if (hasStartDate) {
+                    query.append(" AND datetime(o.ord_timecreated,'utc') >= datetime(?, 'utc')");
                     where_values.add(startDate);
                 } else {
-                    query.append(" AND datetime(date,'utc') = datetime(?, 'utc')");
-                    where_values.add(startDate);
+                    query.append(" AND datetime(o.ord_timecreated,'utc') <= datetime(?, 'utc') ");
+                    where_values.add(endDate + ":59");
                 }
-            }
-            if (endDate != null && !endDate.isEmpty()) {
-                query.append(" AND datetime(date,'utc') <= datetime(?, 'utc') ");
-                where_values.add(endDate + ":59");
             }
 
             query.append(" AND o.ord_id IN (SELECT job_id FROM Payments GROUP BY job_id) ");
@@ -781,18 +783,23 @@ public class OrderProductsHandler {
                 query.append(" AND o.clerk_id = ? ");
                 where_values.add(clerk_id);
             }
-            if (startDate != null && !startDate.isEmpty()) {
-                if (endDate != null && !endDate.isEmpty()) {
-                    query.append(" AND datetime(date,'utc') >= datetime(?, 'utc') ");
+
+            boolean hasStartDate = (startDate != null && !startDate.isEmpty())?true:false;
+            boolean hasEndDate = (endDate != null && !endDate.isEmpty())?true:false;
+
+            if (hasStartDate && hasEndDate) {
+                query.append(" AND datetime(o.ord_timecreated,'utc') BETWEEN datetime(?,'utc')  ");
+                query.append(" and datetime(?,'utc')");
+                where_values.add(startDate);
+                where_values.add(endDate + ":59");
+            }else if(hasStartDate || hasEndDate) {
+                if (hasStartDate) {
+                    query.append(" AND datetime(o.ord_timecreated,'utc') >= datetime(?, 'utc')");
                     where_values.add(startDate);
                 } else {
-                    query.append(" AND datetime(date,'utc') = datetime(?, 'utc') ");
-                    where_values.add(startDate);
+                    query.append(" AND datetime(o.ord_timecreated,'utc') <= datetime(?, 'utc') ");
+                    where_values.add(endDate + ":59");
                 }
-            }
-            if (endDate != null && !endDate.isEmpty()) {
-                query.append(" AND datetime(date,'utc') <= datetime(?, 'utc') ");
-                where_values.add(endDate + ":59");
             }
 
             query.append(" GROUP BY o.clerk_id");
