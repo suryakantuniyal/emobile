@@ -500,11 +500,8 @@ public class CustomersHandler {
 
     public void insert(List<Customer> customers) {
         SQLiteStatement insert = null;
-        SQLiteStatement cipher = null;
         DBManager.getDatabase().beginTransaction();
         try {
-            cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = OFF;");
-            cipher.execute();
             String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
                     "VALUES (" + sb2.toString() + ")";
             insert = DBManager.getDatabase().compileStatement(sb);
@@ -554,9 +551,6 @@ public class CustomersHandler {
         } finally {
             if (insert != null) {
                 insert.close();
-            }
-            if (cipher != null) {
-                cipher.close();
             }
             DBManager.getDatabase().endTransaction();
 

@@ -95,10 +95,7 @@ public class ProductsHandler {
     public void insert(List<Product> products) {
         DBManager.getDatabase().beginTransaction();
         SQLiteStatement insert = null;
-        SQLiteStatement cipher = null;
         try {
-            cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = OFF;");
-            cipher.execute();
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             for (Product product : products) {
@@ -142,9 +139,6 @@ public class ProductsHandler {
         } finally {
             if (insert != null) {
                 insert.close();
-            }
-            if (cipher != null) {
-                cipher.close();
             }
         }
     }

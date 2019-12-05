@@ -60,11 +60,8 @@ public class ProductAliases_DB {
 
     public void insert(List<ProductAlias> aliases) {
         SQLiteStatement insert=null;
-        SQLiteStatement cipher=null;
         DBManager.getDatabase().beginTransaction();
         try {
-            cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = OFF;");
-            cipher.execute();
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
@@ -81,9 +78,6 @@ public class ProductAliases_DB {
         } finally {
             if(insert!=null) {
                 insert.close();
-            }
-            if (cipher != null) {
-                cipher.close();
             }
             DBManager.getDatabase().endTransaction();
         }

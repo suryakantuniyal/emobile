@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.TimingLogger;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -133,6 +134,8 @@ import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
 
 import com.android.emobilepos.models.response.BuildSettings;
+
+import net.sqlcipher.database.SQLiteStatement;
 
 import util.XmlUtils;
 import util.json.JsonUtils;
@@ -460,6 +463,9 @@ public class SynchMethods {
     }
 
     public boolean syncReceive() {
+        SQLiteStatement cipher = null;
+        cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = OFF;");
+        cipher.execute();
         try {
             synchGetServerTime();
             synchEmployeeData();
@@ -522,6 +528,10 @@ public class SynchMethods {
             preferences.setLastReceiveSync("Sync Fail");
             e.printStackTrace();
             return false;
+        }finally {
+            cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = ON;");
+            cipher.execute();
+            cipher.close();
         }
         return true;
     }
