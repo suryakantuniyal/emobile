@@ -17,8 +17,12 @@ import android.os.Message;
 import android.text.InputType;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -31,8 +35,11 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
@@ -103,7 +110,7 @@ import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
 import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
 
 public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
-        implements EMSCallBack, OnClickListener, OnItemClickListener,
+        implements EMSCallBack, OnClickListener, OnItemClickListener,PopupMenu.OnMenuItemClickListener,
         MobilePosSdkHelper.OnIngenicoTransactionCallback {
 
     private static List<String> allInfoLeft;
@@ -966,6 +973,20 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                         holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
                         holder.ordProdQty.setText(String.format("%s x", orderedProd.get(ind).getOrdprod_qty()));
                         holder.ordProdPrice.setText(Global.getCurrencyFormat(orderedProd.get(ind).getFinalPrice()));
+                        LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.linearLayoutVertical);
+                        if(linearLayout != null){
+                            linearLayout.setOnClickListener(
+                                    new OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            PopupMenu popup = new PopupMenu(HistoryTransactionDetails_FA.this, view);
+                                            popup.setOnMenuItemClickListener(HistoryTransactionDetails_FA.this);
+                                            popup.inflate(R.menu.order_detail_item_menu);
+                                            popup.show();
+                                        }
+                                    }
+                            );
+                        }
                         break;
                     }
                     case 3: {
@@ -1057,6 +1078,17 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
             TextView ordProdPrice;
             ImageView iconImage;
             ImageView moreDetails;
+        }
+    }
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
+        switch (item.getItemId()) {
+            case R.id.printGiftReceipt:
+                Toast.makeText(HistoryTransactionDetails_FA.this,"Print Gift Receipt onMenuItemClick!!!",Toast.LENGTH_LONG).show();
+                return true;
+            default:
+                return false;
         }
     }
 }
