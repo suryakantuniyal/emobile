@@ -463,9 +463,7 @@ public class SynchMethods {
     }
 
     public boolean syncReceive() {
-        SQLiteStatement cipher = null;
-        cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = OFF;");
-        cipher.execute();
+        DBManager.cipherMemorySecurity(true);
         try {
             synchGetServerTime();
             synchEmployeeData();
@@ -529,9 +527,7 @@ public class SynchMethods {
             e.printStackTrace();
             return false;
         }finally {
-            cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = ON;");
-            cipher.execute();
-            cipher.close();
+            DBManager.cipherMemorySecurity(false);
         }
         return true;
     }

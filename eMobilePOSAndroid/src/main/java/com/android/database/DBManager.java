@@ -14,6 +14,7 @@ import com.android.support.SynchMethods;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteStatement;
 
 import org.apache.commons.io.FileUtils;
 
@@ -53,6 +54,7 @@ public class DBManager {
             "CREATE INDEX IF NOT EXISTS Taxes_Group_taxId_index ON Taxes_Group (taxId)",
             "CREATE INDEX IF NOT EXISTS Taxes_Group_taxcode_id_index ON Taxes_Group (taxcode_id)",
             "CREATE INDEX IF NOT EXISTS Orders_ord_issync_index ON Orders (ord_issync)",
+            "CREATE INDEX IF NOT EXISTS Orders_ord_isonhold_index ON Orders (isOnHold)",
             "CREATE INDEX IF NOT EXISTS VoidTransactions_is_sync_index ON VoidTransactions (is_sync)",
             "CREATE INDEX IF NOT EXISTS prodcatxref_prod_id_index ON ProdCatXref (prod_id)",
             "CREATE INDEX IF NOT EXISTS prodcatxref_cat_id_index ON ProdCatXref (cat_id)",
@@ -371,6 +373,17 @@ public class DBManager {
 
     public static void setDatabase(SQLiteDatabase database) {
         DBManager.database = database;
+    }
+
+    public static void cipherMemorySecurity(boolean turnOn){
+        SQLiteStatement cipher = null;
+        if(turnOn)
+            cipher = getDatabase().compileStatement("PRAGMA cipher_memory_security = ON;");
+        else
+            cipher = getDatabase().compileStatement("PRAGMA cipher_memory_security = OFF;");
+
+        cipher.execute();
+        cipher.close();
     }
 
     public static void encrypt(Context ctxt, String dbName, String passphrase) throws IOException {
