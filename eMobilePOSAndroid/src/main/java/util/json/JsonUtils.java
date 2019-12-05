@@ -25,7 +25,9 @@ import io.realm.RealmObject;
  * Created by guarionex on 06-28-16.
  */
 public class JsonUtils {
-    public static Gson getInstance() {
+    private static volatile Gson mInstance;
+
+    private static Gson buildNewInstance(){
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -46,6 +48,35 @@ public class JsonUtils {
                         new EmobileBiometricsRealmListConverter())
 //                .excludeFieldsWithoutExposeAnnotation()
                 .create();
+    }
+
+    public static Gson getInstance() {
+        if(mInstance == null){
+            synchronized (JsonUtils.class){
+                mInstance = buildNewInstance();
+            }
+        }
+        return mInstance;/*
+        return new GsonBuilder()
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getDeclaringClass().equals(RealmObject.class);
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                }).registerTypeAdapter(new TypeToken<RealmList<DinningTable>>() {
+                        }.getType(),
+                        new DinningTableRealmListConverter())
+                .setDateFormat(DateUtils.DATE_yyyy_MM_ddTHH_mm_ss)
+                .registerTypeAdapter(new TypeToken<RealmList<EmobileBiometric>>() {
+                        }.getType(),
+                        new EmobileBiometricsRealmListConverter())
+//                .excludeFieldsWithoutExposeAnnotation()
+                .create();*/
     }
 
     public String readJSONfileFromPath(String path) {

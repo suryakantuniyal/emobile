@@ -108,9 +108,11 @@ public class PayMethodsHandler {
 
     public void insert(List<PaymentMethod> paymentMethods) {
         SQLiteStatement insert = null;
+        SQLiteStatement cipher = null;
         DBManager.getDatabase().beginTransaction();
         try {
-
+            cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = OFF;");
+            cipher.execute();
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             for (PaymentMethod method : paymentMethods) {
@@ -142,6 +144,9 @@ public class PayMethodsHandler {
         } finally {
             if (insert != null) {
                 insert.close();
+            }
+            if (cipher != null) {
+                cipher.close();
             }
             DBManager.getDatabase().endTransaction();
         }

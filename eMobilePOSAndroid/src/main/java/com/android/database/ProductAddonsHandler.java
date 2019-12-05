@@ -77,8 +77,10 @@ public class ProductAddonsHandler {
     public void insert(List<ProductAddons> addons) {
         DBManager.getDatabase().beginTransaction();
         SQLiteStatement insert=null;
+        SQLiteStatement cipher=null;
         try {
-
+            cipher = DBManager.getDatabase().compileStatement("PRAGMA cipher_memory_security = OFF;");
+            cipher.execute();
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
             for (ProductAddons addon : addons) {
                 insert.bindString(index(rest_addons), String.valueOf(addon.getRestAddons()));
@@ -96,6 +98,9 @@ public class ProductAddonsHandler {
         } finally {
             if(insert!=null) {
                 insert.close();
+            }
+            if (cipher != null) {
+                cipher.close();
             }
             DBManager.getDatabase().endTransaction();
 
