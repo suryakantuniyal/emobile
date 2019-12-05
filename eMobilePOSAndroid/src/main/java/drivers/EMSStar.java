@@ -800,6 +800,27 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         }
         return result;
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold){
+        boolean result = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+            verifyConnectivity();
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getReceipt(order, saleTypes, isFromHistory, fromOnHold);
+
+            printReceipt(receipt);
+//            printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+
+            releasePrinter();
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return result;
+    }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory,

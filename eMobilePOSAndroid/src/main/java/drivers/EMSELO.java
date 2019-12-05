@@ -212,6 +212,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
+
+    @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         try {
             if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {

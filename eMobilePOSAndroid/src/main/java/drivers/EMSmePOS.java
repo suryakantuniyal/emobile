@@ -374,4 +374,8 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     public void printExpenseReceipt(ShiftExpense expense) {
         printExpenseReceipt(LINE_WIDTH, expense);
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

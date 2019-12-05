@@ -396,6 +396,9 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
             return true;
         }
     }
-
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 
 }

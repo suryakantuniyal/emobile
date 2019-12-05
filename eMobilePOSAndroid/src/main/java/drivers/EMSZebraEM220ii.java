@@ -633,4 +633,8 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         printExpenseReceipt(LINE_WIDTH, expense);
     }
 
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

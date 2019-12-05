@@ -514,4 +514,8 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             Toast.makeText(activity, "finished connection", Toast.LENGTH_LONG).show();
         }
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

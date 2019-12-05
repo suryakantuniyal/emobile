@@ -551,4 +551,8 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
                     new CreditCardInfo());
         }
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

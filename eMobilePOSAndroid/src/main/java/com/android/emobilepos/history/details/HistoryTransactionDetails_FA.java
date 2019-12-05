@@ -17,11 +17,8 @@ import android.os.Message;
 import android.text.InputType;
 import android.util.Base64;
 import android.util.DisplayMetrics;
-import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -278,7 +275,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         switch (v.getId()) {
             case R.id.printButton:
                 btnPrint.setClickable(false);
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                 btnPrint.setClickable(true);
                 break;
             case R.id.btnVoid:
@@ -371,7 +368,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
         });
@@ -747,7 +744,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         activity.setResult(100);
     }
 
-    private class printAsync extends AsyncTask<String, String, String> {
+    private class PrintAsync extends AsyncTask<String, String, String> {
         private boolean printSuccessful = true;
 
         @Override
@@ -1082,10 +1079,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
     }
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
         switch (item.getItemId()) {
             case R.id.printGiftReceipt:
-                Toast.makeText(HistoryTransactionDetails_FA.this,"Print Gift Receipt onMenuItemClick!!!",Toast.LENGTH_LONG).show();
+                Toast.makeText(HistoryTransactionDetails_FA.this,"Print Gift Receipt!!!",Toast.LENGTH_LONG).show();
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                 return true;
             default:
                 return false;

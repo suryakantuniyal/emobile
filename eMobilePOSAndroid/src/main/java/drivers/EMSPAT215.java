@@ -501,4 +501,8 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         super.printFooter(LINE_WIDTH);
     }
 
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

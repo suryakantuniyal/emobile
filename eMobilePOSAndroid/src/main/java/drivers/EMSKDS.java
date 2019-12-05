@@ -764,4 +764,8 @@ public class EMSKDS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             return TransType.START_CHECK.getType();
         }
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

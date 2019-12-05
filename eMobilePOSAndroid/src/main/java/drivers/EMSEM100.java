@@ -78,6 +78,11 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
+
+    @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         return false;
     }

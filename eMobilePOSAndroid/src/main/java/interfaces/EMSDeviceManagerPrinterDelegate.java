@@ -27,6 +27,8 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
 
+    boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
+
     boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer);
 
     boolean printBalanceInquiry(HashMap<String, String> values);

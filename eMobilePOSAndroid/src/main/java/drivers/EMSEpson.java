@@ -1284,4 +1284,8 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private String removeNewLine(String str){
         return str.substring(0,str.length()-2);
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

@@ -83,7 +83,73 @@ public class ReceiptBuilder {
         myPref = new MyPreferences(context);
         printPref = myPref.getPrintingPreferences();
     }
+    public Receipt getReceipt(Order order, Global.OrderType type,
+                                  boolean isFromHistory, boolean isFromOnHold){
+        Receipt receipt = new Receipt();
+        try{
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(context);
+            List<DataTaxes> listOrdTaxes = order.getListOrderTaxes();
+            List<OrderProduct> orderProducts = order.getOrderProducts();
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 
+            StringBuilder sb = new StringBuilder();
+            boolean payWithLoyalty = false;
+
+            receipt.setMerchantLogo(getMerchantLogo());
+
+            fillMerchantHeaderAndFooter(receipt, textHandler);
+
+            if (order.isVoid.equals("1")) {
+                sb.append(textHandler.centeredString("*** VOID ***", lineWidth));
+                sb.append(textHandler.newLines(1));
+                receipt.setSpecialHeader(sb.toString());
+                sb.setLength(0);
+            }
+
+            if (isFromOnHold) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        "[" + context.getString(R.string.on_hold) + "]",
+                        order.ord_HoldName, lineWidth, 0));
+            }
+
+            switch (type) {
+                case ORDER: // Order
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.order) + ":", order.ord_id,
+                            lineWidth, 0));
+                    break;
+                case RETURN: // Return
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.return_tag) + ":", order.ord_id,
+                            lineWidth, 0));
+                    break;
+                case INVOICE: // Invoice
+                case CONSIGNMENT_INVOICE:// Consignment Invoice
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.invoice) + ":", order.ord_id,
+                            lineWidth, 0));
+                    break;
+                case ESTIMATE: // Estimate
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.estimate) + ":", order.ord_id,
+                            lineWidth, 0));
+                    break;
+                case SALES_RECEIPT: // Sales Receipt
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            context.getString(R.string.sales_receipt) + ":", order.ord_id,
+                            lineWidth, 0));
+                    break;
+            }
+
+
+
+        }catch (Exception x){
+            x.printStackTrace();
+        }
+        return receipt;
+    }
     public Receipt getTransaction(Order order, Global.OrderType type,
                                   boolean isFromHistory, boolean isFromOnHold) {
 

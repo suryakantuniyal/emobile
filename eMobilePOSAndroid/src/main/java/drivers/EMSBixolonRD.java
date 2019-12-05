@@ -896,5 +896,8 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     public enum BixolonCountry {
         PANAMA, DOMINICAN_REPUBLIC
     }
-
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

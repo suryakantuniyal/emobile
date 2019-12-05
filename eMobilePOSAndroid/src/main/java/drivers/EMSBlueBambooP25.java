@@ -786,4 +786,8 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
             }
         }
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

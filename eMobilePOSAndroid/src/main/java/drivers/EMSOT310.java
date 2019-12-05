@@ -398,4 +398,8 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             return ret;
         }
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

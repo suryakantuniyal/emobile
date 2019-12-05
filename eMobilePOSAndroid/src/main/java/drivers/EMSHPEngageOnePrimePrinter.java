@@ -299,4 +299,8 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
         hpPrinter = new POSPrinter();
         printExpenseReceipt(LINE_WIDTH, expense);
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

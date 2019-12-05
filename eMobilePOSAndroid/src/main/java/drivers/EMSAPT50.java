@@ -341,4 +341,8 @@ public class EMSAPT50 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 //            e.printStackTrace();
 //        }
 //    }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

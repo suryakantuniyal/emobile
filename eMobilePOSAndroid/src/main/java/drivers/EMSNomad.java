@@ -684,4 +684,8 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
         protected void onPostExecute(Void unused) {
         }
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

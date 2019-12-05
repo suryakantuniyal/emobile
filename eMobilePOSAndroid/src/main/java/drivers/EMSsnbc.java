@@ -533,4 +533,8 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
         }
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

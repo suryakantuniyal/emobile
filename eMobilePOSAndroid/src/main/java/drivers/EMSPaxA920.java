@@ -287,4 +287,8 @@ public class EMSPaxA920 extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public void printExpenseReceipt(ShiftExpense expense) {
         printExpenseReceipt(LINE_WIDTH, expense);
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

@@ -741,4 +741,8 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 //
 //
 //    }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

@@ -761,4 +761,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         }
     }
 
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }

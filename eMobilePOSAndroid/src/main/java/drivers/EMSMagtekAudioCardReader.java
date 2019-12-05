@@ -630,6 +630,9 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         }
     }
 
-
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }
 

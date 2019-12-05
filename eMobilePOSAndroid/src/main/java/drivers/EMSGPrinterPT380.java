@@ -217,6 +217,11 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
+
+    @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         setPaperWidth(LINE_WIDTH);
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);

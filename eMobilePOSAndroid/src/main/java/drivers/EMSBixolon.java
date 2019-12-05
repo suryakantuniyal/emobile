@@ -523,4 +523,8 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             }
         }
     }
+    @Override
+    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
 }
