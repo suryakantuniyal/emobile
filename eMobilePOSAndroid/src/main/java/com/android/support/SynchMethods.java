@@ -353,6 +353,7 @@ public class SynchMethods {
 
     public static synchronized void synchOrdersOnHoldList(Context context) throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
         if (!Global.isCheckoutInProgress) {
+            DBManager.cipherMemorySecurity(false);
             MyPreferences preferences = new MyPreferences(context);
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(context);
@@ -392,6 +393,7 @@ public class SynchMethods {
                 ordersHandler.insert(orders);
             }
             ordersHandler.deleteOnHoldsOrders(ordersToDelete);
+            DBManager.cipherMemorySecurity(true);
         }
     }
 
@@ -463,7 +465,7 @@ public class SynchMethods {
     }
 
     public boolean syncReceive() {
-        DBManager.cipherMemorySecurity(true);
+        DBManager.cipherMemorySecurity(false);
         try {
             synchGetServerTime();
             synchEmployeeData();
@@ -527,7 +529,7 @@ public class SynchMethods {
             e.printStackTrace();
             return false;
         }finally {
-            DBManager.cipherMemorySecurity(false);
+            DBManager.cipherMemorySecurity(true);
         }
         return true;
     }
