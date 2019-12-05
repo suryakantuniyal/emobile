@@ -370,11 +370,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                             return checkPaxDevices(newValue);
                         }
                     });
-                    if(((CheckBoxPreference)prefManager.findPreference("pref_use_pax")).isChecked() &&
+                    if (((CheckBoxPreference) prefManager.findPreference("pref_use_pax")).isChecked() &&
                             !myPref.getPaymentDevice().isEmpty() &&
-                            myPref.getPaymentDevice() != null){
+                            myPref.getPaymentDevice() != null) {
                         prefManager.findPreference("pref_use_pax_device_list").setEnabled(true);
-                    }else{
+                    } else {
                         prefManager.findPreference("pref_use_pax_device_list").setEnabled(false);
                     }
                     break;
@@ -432,7 +432,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     try {
                         prefManager.findPreference("pref_batch_pax").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_pax_close_batch_hour").setOnPreferenceClickListener(this);
-                    }catch (Exception x){
+                    } catch (Exception x) {
                         x.printStackTrace();
                     }
                     break;
@@ -574,19 +574,19 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     .unregisterOnSharedPreferenceChangeListener(this);
         }
 
-        private boolean checkPaxDevices(Object newValue){
+        private boolean checkPaxDevices(Object newValue) {
             boolean result = false;
-            if(newValue.equals("D220 / S300")){
+            if (newValue.equals("D220 / S300")) {
                 promptPaxSetup(newValue);
                 result = true;
-            }else if(newValue.equals("A920")){
-                Log.e("PAX","A920");
+            } else if (newValue.equals("A920")) {
+                Log.e("PAX", "A920");
                 result = true;
             }
             return result;
         }
 
-        private void promptPaxSetup(Object value){
+        private void promptPaxSetup(Object value) {
             final String deviceModel = (String) value;
             promptDialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             promptDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -633,7 +633,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     String value = ((EditTextPreference) findPreference(key)).getEditText().getText().toString();
                     Global.MAX_ACTIVITY_TRANSITION_TIME_MS = Long.parseLong(value) * 1000;
                 }
-            }catch (Exception x){
+            } catch (Exception x) {
                 x.printStackTrace();
             }
         }
@@ -727,16 +727,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     changePassword(false, null);
                     break;
                 case R.string.config_backup_settings_global:
-                    backupSettings(true);
+                    confirmRestoreOrBackupAction(getString(R.string.config_backup_settings_global),true,true);
+                    //backupSettings(true);
                     break;
                 case R.string.config_backup_settings_local:
-                    backupSettings(false);
+                    confirmRestoreOrBackupAction(getString(R.string.config_backup_settings_global),true,false);
                     break;
                 case R.string.config_restore_settings_global:
-                    restoreSettings(true);
+                    confirmRestoreOrBackupAction(getString(R.string.config_backup_settings_global),false,true);
                     break;
                 case R.string.config_restore_settings_lcoal:
-                    restoreSettings(false);
+                    confirmRestoreOrBackupAction(getString(R.string.config_backup_settings_global),false,false);
                     break;
                 case R.string.config_open_cash_drawer:
                     new Thread(new Runnable() {
@@ -907,24 +908,48 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             Global.showPrompt(getActivity(), R.string.config_batch_pax, result);
         }
 
+        private void confirmRestoreOrBackupAction(String nameOfSelection,boolean isBackUp,boolean isForGlobal){
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+            alertDialog.setTitle(R.string.dlog_title_confirm);
+            alertDialog.setMessage(String.format("Are you sure you want to %s?",nameOfSelection.toLowerCase()));
+            alertDialog.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(isBackUp && isForGlobal)
+                        backupSettings(true);
+                    else if(isBackUp && !isForGlobal)
+                        backupSettings(false);
+                    else if(!isBackUp && isForGlobal)
+                        restoreSettings(true);
+                    else
+                        restoreSettings(false);
+                }
+            });
+            alertDialog.setNegativeButton(R.string.button_no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {}
+            });
+            alertDialog.show();
+        }
+
         private void restoreSettings(boolean isFromGlobal) {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
-            if(isFromGlobal){
-                sm.restoreSettings(getActivity(),"0");
-            }else{
-                sm.restoreSettings(getActivity(),String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()));
+            if (isFromGlobal) {
+                sm.restoreSettings(getActivity(), "0");
+            } else {
+                sm.restoreSettings(getActivity(), String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()));
             }
         }
 
-        private void backupSettings(boolean isToGlobal){
+        private void backupSettings(boolean isToGlobal) {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
             String regID = myPref.getAcctNumber();
             String empID = String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId());
-            if(isToGlobal){
-                sm.backupSettings(getActivity(),"0", regID);
-            }else{
+            if (isToGlobal) {
+                sm.backupSettings(getActivity(), "0", regID);
+            } else {
                 sm.backupSettings(getActivity(), empID, regID);
             }
         }
@@ -990,6 +1015,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             });
             globalDlog.show();
         }
+
         private void setBatchClose() {
             final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1027,6 +1053,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             });
             globalDlog.show();
         }
+
         private void setGratuityOne() {
             final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1064,6 +1091,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             });
             globalDlog.show();
         }
+
         private void setGratuityTwo() {
             final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1101,6 +1129,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             });
             globalDlog.show();
         }
+
         private void setGratuityThree() {
             final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1138,6 +1167,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             });
             globalDlog.show();
         }
+
         private void setDefaultUnitsName() {
             final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1510,7 +1540,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             new FindEpsonDevices(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
-        public void loadEpsonDlogSetup(Activity activity){
+        public void loadEpsonDlogSetup(Activity activity) {
             SimpleAdapter mPrinterListAdapter = null;
             EpsonDevices epsonDeviceList = new EpsonDevices();
 
@@ -1526,8 +1556,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             mPrinterListAdapter = new SimpleAdapter(activity,
                     Global.epson_device_list,
                     R.layout.config_epson_setup_device_selection_item,
-                    new String[] { "PrinterName", "Target" },
-                    new int[] { R.id.PrinterName, R.id.Target });
+                    new String[]{"PrinterName", "Target"},
+                    new int[]{R.id.PrinterName, R.id.Target});
             epsonDevicesDropDown.setAdapter(mPrinterListAdapter);
             epsonDevicesDropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -1536,12 +1566,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     String target = hashmap.get("Target");
                     myPref.setEpsonTarget(target);
                 }
+
                 @Override
-                public void onNothingSelected(AdapterView<?> parent) {}
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
             });
 
 
-            ArrayAdapter<SpnModelsItem> seriesAdapter = new ArrayAdapter<SpnModelsItem>(activity, android.R.layout.simple_spinner_item,epsonDeviceList.getDeviceList());
+            ArrayAdapter<SpnModelsItem> seriesAdapter = new ArrayAdapter<SpnModelsItem>(activity, android.R.layout.simple_spinner_item, epsonDeviceList.getDeviceList());
             seriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             printerModels.setAdapter(seriesAdapter);
 
@@ -1549,10 +1581,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 @Override
                 public void onClick(View v) {
                     myPref.setPrinterType(Global.EPSON);
-                    myPref.setEpsonModel(((SpnModelsItem)printerModels.getSelectedItem()).getModelConstant());
+                    myPref.setEpsonModel(((SpnModelsItem) printerModels.getSelectedItem()).getModelConstant());
                     if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                         Global.mainPrinterManager.loadDrivers(getActivity(), Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
-                    }else {
+                    } else {
                         EMSDeviceManager edm = new EMSDeviceManager();
                         Global.mainPrinterManager = edm.getManager();
                         Global.mainPrinterManager.loadDrivers(getActivity(), Global.EPSON, EMSDeviceManager.PrinterInterfase.USB);
@@ -2078,7 +2110,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 //            }
 //        }
 
-        public class FindEpsonDevices extends AsyncTask<Object,Void,Void>{
+        public class FindEpsonDevices extends AsyncTask<Object, Void, Void> {
             EMSEpson epson = new EMSEpson();
             private ProgressDialog progressDialog;
             private Activity activity;
@@ -2115,11 +2147,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             }
         }
 
-        private class FindPaxDevice extends AsyncTask<String,Void,Void>{
+        private class FindPaxDevice extends AsyncTask<String, Void, Void> {
             private Activity activity;
             private ProgressDialog progressDialog;
 
-            public FindPaxDevice(Activity activity){
+            public FindPaxDevice(Activity activity) {
                 this.activity = activity;
             }
 
@@ -2308,35 +2340,36 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             }
         }
     }
-    private void closeCurrentJob(ComponentName componentName, JobScheduler jobScheduler){
-        for(JobInfo job: jobScheduler.getAllPendingJobs()){
-            if(componentName.getPackageName() != null
+
+    private void closeCurrentJob(ComponentName componentName, JobScheduler jobScheduler) {
+        for (JobInfo job : jobScheduler.getAllPendingJobs()) {
+            if (componentName.getPackageName() != null
                     && componentName.getClassName() != null
-                && job.getService().getPackageName() != null
-                        && job.getService().getClassName() != null
-            )
-            {
+                    && job.getService().getPackageName() != null
+                    && job.getService().getClassName() != null
+            ) {
                 String compName = componentName.getPackageName() + componentName.getClassName();
                 String currName = job.getService().getPackageName() + componentName.getClassName();
-                if(compName.equals(currName)){
-                    try{
+                if (compName.equals(currName)) {
+                    try {
                         jobScheduler.cancel(job.getId());
-                    }catch (Exception x){
+                    } catch (Exception x) {
                         x.printStackTrace();
                     }
                 }
             }
         }
     }
+
     //Schedule Job
-    public void scheduleJob(Context context){
-        try{
+    public void scheduleJob(Context context) {
+        try {
             final long ONE_SECOND = 1000;
             final long ONE_MINUTE = ONE_SECOND * 60;
             final long FIFTEEN_MINUTES = ONE_MINUTE * 15;
             final long ONE_HOUR = ONE_MINUTE * 60;
 
-            JobScheduler jobScheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
+            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(JOB_SCHEDULER_SERVICE);
             ComponentName componentName = new ComponentName(context, CloseBatchPaxService.class);
             MyPreferences myPref = new MyPreferences(context);
 
@@ -2347,7 +2380,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .build();
             jobScheduler.schedule(jobInfo);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
