@@ -83,70 +83,171 @@ public class ReceiptBuilder {
         myPref = new MyPreferences(context);
         printPref = myPref.getPrintingPreferences();
     }
-    public Receipt getReceipt(Order order, Global.OrderType type,
-                                  boolean isFromHistory, boolean isFromOnHold){
+    public Receipt getReceipt(OrderProduct orderProduct,
+                              Order order,
+                              Global.OrderType type,
+                              boolean isFromHistory,
+                              boolean isFromOnHold) {
+
         Receipt receipt = new Receipt();
-        try{
+
+        try {
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             OrderProductsHandler orderProductsHandler = new OrderProductsHandler(context);
-            List<DataTaxes> listOrdTaxes = order.getListOrderTaxes();
-            List<OrderProduct> orderProducts = order.getOrderProducts();
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-
             StringBuilder sb = new StringBuilder();
             boolean payWithLoyalty = false;
-
             receipt.setMerchantLogo(getMerchantLogo());
-
             fillMerchantHeaderAndFooter(receipt, textHandler);
-
-            if (order.isVoid.equals("1")) {
-                sb.append(textHandler.centeredString("*** VOID ***", lineWidth));
-                sb.append(textHandler.newLines(1));
-                receipt.setSpecialHeader(sb.toString());
-                sb.setLength(0);
-            }
-
-            if (isFromOnHold) {
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                    context.getString(R.string.order) + ":", orderProduct.getOrd_id(),
+                    lineWidth, 0));
+            sb.append(textHandler.newLines(1));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                    context.getString(R.string.receipt_date),
+                    Global.formatToDisplayDate(order.ord_timeStarted, 3),
+                    lineWidth, 0));
+            if (ShiftDAO.isShiftOpen() && myPref.isUseClerks()) {
+                String clerk_id = order.clerk_id;
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                        "[" + context.getString(R.string.on_hold) + "]",
-                        order.ord_HoldName, lineWidth, 0));
+                        context.getString(R.string.receipt_clerk),
+                        clerk.getEmpName() + "(" + clerk_id + ")",
+                        lineWidth, 0));
             }
-
-            switch (type) {
-                case ORDER: // Order
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                    context.getString(R.string.receipt_employee),
+                    employee.getEmpName() + "(" + employee.getEmpId() + ")",
+                    lineWidth, 0));
+            String custName = getCustName(order.cust_id);
+            if (custName != null && !custName.isEmpty()) {
+                if (!TextUtils.isEmpty(custName)) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                            context.getString(R.string.order) + ":", order.ord_id,
+                            context.getString(R.string.receipt_customer), custName,
                             lineWidth, 0));
-                    break;
-                case RETURN: // Return
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                            context.getString(R.string.return_tag) + ":", order.ord_id,
-                            lineWidth, 0));
-                    break;
-                case INVOICE: // Invoice
-                case CONSIGNMENT_INVOICE:// Consignment Invoice
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                            context.getString(R.string.invoice) + ":", order.ord_id,
-                            lineWidth, 0));
-                    break;
-                case ESTIMATE: // Estimate
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                            context.getString(R.string.estimate) + ":", order.ord_id,
-                            lineWidth, 0));
-                    break;
-                case SALES_RECEIPT: // Sales Receipt
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                            context.getString(R.string.sales_receipt) + ":", order.ord_id,
-                            lineWidth, 0));
-                    break;
+                }
             }
+            custName = getCustAccount(order.cust_id);
+            if (printPref.contains(MyPreferences.print_customer_id) &&
+                    custName != null && !TextUtils.isEmpty(custName)) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                        context.getString(R.string.receipt_customer_id),
+                        custName, lineWidth, 0));
+            }
+            String ordComment = order.ord_comment;
+            if (!TextUtils.isEmpty(ordComment)) {
+                sb.append(textHandler.newLines(1));
+                sb.append(context.getString(R.string.receipt_comments));
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                        ordComment, lineWidth, 3));
+            }
+            receipt.setHeader(sb.toString());
+            sb.setLength(0);
+            int totalItemstQty = 0;
+            if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
+                boolean isRestMode = myPref.isRestaurantMode();
+                    if (!TextUtils.isEmpty(orderProduct.getProd_price_points()) &&
+                            Integer.parseInt(orderProduct.getProd_price_points()) > 0) {
+                        payWithLoyalty = true;
+                    }
+                    totalItemstQty += TextUtils.isEmpty(orderProduct.getOrdprod_qty()) ?
+                            0 : Double.parseDouble(orderProduct.getOrdprod_qty());
+                    String uomDescription = "";
+                    if (!TextUtils.isEmpty(orderProduct.getUom_name())) {
+                        uomDescription = orderProduct.getUom_name() +
+                                "(" + orderProduct.getUom_conversion() + ")";
+                    }
+                    if (isRestMode) {
+                        if (!orderProduct.isAddon()) {
+                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                    orderProduct.getOrdprod_qty() + "x " +
+                                            orderProduct.getOrdprod_name() + " " +
+                                            uomDescription, lineWidth, 1));
+                            if (orderProduct.getHasAddons()) {
+                                List<OrderProduct> addons = orderProductsHandler
+                                        .getOrderProductAddons(orderProduct
+                                                .getOrdprod_id());
+                                for (OrderProduct addon : addons) {
+                                    if (addon.isAdded()) {
+                                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                                " >" + addon.getOrdprod_name(),
+                                                Global.getCurrencyFormat(addon.getFinalPrice()),
+                                                lineWidth, 2));
+                                    } else {
+                                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                                " >NO " + addon.getOrdprod_name(),
+                                                Global.getCurrencyFormat(addon.getFinalPrice()),
+                                                lineWidth, 2));
+                                    }
+                                }
+                            }
+                            if (printPref.contains(MyPreferences.print_descriptions)) {
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                        context.getString(R.string.receipt_description),
+                                        "", lineWidth, 3));
+                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                        orderProduct.getOrdprod_desc(),
+                                        lineWidth, 5));
+                            }
+                        }
+                    } else {
+                        sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                orderProduct.getOrdprod_qty()
+                                        + "x " + orderProduct.getOrdprod_name()
+                                        + " " + uomDescription, lineWidth, 1));
+                        if (printPref.contains(MyPreferences.print_descriptions)) {
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                    context.getString(R.string.receipt_description),
+                                    "", lineWidth, 3));
+                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                    orderProduct.getOrdprod_desc(),
+                                    lineWidth, 5));
+                        }
+                    }
+                    receipt.getItems().add((sb.toString()));
+                    sb.setLength(0);
+            } else {
+                int padding = lineWidth / 4;
+                String tempor = Integer.toString(padding);
+                StringBuilder tempSB = new StringBuilder();
+                tempSB.append("%").append(tempor).append("s").append("%").append(tempor)
+                        .append("s").append("%").append(tempor).append("s").append("%")
+                        .append(tempor).append("s");
+                sb.append(String.format(tempSB.toString(), "Item", "Qty", "Price", "Total"));
+                sb.append(textHandler.newLines(1));
 
+                    if (!TextUtils.isEmpty(orderProduct.getProd_price_points()) &&
+                            Integer.parseInt(orderProduct.getProd_price_points()) > 0) {
+                        payWithLoyalty = true;
+                    }
+                    totalItemstQty += TextUtils.isEmpty(orderProduct.getOrdprod_qty()) ? 0
+                            : Double.parseDouble(orderProduct.getOrdprod_qty());
+                    sb.append(orderProduct.getOrdprod_name()).append("-")
+                            .append(orderProduct.getOrdprod_desc());
+                    sb.append(textHandler.newLines(1));
 
-
-        }catch (Exception x){
-            x.printStackTrace();
+                    sb.append(String.format("Discount %s", Global.getCurrencyFormat(
+                            orderProduct.getDiscountTotal().toString())));
+                    sb.append(textHandler.newLines(1));
+                    sb.append(String.format(tempSB.toString(), "   ",
+                            orderProduct.getOrdprod_qty(),
+                            Global.getCurrencyFormat(orderProduct.getFinalPrice()),
+                            Global.getCurrencyFormat(orderProduct.getItemTotal())));
+                    sb.append(textHandler.newLines(1));
+                    receipt.getItems().add((sb.toString()));
+                    sb.setLength(0);
+            }
+            sb.append(textHandler.lines(lineWidth));
+            sb.append(textHandler.newLines(2));
+            receipt.setSeparator(sb.toString());
+            sb.setLength(0);
+            receipt.setTermsAndConditions(textHandler.oneColumnLineWithLeftAlignedText(
+                    getTermsAndConditions(textHandler), lineWidth + 2, 0));
+            receipt.setEnablerWebsite(getEnablerWebsite(textHandler));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
         }
         return receipt;
     }

@@ -15,6 +15,7 @@ import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.Report;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.print.ReceiptBuilder;
@@ -1284,8 +1285,12 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private String removeNewLine(String str){
         return str.substring(0,str.length()-2);
     }
+
     @Override
-    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+    public boolean printGiftReceipt(OrderProduct orderProduct,
+                                    Order order,
+                                    Global.OrderType saleTypes, boolean isFromHistory,
+                                    boolean fromOnHold) {
         return false;
     }
 }

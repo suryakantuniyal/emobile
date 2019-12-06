@@ -18,6 +18,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.settings.SettingListActivity;
@@ -685,7 +686,10 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
         }
     }
     @Override
-    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+    public boolean printGiftReceipt(OrderProduct orderProduct,
+                                    Order order,
+                                    Global.OrderType saleTypes, boolean isFromHistory,
+                                    boolean fromOnHold) {
         return false;
     }
 }

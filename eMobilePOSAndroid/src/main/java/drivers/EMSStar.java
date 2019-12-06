@@ -21,6 +21,7 @@ import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.Report;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
@@ -801,14 +802,17 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return result;
     }
     @Override
-    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold){
+    public boolean printGiftReceipt(OrderProduct orderProduct,
+                                    Order order,
+                                    Global.OrderType saleTypes, boolean isFromHistory,
+                                    boolean fromOnHold){
         boolean result = false;
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
 
             ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
-            Receipt receipt = receiptBuilder.getReceipt(order, saleTypes, isFromHistory, fromOnHold);
+            Receipt receipt = receiptBuilder.getReceipt(orderProduct,order, saleTypes, isFromHistory,fromOnHold);
 
             printReceipt(receipt);
 //            printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);

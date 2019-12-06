@@ -129,6 +129,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
     private Global global;
     private String order_id;
     private List<OrderProduct> orderedProd;
+    private OrderProduct       orderProduct;
     private Drawable mapDrawable;
     private ProgressDialog myProgressDialog;
     private List<Payment> paymentMapList = new ArrayList<>();
@@ -785,6 +786,44 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
             }
         }
     }
+    // GiftReceiptPrinting
+    private class GiftReceiptPrintAsync extends AsyncTask<String, String, String> {
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Bundle extras = activity.getIntent().getExtras();
+            String trans_type = extras.getString("trans_type");
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                printSuccessful = emsDeviceManager.getCurrentDevice().printGiftReceipt(orderProduct, order, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+            if (!printSuccessful) {
+                showPrintDlg(false);
+            } else if (myPref.isMultiplePrints()) {
+                showPrintDlg(true);
+            }
+        }
+    }
 
     public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
         HashMap<String, String> parsedMap = new HashMap<String, String>();
@@ -966,6 +1005,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                         holder.ordProdQty = convertView.findViewById(R.id.ordProdQty);
                         holder.iconImage = convertView.findViewById(R.id.prodIcon);
                         int ind = position - allInfoLeft.size() - 2;
+                        final int indicator = ind;
                         holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
                         holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
                         holder.ordProdQty.setText(String.format("%s x", orderedProd.get(ind).getOrdprod_qty()));
@@ -976,6 +1016,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                                     new OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
+                                            orderProduct = orderedProd.get(indicator);
                                             PopupMenu popup = new PopupMenu(HistoryTransactionDetails_FA.this, view);
                                             popup.setOnMenuItemClickListener(HistoryTransactionDetails_FA.this);
                                             popup.inflate(R.menu.order_detail_item_menu);
@@ -1082,8 +1123,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         //Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
         switch (item.getItemId()) {
             case R.id.printGiftReceipt:
-                Toast.makeText(HistoryTransactionDetails_FA.this,"Print Gift Receipt!!!",Toast.LENGTH_LONG).show();
-                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+                Toast.makeText(HistoryTransactionDetails_FA.this,"Print Gift Receipt!!! Name: " + orderProduct.getOrdprod_name(),Toast.LENGTH_LONG).show();
+                new GiftReceiptPrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                 return true;
             default:
                 return false;

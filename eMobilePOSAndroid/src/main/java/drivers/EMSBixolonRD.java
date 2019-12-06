@@ -897,7 +897,10 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         PANAMA, DOMINICAN_REPUBLIC
     }
     @Override
-    public boolean printGiftReceipt(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+    public boolean printGiftReceipt(OrderProduct orderProduct,
+                                    Order order,
+                                    Global.OrderType saleTypes, boolean isFromHistory,
+                                    boolean fromOnHold) {
         return false;
     }
 }
