@@ -92,7 +92,6 @@ public class ReceiptBuilder {
         Receipt receipt = new Receipt();
 
         try {
-            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             OrderProductsHandler orderProductsHandler = new OrderProductsHandler(context);
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -100,8 +99,8 @@ public class ReceiptBuilder {
             boolean payWithLoyalty = false;
             receipt.setMerchantLogo(getMerchantLogo());
             fillMerchantHeaderAndFooter(receipt, textHandler);
-            sb.append(textHandler.centeredString(context.getString(R.string.receipt_gift),lineWidth));
-            sb.append(textHandler.newLines(1));
+            receipt.setRemoteStationHeader(textHandler.centeredString(context.getString(R.string.receipt_gift),lineWidth/2));
+
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                     context.getString(R.string.order) + ":", orderProduct.getOrd_id(),
                     lineWidth, 0));
@@ -117,10 +116,7 @@ public class ReceiptBuilder {
                         clerk.getEmpName() + "(" + clerk_id + ")",
                         lineWidth, 0));
             }
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                    context.getString(R.string.receipt_employee),
-                    employee.getEmpName() + "(" + employee.getEmpId() + ")",
-                    lineWidth, 0));
+
             String custName = getCustName(order.cust_id);
             if (custName != null && !custName.isEmpty()) {
                 if (!TextUtils.isEmpty(custName)) {
