@@ -100,6 +100,8 @@ public class ReceiptBuilder {
             boolean payWithLoyalty = false;
             receipt.setMerchantLogo(getMerchantLogo());
             fillMerchantHeaderAndFooter(receipt, textHandler);
+            sb.append(textHandler.centeredString(context.getString(R.string.receipt_gift),lineWidth));
+            sb.append(textHandler.newLines(1));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                     context.getString(R.string.order) + ":", orderProduct.getOrd_id(),
                     lineWidth, 0));
