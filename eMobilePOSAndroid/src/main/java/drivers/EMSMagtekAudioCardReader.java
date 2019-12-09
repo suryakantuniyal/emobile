@@ -18,6 +18,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -630,6 +631,12 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         }
     }
 
-
+    @Override
+    public boolean printGiftReceipt(OrderProduct orderProduct,
+                                    Order order,
+                                    Global.OrderType saleTypes, boolean isFromHistory,
+                                    boolean fromOnHold) {
+        return false;
+    }
 }
 

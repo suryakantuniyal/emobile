@@ -19,6 +19,7 @@ import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -31,8 +32,11 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
@@ -103,7 +107,7 @@ import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
 import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
 
 public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
-        implements EMSCallBack, OnClickListener, OnItemClickListener,
+        implements EMSCallBack, OnClickListener, OnItemClickListener,PopupMenu.OnMenuItemClickListener,
         MobilePosSdkHelper.OnIngenicoTransactionCallback {
 
     private static List<String> allInfoLeft;
@@ -125,6 +129,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
     private Global global;
     private String order_id;
     private List<OrderProduct> orderedProd;
+    private OrderProduct       orderProduct;
     private Drawable mapDrawable;
     private ProgressDialog myProgressDialog;
     private List<Payment> paymentMapList = new ArrayList<>();
@@ -271,7 +276,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         switch (v.getId()) {
             case R.id.printButton:
                 btnPrint.setClickable(false);
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                 btnPrint.setClickable(true);
                 break;
             case R.id.btnVoid:
@@ -364,7 +369,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
         });
@@ -740,7 +745,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
         activity.setResult(100);
     }
 
-    private class printAsync extends AsyncTask<String, String, String> {
+    private class PrintAsync extends AsyncTask<String, String, String> {
         private boolean printSuccessful = true;
 
         @Override
@@ -766,6 +771,44 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                 }
             }
 
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+            if (!printSuccessful) {
+                showPrintDlg(false);
+            } else if (myPref.isMultiplePrints()) {
+                showPrintDlg(true);
+            }
+        }
+    }
+    // GiftReceiptPrinting
+    private class GiftReceiptPrintAsync extends AsyncTask<String, String, String> {
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Bundle extras = activity.getIntent().getExtras();
+            String trans_type = extras.getString("trans_type");
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                printSuccessful = emsDeviceManager.getCurrentDevice().printGiftReceipt(orderProduct, order, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+            }
             return null;
         }
 
@@ -962,10 +1005,26 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
                         holder.ordProdQty = convertView.findViewById(R.id.ordProdQty);
                         holder.iconImage = convertView.findViewById(R.id.prodIcon);
                         int ind = position - allInfoLeft.size() - 2;
+                        final int indicator = ind;
                         holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
                         holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
                         holder.ordProdQty.setText(String.format("%s x", orderedProd.get(ind).getOrdprod_qty()));
                         holder.ordProdPrice.setText(Global.getCurrencyFormat(orderedProd.get(ind).getFinalPrice()));
+                        LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.linearLayoutVertical);
+                        if(linearLayout != null){
+                            linearLayout.setOnClickListener(
+                                    new OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            orderProduct = orderedProd.get(indicator);
+                                            PopupMenu popup = new PopupMenu(HistoryTransactionDetails_FA.this, view);
+                                            popup.setOnMenuItemClickListener(HistoryTransactionDetails_FA.this);
+                                            popup.inflate(R.menu.order_detail_item_menu);
+                                            popup.show();
+                                        }
+                                    }
+                            );
+                        }
                         break;
                     }
                     case 3: {
@@ -1057,6 +1116,18 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
             TextView ordProdPrice;
             ImageView iconImage;
             ImageView moreDetails;
+        }
+    }
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        //Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
+        switch (item.getItemId()) {
+            case R.id.printGiftReceipt:
+                Toast.makeText(HistoryTransactionDetails_FA.this,"Print Gift Receipt!!! Name: " + orderProduct.getOrdprod_name(),Toast.LENGTH_LONG).show();
+                new GiftReceiptPrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+                return true;
+            default:
+                return false;
         }
     }
 }

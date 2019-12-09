@@ -750,6 +750,7 @@
 
 
     <!-- Receipt Values -->
+    <string name="receipt_gift">Gift Receipt</string>
     <string name="receipt_date">Date:</string>
     <string name="receipt_time">Time:</string>
     <string name="receipt_clerk">Clerk:</string>
