@@ -1480,5 +1480,10 @@
     <string name="config_restore_settings_global">Restore Settings From Global</string>
     <string name="config_restore_settings_lcoal">Restore Settings</string>
     <string name="dlog_title_pax">PAX</string>
+    <!-- Open discount -->
+    <string name="enter_open_discount">"Entrar valor para descuento"</string>
+    <string name="invalid_open_discount">"Valor inválido. Por favor entre un número entero"</string>
+    <string name="config_manager_password_required">"Requerir Contraseña de Gerente para Descuento Configurable"</string>
+
     <string name="dlog_pax_use_signatures">¿Le gustaría usar firmas?</string>
 </resources>
