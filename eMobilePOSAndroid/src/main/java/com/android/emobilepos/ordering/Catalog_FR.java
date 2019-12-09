@@ -564,10 +564,14 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         loadCursor();
         getOrderingMainFa().invisibleSearchMain.requestFocus();
     }
-
-    public void automaticAddOrder(Product product) {
+    public void automaticAddOrder(Product product, String quantity, String price) {
+        OrderProduct orderProduct = new OrderProduct(product);
+        if(quantity != null)
+            orderProduct.setOrdprod_qty(quantity);
+        if(price != null)
+            orderProduct.setProd_price(price);
         getOrderingMainFa().disableCheckoutButton();
-        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber(), ((OrderingMain_FA) getActivity()).mTransType);
+        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, orderProduct, ((OrderingMain_FA) getActivity()).getSelectedSeatNumber(), ((OrderingMain_FA) getActivity()).mTransType);
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -673,9 +677,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                         refreshListView();
                         callBackRefreshView.refreshView();
                     } else
-                        automaticAddOrder(product);
+                        automaticAddOrder(product,null,null);
                 } else
-                    automaticAddOrder(product);
+                    automaticAddOrder(product,null,null);
 
             }
 

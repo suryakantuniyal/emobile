@@ -52,5 +52,17 @@
             android:key="pref_limit_products_on_hand"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_limit_products_on_hand" />
+        <CheckBoxPreference
+            android:key="pref_embedded_barcodes"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_embedded_barcodes" />
+        <ListPreference
+            android:dependency="pref_embedded_barcodes"
+            android:defaultValue="price"
+            android:entries="@array/embedded_barcode_type"
+            android:entryValues="@array/embedded_barcode_type"
+            android:key="pref_embedded_barcode_type"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_embedded_barcodes" />
     </PreferenceCategory>
 </PreferenceScreen>

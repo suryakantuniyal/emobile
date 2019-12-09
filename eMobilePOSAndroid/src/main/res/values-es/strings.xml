@@ -982,6 +982,7 @@
     <string name="config_group_in_catalog_by_name">"Agrupar catálogo por nombre"</string>
     <string name="config_filter_products_by_customer">"Filtrar productos por clientes"</string>
     <string name="config_limit_products_on_hand">"Límite de productos disponibles"</string>
+    <string name="config_embedded_barcodes">"Códigos de barras embebidos"</string>
 
     <string name="config_open_shift">"Turno abierto"</string>
     <string name="config_expenses">"Gastos"</string>
