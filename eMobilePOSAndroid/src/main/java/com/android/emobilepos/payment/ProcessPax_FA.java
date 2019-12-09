@@ -1,19 +1,25 @@
 package com.android.emobilepos.payment;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -21,6 +27,7 @@ import com.android.dao.ShiftDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
+import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.genius.AdditionalParameters;
@@ -33,6 +40,7 @@ import com.android.ivu.MersenneTwisterFast;
 import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
+import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -45,11 +53,16 @@ import com.pax.poslink.ProcessTransResult;
 import com.pax.poslink.ProcessTransResult.ProcessTransResultCode;
 import com.pax.poslink.poslink.POSLinkCreator;
 
+import org.kxml2.kdom.Document;
+
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import drivers.pax.utils.PosLinkHelper;
+import interfaces.TipsCallback;
 import main.EMSDeviceManager;
 import util.MoneyUtils;
+import util.NumberUtil;
 import util.XmlUtils;
 
 import static drivers.pax.utils.Constant.CARD_EXPIRED;
@@ -65,7 +78,7 @@ import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_SALE;
 /**
  * Created by Luis Camayd on 10/11/2018.
  */
-public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
+public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View.OnClickListener, TipsCallback {
 
     private static final String APPROVED = "APPROVED";
     private Global global;
@@ -79,6 +92,11 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     private MyPreferences myPref;
     private PosLink poslink;
     private static ProcessTransResult ptr;
+    private Button btnProcess;
+    private TextView dlogGrandTotal;
+    private String paid_amount;
+    double grandTotalAmount;
+    double amountToTip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +109,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         amountTextView = findViewById(R.id.amountTextView);
         creditRadioButton = findViewById(R.id.creditRadioButton);
 
-        Button btnProcess = findViewById(R.id.processButton);
+        btnProcess = findViewById(R.id.processButton);
         btnProcess.setOnClickListener(this);
 
         String inv_id;
@@ -136,7 +154,13 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.processButton:
-                processPayment(view.getContext());
+                if(myPref.getPreferences("pref_show_confirmation_screen")){
+                    btnProcess.setEnabled(false);
+                    promptAmountConfirmation(this);
+                }
+                else{
+                    processPayment(view.getContext());
+                }
                 break;
         }
     }
@@ -173,13 +197,18 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         payment.setPaymethod_id(paymethod_id);
         payment.setPay_expmonth("0");// dummy
         payment.setPay_expyear("2000");// dummy
-        payment.setPay_tip("0.00");
-        payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(
-                amountTextView.getText().toString()));
-        payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(
-                amountTextView.getText().toString()));
         payment.setOriginalTotalAmount("0");
         payment.setPay_type("0");
+        if(myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
+            payment.setPay_tip(NumberUtils.cleanCurrencyFormatedNumber(Global.formatDoubleToCurrency(amountToTip)));
+        }
+        else {
+            payment.setPay_tip("0.00");
+        }
+//        payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(String.valueOf(grandTotalAmount)));
+//        payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(String.valueOf(grandTotalAmount)));
+        payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
+        payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
 
         if (isRefund) {
             payment.setIs_refund("1");
@@ -211,9 +240,13 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payrequest.TransType = REQUEST_TRANSACTION_TYPE_RETURN;
         }
 
-        payrequest.Amount = String.valueOf(
-                MoneyUtils.convertDollarsToCents(
-                        NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
+        if(myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)){
+            payrequest.TipAmt = String.valueOf(MoneyUtils.convertDollarsToCents(
+                    NumberUtils.cleanCurrencyFormatedNumber(Global.formatDoubleToCurrency(amountToTip))));
+        }
+        payrequest.Amount = String.valueOf(MoneyUtils.convertDollarsToCents(
+                NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
+
         payrequest.ECRRefNum = DateUtils.getEpochTime();
         poslink.PaymentRequest = payrequest;
         poslink.SetCommSetting(PosLinkHelper.getCommSetting(myPref.getPaymentDevice(),myPref.getPaymentDeviceIP()));
@@ -302,20 +335,27 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             switch (response.ResultCode) {
                 case TRANSACTION_SUCCESS:
                     payHandler.insert(payment);
-                    String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
+                    paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
                             amountTextView.getText().toString());
 
                     payment.getEmvContainer().getGeniusResponse().setStatus(APPROVED);
 
-                    result.putExtra("total_amount", paid_amount);
-                    result.putExtra("emvcontainer",
-                            new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
-                    setResult(-2, result);
+                    if(myPref.getPreferences(MyPreferences.pref_use_pax_signature))
+                    {
+                        Intent intent = new Intent(this, DrawReceiptActivity.class);
+                        intent.putExtra("isFromPayment", true);
+                        startActivityForResult(intent, 0);
+                    }else {
+                        result.putExtra("total_amount", paid_amount);
+                        result.putExtra("emvcontainer",
+                                new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+                        setResult(-2, result);
 
-                    if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-                        showPrintDlg();
-                    else {
-                        finish();
+                        if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+                            showPrintDlg();
+                        else {
+                            finish();
+                        }
                     }
                     break;
                 case TRANSACTION_DECLINED:
@@ -338,6 +378,67 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         } else {
             showErrorDlog("Transaction Error!\n" + ptr.Msg);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == -1){
+            Intent result = new Intent();
+            result.putExtra("total_amount", paid_amount);
+            result.putExtra("emvcontainer", new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+            setResult(-2, result);
+            if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+               showPrintDlg();
+            else {
+                finish();
+            }
+        }
+    }
+
+    private void promptAmountConfirmation(Activity activity) {
+        LayoutInflater inflater = LayoutInflater.from(activity);
+        View dialogLayout = inflater.inflate(R.layout.confirmation_amount_layout, null);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final AlertDialog dialog = builder.create();
+        dialog.setView(dialogLayout, 0, 0, 0, 0);
+        dialog.setInverseBackgroundForced(true);
+        dialog.setCancelable(false);
+        dlogGrandTotal = dialogLayout.findViewById(R.id.confirmTotalView);
+        LinearLayout cardDetails = dialogLayout.findViewById(R.id.cardDetailsLayout);
+        cardDetails.setVisibility(View.GONE);
+
+        grandTotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
+        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+
+        Button cancelButton = dialogLayout.findViewById(R.id.cancelButton);
+        Button nextButton = dialogLayout.findViewById(R.id.nextButton);
+
+        cancelButton.setOnClickListener(new Button.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                btnProcess.setEnabled(true);
+                dialog.dismiss();
+            }
+        });
+
+        nextButton.setOnClickListener(new Button.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                promptTipConfirmation();
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    private void promptTipConfirmation() {
+        SelectPayMethod_FA.GratuityManager gm = new SelectPayMethod_FA.GratuityManager(this,this,myPref,global,extras.getBoolean("isFromMainMenu", false));
+        gm.showTipsForPaxPayments(amountTextView);
     }
 
     private void showPrintDlg() {
@@ -435,6 +536,30 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     public void onPause() {
         super.onPause();
         global.startActivityTransitionTimer();
+    }
+
+    @Override
+    public void noneTipGratuityWasPressed(TextView totalAmountView, TextView dlogGrandTotal, double subTotal) {
+        amountToTip = 0;
+        grandTotalAmount = subTotal;
+        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+        totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
+    }
+
+    @Override
+    public void cancelTipGratuityWasPressed(AlertDialog dialog) {
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
+        amountToTip = 0;
+        grandTotalAmount = amountToBePaid;
+        btnProcess.setEnabled(true);
+        dialog.dismiss();
+    }
+
+    @Override
+    public void saveTipGratuityWasPressed(AlertDialog dialog, double amountToTip) {
+        dialog.dismiss();
+        processPayment(this);
     }
 
     private class printAsync extends AsyncTask<Void, Void, Void> {

@@ -331,7 +331,7 @@
     <string name="admin_enable_retail_taxes">Enable Retail Taxes</string>
     <string name="admin_skip_email_phone">Skip at Checkout - \u0022Add eMail\u0026Phone\u0022</string>
     <string name="admin_skip_want_add_more_products">Skip at Checkout - \u0022Add More Products\u0022 </string>
-    <string name="admin_show_confirmation_screen">Show Confirmation Screen</string>
+    <string name="admin_show_confirmation_screen">Show Gratuity Screen</string>
     <string name="admin_quick_customer_selection">Quick Customer Selection</string>
     <string name="admin_require_customer">Require Customer</string>
     <string name="admin_use_clerks">Use Clerks</string>
@@ -911,7 +911,7 @@
     <string name="config_show_only_group_taxes">Show Only Group Taxes</string>
     <string name="config_retail_taxes">Item Based Taxes</string>
     <string name="config_require_customer">Require Customer</string>
-    <string name="config_show_confirmation_screen">Show Confirmation Screen</string>
+    <string name="config_show_confirmation_screen">Show Gratuity Screen</string>
     <string name="config_ask_order_comments">Ask for order comments</string>
     <string name="config_direct_customer_selection">Direct Customer Selection</string>
     <string name="config_display_customer_account_number">Display Customer Account Number</string>
@@ -1516,9 +1516,5 @@
     <string name="handlingmsg_err_offline">Printer is offline.\n</string>
     <string name="config_use_pax_device_list">Select Pax Device</string>
     <string name="dlog_title_pax">PAX</string>
-    <!-- Open discount -->
-    <string name="enter_open_discount">Set Open Discount</string>
-    <string name="invalid_open_discount">Invalid value. Please enter integer number.</string>
-    <string name="config_manager_password_required">Require Manager Password for Open Discount</string>
-
+    <string name="dlog_pax_use_signatures">Would you like to use signatures?</string>
 </resources>

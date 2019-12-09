@@ -522,7 +522,7 @@
     </string-array>
 
     <string-array name="pax_devices">
-        <item name="a920">A920</item>
+        <item name="a920">A920/Aries</item>
         <item name="d220">D220 / S300</item> <!-- The code makes reference to this text. If this text is changed must be changed in SettingListActivity: private boolean checkPaxDevices -->
     </string-array>
 </resources>

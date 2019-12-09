@@ -49,10 +49,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import interfaces.TipsCallback;
 import main.EMSDeviceManager;
 import util.json.UIUtils;
 
-public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
+public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener, TipsCallback {
     String orderSubTotal;
     //    private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
@@ -462,160 +463,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     }
 
     private void promptTipConfirmation() {
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        View dialogLayout = inflater.inflate(R.layout.tip_dialog_layout, null);
-
-
-        //****Method that works with both jelly bean/gingerbread
-        //AlertDialog.Builder dialog = new AlertDialog.Builder(this,R.style.TransparentDialog);
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.DialogLargeArea);
-        final AlertDialog dialog = builder.create();
-        dialog.setView(dialogLayout, 0, 0, 0, 0);
-        dialog.setInverseBackgroundForced(true);
-
-        //*****Method that works only with gingerbread and removes background
-        /*final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
-        dialog.setContentView(dialogLayout);*/
-
-        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-        grandTotalAmount = amountToBePaid + amountToTip;
-        final double subTotal;
-        if (isFromMainMenu) {
-            subTotal = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-        } else {
-            subTotal = Double.parseDouble(orderSubTotal);
-        }
-        Button tenPercent = dialogLayout.findViewById(R.id.tenPercent);
-        Button fifteenPercent = dialogLayout.findViewById(R.id.fifteenPercent);
-        Button twentyPercent = dialogLayout.findViewById(R.id.twentyPercent);
-        dlogGrandTotal = dialogLayout.findViewById(R.id.grandTotalView);
-        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
-
-
-        promptTipField = dialogLayout.findViewById(R.id.otherTipAmountField);
-        promptTipField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        promptTipField.setText("");
-
-        Button cancelTip = dialogLayout.findViewById(R.id.cancelTipButton);
-        Button saveTip = dialogLayout.findViewById(R.id.acceptTipButton);
-        Button noneButton = dialogLayout.findViewById(R.id.noneButton);
-        final TextView totalAmountView = dialogLayout.findViewById(R.id.totalAmountView);
-        totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
-                Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(0)));
-        promptTipField.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString())) > 0) {
-                    double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                    amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString()));
-                    grandTotalAmount = subTotal + amountToTip;
-                    dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
-                    totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
-                            Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
-                }
-                NumberUtils.parseInputedCurrency(s, promptTipField);
-            }
-        });
-
-
-        promptTipField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (v.hasFocus()) {
-                    Selection.setSelection(promptTipField.getText(), promptTipField.getText().toString().length());
-                }
-
-            }
-        });
-
-        tenPercent.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (subTotal * (0.1));
-                grandTotalAmount = subTotal + amountToTip;
-                dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
-                promptTipField.setText("");
-                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
-                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
-            }
-        });
-
-        fifteenPercent.setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (subTotal * (0.15));
-                grandTotalAmount = subTotal + amountToTip;
-                dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
-                promptTipField.setText("");
-                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
-                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
-            }
-        });
-
-        twentyPercent.setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (subTotal * (0.2));
-                grandTotalAmount = subTotal + amountToTip;
-                dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
-                promptTipField.setText("");
-                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
-                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
-            }
-        });
-
-
-        noneButton.setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = 0;
-                grandTotalAmount = subTotal;
-                dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
-                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
-                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
-                //dialog.dismiss();
-            }
-        });
-
-
-        cancelTip.setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = 0;
-                grandTotalAmount = amountToBePaid;
-                dialog.dismiss();
-            }
-        });
-
-        saveTip.setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (tipAmount != null)
-                    tipAmount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(Double.toString(amountToTip)))));
-                dialog.dismiss();
-
-            }
-        });
-        dialog.show();
+        SelectPayMethod_FA.GratuityManager gm = new SelectPayMethod_FA.GratuityManager(this,activity,myPref,global,isFromMainMenu);
+        gm.showTipsForCashPayments(amountDue, promptTipField, paid, orderSubTotal);
     }
 
     private Payment processPayment() {
@@ -1012,6 +861,30 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         amountToBePaid += temp;
         grandTotalAmount = amountToBePaid + amountToTip;
         paid.setText(Global.formatDoubleToCurrency(amountToBePaid));
+    }
+
+    @Override
+    public void noneTipGratuityWasPressed(TextView totalAmountView, TextView dlogGrandTotal, double subTotal) {
+        amountToTip = 0;
+        grandTotalAmount = subTotal;
+        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+        totalAmountView.setText(String.format(Locale.getDefault(), activity.getString(R.string.total_plus_tip),
+                Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
+    }
+
+    @Override
+    public void cancelTipGratuityWasPressed(AlertDialog dialog) {
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+        amountToTip = 0;
+        grandTotalAmount = amountToBePaid;
+        dialog.dismiss();
+    }
+
+    @Override
+    public void saveTipGratuityWasPressed(AlertDialog dialog, double amountToTip) {
+        if (tipAmount != null)
+            tipAmount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(Double.toString(amountToTip)))));
+        dialog.dismiss();
     }
 
     private class processPaymentAsync extends AsyncTask<Boolean, String, Payment> {
