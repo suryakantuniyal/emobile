@@ -1215,18 +1215,27 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
         public boolean isUPCA(){
-            String barcodeType = barcode.substring(0,1);
-            if(barcodeType.equals("2"))// Embedded Barcodes start with 2.
-                return true;
-            else
+            if(barcode != null && barcode.length() == 12){
+                String barcodeType = barcode.substring(0,1);
+                if(barcodeType.equals("2"))// Embedded Barcodes start with 2.
+                    return true;
+                else
+                    return false;
+            }else{
                 return false;
+            }
+
         }
         public boolean isEAN13(){
-            String barcodeType = barcode.substring(0,2);
-            if(barcodeType.equals("02"))// Embedded Barcodes start with 02.
-                return true;
-            else
+            if(barcode != null && barcode.length() == 13){
+                String barcodeType = barcode.substring(0,2);
+                if(barcodeType.equals("02"))// Embedded Barcodes start with 02.
+                    return true;
+                else
+                    return false;
+            } else{
                 return false;
+            }
         }
         public boolean isEmbeddedBarcode(){
             return isUPCA() || isEAN13();
