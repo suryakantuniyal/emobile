@@ -1291,6 +1291,21 @@ public class EMSEpson extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                                     Order order,
                                     Global.OrderType saleTypes, boolean isFromHistory,
                                     boolean fromOnHold) {
-        return false;
+
+        boolean result = false;
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
+            Receipt receipt = receiptBuilder.getReceipt(orderProduct,order, saleTypes, isFromHistory,fromOnHold);
+
+            printReceipt(receipt);
+            releasePrinter();
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+        return result;
     }
 }
