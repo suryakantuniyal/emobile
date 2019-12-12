@@ -44,6 +44,7 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.Receipt;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.Order;
@@ -74,6 +75,7 @@ import com.printer.command.PrinterCom;
 import com.printer.command.PrinterUtils;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
+import com.starmicronics.stario.StarPrinterStatus;
 import com.starmicronics.starioextension.ICommandBuilder;
 import com.starmicronics.starioextension.StarIoExt;
 import com.thefactoryhka.android.pa.TfhkaAndroid;
@@ -3658,5 +3660,66 @@ public class EMSDeviceDriver {
         } catch (StarIOPortException ignored) {
         }
     }
-
+    protected void printGiftReceipt(Receipt receipt, int lineWidth) {
+        StringBuilder sb = new StringBuilder();
+        if (receipt.getMerchantLogo() != null)
+            printImage(receipt.getMerchantLogo());
+        if (receipt.getMerchantHeader() != null)
+            sb.append((receipt.getMerchantHeader()));
+        if (receipt.getSpecialHeader() != null)
+            sb.append((receipt.getSpecialHeader()));
+        if (receipt.getRemoteStationHeader() != null)
+            sb.append((receipt.getRemoteStationHeader()));
+        if (receipt.getHeader() != null)
+            sb.append((receipt.getHeader()));
+        if (receipt.getEmvDetails() != null)
+            sb.append((receipt.getEmvDetails()));
+        if (receipt.getSeparator() != null)
+            sb.append((receipt.getSeparator()));
+        for (String s : receipt.getItems()) {
+            if (s != null)
+                sb.append((s));
+        }
+        for (String s : receipt.getRemoteStationItems()) {
+            if (s != null)
+                sb.append((s));
+        }
+        if (receipt.getSeparator() != null)
+            sb.append((receipt.getSeparator()));
+        if (receipt.getTotals() != null)
+            sb.append((receipt.getTotals()));
+        if (receipt.getTaxes() != null)
+            sb.append((receipt.getTaxes()));
+        if (receipt.getTotalItems() != null)
+            sb.append((receipt.getTotalItems()));
+        if (receipt.getGrandTotal() != null)
+            sb.append((receipt.getGrandTotal()));
+        if (receipt.getPaymentsDetails() != null)
+            sb.append((receipt.getPaymentsDetails()));
+        if (receipt.getYouSave() != null)
+            sb.append((receipt.getYouSave()));
+        if (receipt.getIvuLoto() != null)
+            sb.append((receipt.getIvuLoto()));
+        if (receipt.getLoyaltyDetails() != null)
+            sb.append((receipt.getLoyaltyDetails()));
+        if (receipt.getRewardsDetails() != null)
+            sb.append((receipt.getRewardsDetails()));
+        try {
+            printPref = myPref.getPrintingPreferences();
+            print(sb.toString(), FORMAT);
+            if (printPref != null && printPref.contains(MyPreferences.print_descriptions))
+                printFooter(lineWidth);
+            try {
+                printImage(1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            printEnablerWebSite(lineWidth);
+            print(textHandler.newLines(1), FORMAT);
+            cutPaper();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+    }
 }

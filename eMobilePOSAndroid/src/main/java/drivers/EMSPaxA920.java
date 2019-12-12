@@ -312,7 +312,7 @@ public class EMSPaxA920 extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
             ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
             Receipt receipt = receiptBuilder.getReceipt(orderProduct,order, saleTypes, isFromHistory,fromOnHold);
-            printTextReceipt(receipt);
+            printGiftReceipt(receipt, LINE_WIDTH);
             releasePrinter();
             result = true;
         } catch (Exception e) {
@@ -320,104 +320,6 @@ public class EMSPaxA920 extends EMSDeviceDriver implements EMSDeviceManagerPrint
             Crashlytics.logException(e);
         }
         return result;
-    }
-    private void printTextReceipt(Receipt receipt) {
-        ICommandBuilder builder = StarIoExt.createCommandBuilder(StarIoExt.Emulation.StarPRNT);
-        builder.beginDocument();
-        Charset encoding = Charset.forName("UTF-8");
-        builder.appendCodePage(ICommandBuilder.CodePageType.UTF8);
-
-        if (receipt.getMerchantLogo() != null)
-            builder.appendBitmapWithAlignment(receipt.getMerchantLogo(), false,
-                    ICommandBuilder.AlignmentPosition.Center);
-        if (receipt.getMerchantHeader() != null)
-            builder.appendEmphasis((receipt.getMerchantHeader()).getBytes(encoding));
-        if (receipt.getSpecialHeader() != null)
-            builder.appendInvert((receipt.getSpecialHeader()).getBytes(encoding));
-        if (receipt.getRemoteStationHeader() != null)
-            builder.appendMultiple((receipt.getRemoteStationHeader()).getBytes(encoding), 2, 2);
-        if (receipt.getHeader() != null)
-            builder.append((receipt.getHeader()).getBytes(encoding));
-        if (receipt.getEmvDetails() != null)
-            builder.append((receipt.getEmvDetails()).getBytes(encoding));
-        if (receipt.getSeparator() != null)
-            builder.append((receipt.getSeparator()).getBytes(encoding));
-        for (String s : receipt.getItems()) {
-            if (s != null)
-                builder.append((s).getBytes(encoding));
-        }
-        for (String s : receipt.getRemoteStationItems()) {
-            if (s != null)
-                builder.appendMultiple((s).getBytes(encoding), 2, 2);
-        }
-        if (receipt.getSeparator() != null)
-            builder.append((receipt.getSeparator()).getBytes(encoding));
-        if (receipt.getTotals() != null)
-            builder.append((receipt.getTotals()).getBytes(encoding));
-        if (receipt.getTaxes() != null)
-            builder.append((receipt.getTaxes()).getBytes(encoding));
-        if (receipt.getTotalItems() != null)
-            builder.append((receipt.getTotalItems()).getBytes(encoding));
-        if (receipt.getGrandTotal() != null)
-            builder.appendMultipleWidth((receipt.getGrandTotal()).getBytes(encoding), 2);
-        if (receipt.getPaymentsDetails() != null)
-            builder.append((receipt.getPaymentsDetails()).getBytes(encoding));
-        // Gratuities line
-        if (myPref.isGratuitySelected() && myPref.getGratuityOne() != null
-                && myPref.getGratuityTwo() != null
-                && myPref.getGratuityThree() != null) {
-            // Gratuity title
-            EMSPlainTextHelper emsPlainTextHelper = new EMSPlainTextHelper();
-
-            if(receipt.getSubTotal()!= null) {
-                String title = getString(R.string.suggested_gratuity_title);
-                title = emsPlainTextHelper.centeredString(title,LINE_WIDTH);
-                if (title != null) {
-                    builder.append(title.getBytes(encoding));
-                }
-            }
-        }
-        if (receipt.getYouSave() != null)
-            builder.append((receipt.getYouSave()).getBytes(encoding));
-        if (receipt.getIvuLoto() != null)
-            builder.append((receipt.getIvuLoto()).getBytes(encoding));
-        if (receipt.getLoyaltyDetails() != null)
-            builder.append((receipt.getLoyaltyDetails()).getBytes(encoding));
-        if (receipt.getRewardsDetails() != null)
-            builder.append((receipt.getRewardsDetails()).getBytes(encoding));
-        if (receipt.getSignatureImage() != null)
-            builder.appendBitmapWithAlignment(receipt.getSignatureImage(), false,
-                    ICommandBuilder.AlignmentPosition.Center);
-        if (receipt.getSignature() != null)
-            builder.append((receipt.getSignature()).getBytes(encoding));
-        if (receipt.getMerchantFooter() != null)
-            builder.appendEmphasis((receipt.getMerchantFooter()).getBytes(encoding));
-        if (receipt.getSpecialFooter() != null)
-            builder.appendInvert((receipt.getSpecialFooter()).getBytes(encoding));
-        if (receipt.getTermsAndConditions() != null)
-            builder.append((receipt.getTermsAndConditions()).getBytes(encoding));
-        if (receipt.getEnablerWebsite() != null)
-            builder.appendEmphasis((receipt.getEnablerWebsite()).getBytes(encoding));
-
-        builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
-        builder.endDocument();
-        byte[] commands;
-        commands = builder.getCommands();
-
-        try {
-            port.beginCheckedBlock();
-            port.writePort(commands, 0, commands.length);
-            port.setEndCheckedBlockTimeoutMillis(30000);
-            StarPrinterStatus status = port.endCheckedBlock();
-            if(status.offline) {
-//                Log.e("Star","offline");
-            }
-//            StarPrinterStatus status = port.endCheckedBlock();
-            // todo: implement status
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-        }
     }
     private BigDecimal getGratuity(BigDecimal gratuity, BigDecimal subTotal){
         BigDecimal oneHundred = new BigDecimal(100);
