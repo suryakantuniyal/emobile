@@ -1534,17 +1534,17 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             totalAmountView.setText(String.format(Locale.getDefault(), activity.getString(R.string.total_plus_tip),
                     Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(0)));
             if(!(myPref.getGratuityOne().isEmpty()))
-                tenPercent.setText(((Double.valueOf(myPref.getGratuityOne())*100)+"%"));
+                tenPercent.setText((myPref.getGratuityOne()+"%"));
             if(!(myPref.getGratuityTwo().isEmpty()))
-                fifteenPercent.setText(((Double.valueOf(myPref.getGratuityTwo())*100)+"%"));
+                fifteenPercent.setText((myPref.getGratuityTwo()+"%"));
             if(!(myPref.getGratuityThree().isEmpty()))
-                twentyPercent.setText(((Double.valueOf(myPref.getGratuityThree())*100)+"%"));
+                twentyPercent.setText((myPref.getGratuityThree()+"%"));
 
             dlogGrandTotal = dialogLayout.findViewById(R.id.grandTotalView);
 
             dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
 
-            EditText promptTipField = dialogLayout.findViewById(R.id.otherTipAmountField);
+            final EditText promptTipField = dialogLayout.findViewById(R.id.otherTipAmountField);
             promptTipField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             promptTipField.clearFocus();
             promptTipField.setText("");
@@ -1657,15 +1657,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else {
                 subTotal = Double.parseDouble(orderSubTotal);
             }
-            Button tenPercent = dialogLayout.findViewById(R.id.tenPercent);
-            Button fifteenPercent = dialogLayout.findViewById(R.id.fifteenPercent);
-            Button twentyPercent = dialogLayout.findViewById(R.id.twentyPercent);
+            final Button tenPercent = dialogLayout.findViewById(R.id.tenPercent);
+            final Button fifteenPercent = dialogLayout.findViewById(R.id.fifteenPercent);
+            final Button twentyPercent = dialogLayout.findViewById(R.id.twentyPercent);
             if(!(myPref.getGratuityOne().isEmpty()))
-                tenPercent.setText(((Double.valueOf(myPref.getGratuityOne())*100)+"%"));
+                tenPercent.setText((myPref.getGratuityOne()+"%"));
             if(!(myPref.getGratuityTwo().isEmpty()))
-                fifteenPercent.setText(((Double.valueOf(myPref.getGratuityTwo())*100)+"%"));
+                fifteenPercent.setText((myPref.getGratuityTwo()+"%"));
             if(!(myPref.getGratuityThree().isEmpty()))
-                twentyPercent.setText(((Double.valueOf(myPref.getGratuityThree())*100)+"%"));
+                twentyPercent.setText((myPref.getGratuityThree()+"%"));
 
             dlogGrandTotal = dialogLayout.findViewById(R.id.grandTotalView);
             dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -1789,24 +1789,24 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             dlogGrandTotal = dialogLayout.findViewById(R.id.grandTotalView);
             dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
 
-            MyEditText promptTipField = dialogLayout.findViewById(R.id.otherTipAmountField);
+            final MyEditText promptTipField = dialogLayout.findViewById(R.id.otherTipAmountField);
             promptTipField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             promptTipField.clearFocus();
             promptTipField.setText("");
 
-            Button tenPercent = dialogLayout.findViewById(R.id.tenPercent);
-            Button fifteenPercent = dialogLayout.findViewById(R.id.fifteenPercent);
-            Button twentyPercent = dialogLayout.findViewById(R.id.twentyPercent);
+            final Button tenPercent = dialogLayout.findViewById(R.id.tenPercent);
+            final Button fifteenPercent = dialogLayout.findViewById(R.id.fifteenPercent);
+            final Button twentyPercent = dialogLayout.findViewById(R.id.twentyPercent);
             Button cancelTip = dialogLayout.findViewById(R.id.cancelTipButton);
             Button saveTip = dialogLayout.findViewById(R.id.acceptTipButton);
             Button noneButton = dialogLayout.findViewById(R.id.noneButton);
 
             if(!(myPref.getGratuityOne().isEmpty()))
-                tenPercent.setText(((Double.valueOf(myPref.getGratuityOne())*100)+"%"));
+                tenPercent.setText((myPref.getGratuityOne()+"%"));
             if(!(myPref.getGratuityTwo().isEmpty()))
-                fifteenPercent.setText(((Double.valueOf(myPref.getGratuityTwo())*100)+"%"));
+                fifteenPercent.setText((myPref.getGratuityTwo()+"%"));
             if(!(myPref.getGratuityThree().isEmpty()))
-                twentyPercent.setText(((Double.valueOf(myPref.getGratuityThree())*100)+"%"));
+                twentyPercent.setText((myPref.getGratuityThree()+"%"));
 
             promptTipField.addTextChangedListener(new TextWatcher() {
                 public void afterTextChanged(Editable s) {

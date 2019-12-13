@@ -1392,20 +1392,8 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.getCurrencyFormat(granTotal), lineWidth, 0));
             sb.append("\n");
-            // Gratuities line
-            if (myPref.isGratuitySelected() && myPref.getGratuityOne() != null
-                    && myPref.getGratuityTwo() != null
-                    && myPref.getGratuityThree() != null) {
-                String title = getString(R.string.suggested_gratuity_title);
-                String gratuityLine = anOrder.getGratuityLines(title,
-                        myPref.getGratuityOne(),
-                        myPref.getGratuityTwo(),
-                        myPref.getGratuityThree(),
-                        lineWidth);
-                print(gratuityLine, FORMAT);
-                sb.setLength(0);
-            }
-            // End of gratuity
+            print(sb.toString(), FORMAT);
+
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(anOrder.ord_id);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
@@ -1512,6 +1500,20 @@ public class EMSDeviceDriver {
             }
             print(sb.toString(), FORMAT);
 
+            // Gratuities line
+            if (myPref.isGratuitySelected() && myPref.getGratuityOne() != null
+                    && myPref.getGratuityTwo() != null
+                    && myPref.getGratuityThree() != null) {
+                String title = getString(R.string.suggested_gratuity_title);
+                String gratuityLine = anOrder.getGratuityLines(title,
+                        myPref.getGratuityOne(),
+                        myPref.getGratuityTwo(),
+                        myPref.getGratuityThree(),
+                        lineWidth);
+                print(gratuityLine, FORMAT);
+                sb.setLength(0);
+            }
+            // End of gratuity
             print(textHandler.newLines(1), FORMAT);
             if (type != Global.OrderType.ORDER && saveAmount > 0)
                 printYouSave(String.valueOf(saveAmount), lineWidth);
