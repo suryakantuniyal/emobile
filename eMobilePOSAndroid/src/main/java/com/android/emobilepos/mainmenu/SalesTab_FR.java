@@ -187,13 +187,15 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         Button btnScan = null;
         if (MyPreferences.isPaxA920()) {
             btnScan = view.findViewById(R.id.btnScan);
-            btnScan.setVisibility(View.VISIBLE);
-            btnScan.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    paxScan();
-                }
-            });
+            if(btnScan != null){
+                btnScan.setVisibility(View.VISIBLE);
+                btnScan.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        paxScan();
+                    }
+                });
+            }
         }
         myPref = new MyPreferences(getActivity());
         myPref.setLogIn(true);

@@ -22,18 +22,23 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
+import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.genius.AdditionalParameters;
 import com.android.emobilepos.models.genius.ApplicationInformation;
 import com.android.emobilepos.models.genius.EMV;
 import com.android.emobilepos.models.genius.GeniusResponse;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.ivu.MersenneTwisterFast;
@@ -43,6 +48,7 @@ import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
+import com.android.support.TaxesCalculator;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.gson.Gson;
 import com.pax.poslink.POSLinkAndroid;
@@ -56,6 +62,7 @@ import com.pax.poslink.poslink.POSLinkCreator;
 import org.kxml2.kdom.Document;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 import drivers.pax.utils.PosLinkHelper;
@@ -78,7 +85,7 @@ import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_SALE;
 /**
  * Created by Luis Camayd on 10/11/2018.
  */
-public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View.OnClickListener, TipsCallback {
+public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickListener, TipsCallback {
 
     private static final String APPROVED = "APPROVED";
     private Global global;
@@ -98,6 +105,16 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     double grandTotalAmount;
     double amountToTip;
 
+    private List<GroupTax> groupTaxRate;
+    private TextView tax1Lbl;
+    private TextView tax2Lbl;
+    private TextView tax3Lbl;
+    private boolean isFromSalesReceipt  = false;
+    private boolean isFromMainMenu      = false;
+    private EditText paid, amountDue, reference, tipAmount, promptTipField, subtotal, tax1, tax2, tax3;
+    private TextView change;
+    private String custidkey = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +122,78 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         global = (Global) getApplication();
         myPref = new MyPreferences(this);
         extras = this.getIntent().getExtras();
+        String custTaxCode;
+
+        if (myPref.isCustSelected()) {
+            custTaxCode = myPref.getCustTaxCode();
+        } else {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            custTaxCode = assignEmployee.getTaxDefault();
+        }
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
+        isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
+        isFromMainMenu = extras.getBoolean("isFromMainMenu");
+        amountDue = findViewById(R.id.amountDueCashEditPax);
+        subtotal = findViewById(R.id.subtotalCashEditPax);
+        tax1 = findViewById(R.id.tax1CashEditPax);
+        tax2 = findViewById(R.id.tax2CashEditPax);
+        tax3 = findViewById(R.id.tax3CashEditPax);
+        tax1Lbl = findViewById(R.id.tax1LblPax);
+        tax2Lbl = findViewById(R.id.tax2LblPax);
+        tax3Lbl = findViewById(R.id.tax3LblPax);
+        TaxesCalculator.setIvuTaxesLabels(groupTaxRate, tax1Lbl, tax2Lbl, tax3Lbl);
+        amountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+        if (!isFromMainMenu && global.order != null) {
+            TaxesCalculator.setIvuTaxesFields(global.order, tax1, tax2, tax3);
+        }
+        custidkey = extras.getString("custidkey");
+        if (custidkey == null)
+            custidkey = "";
+
+        if (!isFromMainMenu || Global.isIvuLoto) {
+            amountDue.setEnabled(false);
+        }
+
+        this.paid = findViewById(R.id.amountTextView);
+        this.paid.setText(Global.formatDoubleToCurrency(0.00));
+        this.paid.setSelection(5);
+//        this.paid.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (v.hasFocus()) {
+//                    int lent = paid.getText().toString().length();
+//                    Selection.setSelection(paid.getText(), lent);
+//                }
+//            }
+//        });
+//        this.paid = findViewById(R.id.paidCashEditPax);
+//
+//        this.paid.setText(Global.formatDoubleToCurrency(0.00));
+//        this.paid.setSelection(5);
+//
+//
+//        this.paid.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (v.hasFocus()) {
+//                    int lent = paid.getText().toString().length();
+//                    Selection.setSelection(paid.getText(), lent);
+//                }
+//            }
+//        });
+        this.amountDue.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {
+                    Selection.setSelection(amountDue.getText(), amountDue.getText().toString().length());
+                }
+
+            }
+        });
+
+//        change = findViewById(R.id.changeEditPax);
         invoiceJobIdTextView = findViewById(R.id.invoiceJobIdTextView);
         amountTextView = findViewById(R.id.amountTextView);
         creditRadioButton = findViewById(R.id.creditRadioButton);
@@ -118,23 +207,74 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         else
             inv_id = extras.getString("job_id");
 
+        // listeners
+        this.amountDue.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                //recalculateChange();
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                NumberUtils.parseInputedCurrency(s, amountDue);
+            }
+        });
+
+//        this.tipAmount.addTextChangedListener(new TextWatcher() {
+//            public void afterTextChanged(Editable s) {
+//                recalculateChange();
+//            }
+//
+//
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                NumberUtils.parseInputedCurrency(s, tipAmount);
+//            }
+//        });
+
+//        this.paid.addTextChangedListener(new TextWatcher() {
+//            public void afterTextChanged(Editable s) {
+//                if (!paid.getText().toString().isEmpty())
+//                    recalculateChange();
+//            }
+//
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                NumberUtils.parseInputedCurrency(s, paid);
+//            }
+//        });
+        // end of listeners
+
+        if (!Global.isIvuLoto || isFromSalesReceipt) {
+//            findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
+//            findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
+//            findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
+//            findViewById(R.id.ivuposRow4).setVisibility(View.GONE);
+        } else {
+            setIVUPOSFieldListeners();
+        }
+        //subtotal.setText(Global.getCurrencyFormat(orderSubTotal));
+
         invoiceJobIdTextView.setEnabled(extras.getBoolean("isFromMainMenu", false));
         invoiceJobIdTextView.setText(inv_id);
 
-        amountTextView.setText(
-                Global.getCurrencyFormat(
-                        Global.formatNumToLocale(
-                                Double.parseDouble(extras.getString("amount")))));
-        amountTextView.addTextChangedListener(getTextWatcher(amountTextView));
-        amountTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    Selection.setSelection(
-                            amountTextView.getText(), amountTextView.getText().length());
-                }
-            }
-        });
+//        amountTextView.setText(
+//                Global.getCurrencyFormat(
+//                        Global.formatNumToLocale(
+//                                Double.parseDouble(extras.getString("amount")))));
+//        amountTextView.addTextChangedListener(getTextWatcher(amountTextView));
+//        amountTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (hasFocus) {
+//                    Selection.setSelection(
+//                            amountTextView.getText(), amountTextView.getText().length());
+//                }
+//            }
+//        });
 
         hasBeenCreated = true;
 
@@ -209,6 +349,13 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 //        payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(String.valueOf(grandTotalAmount)));
         payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
         payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
+        // taxes
+        payment.setTax1_amount(tax1.getText().toString());
+        payment.setTax2_amount(tax2.getText().toString());
+        payment.setTax3_amount(tax3.getText().toString());
+        payment.setTax1_name(tax1Lbl.getText().toString());
+        payment.setTax2_name(tax2Lbl.getText().toString());
+        payment.setTax3_name(tax3Lbl.getText().toString());
 
         if (isRefund) {
             payment.setIs_refund("1");
@@ -564,7 +711,6 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
     private class printAsync extends AsyncTask<Void, Void, Void> {
         private boolean printSuccessful = true;
-
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(ProcessPax_FA.this);
@@ -582,7 +728,6 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             }
             return null;
         }
-
         @Override
         protected void onPostExecute(Void unused) {
             myProgressDialog.dismiss();
@@ -591,6 +736,113 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             else {
                 showPrintDlg();
             }
+        }
+    }
+//    private void recalculateChange() {
+//        //amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tipAmount));
+//        double totAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+//        double totalPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+//
+//        if (totalPaid > totAmount) {
+//            double tempTotal = Math.abs(totAmount - totalPaid);
+//            change.setText(Global.getCurrencyFormat(Global.formatNumToLocale(tempTotal)));
+//        } else {
+//            change.setText(Global.formatDoubleToCurrency(0.00));
+//        }
+//
+//    }
+    private void setIVUPOSFieldListeners() {
+        try{
+            subtotal.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (v.hasFocus()) {
+                        Selection.setSelection(subtotal.getText(), subtotal.getText().toString().length());
+                    }
+                }
+            });
+            tax1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (v.hasFocus()) {
+                        Selection.setSelection(tax1.getText(), tax1.getText().toString().length());
+                    }
+                }
+            });
+            tax2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (v.hasFocus()) {
+                        NumberUtils.parseInputedCurrency(tax2.getText().toString(), tax2);
+                    }
+                }
+            });
+            tax3.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (v.hasFocus()) {
+                        NumberUtils.parseInputedCurrency(tax3.getText().toString(), tax3);
+                    }
+
+                }
+            });
+            subtotal.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable s) {
+//                NumberUtils.parseInputedCurrency(s, subtotal);
+                    if (isFromMainMenu) {
+                        TaxesCalculator.setIvuTaxesFields(groupTaxRate, subtotal, tax1, tax2, tax3);
+                        calculateAmountDue(subtotal, tax1, tax2, tax3, amountDue);
+                    }
+                    //recalculateChange();
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    NumberUtils.parseInputedCurrency(s, subtotal);
+                }
+            });
+            tax1.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable s) {
+                    calculateAmountDue(subtotal, tax1, tax2, tax3, amountDue);
+                    //recalculateChange();
+                }
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    NumberUtils.parseInputedCurrency(s, tax1);
+                }
+            });
+            tax2.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable s) {
+                    System.out.println("13");
+                    calculateAmountDue(subtotal, tax1, tax2, tax3, amountDue);
+                    System.out.println("14");
+                    //recalculateChange();
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    NumberUtils.parseInputedCurrency(s, tax2);
+                }
+            });
+            tax3.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable s) {
+                    calculateAmountDue(subtotal, tax1, tax2, tax3, amountDue);
+                    //recalculateChange();
+                }
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    NumberUtils.parseInputedCurrency(s, tax3);
+                }
+            });
+        }catch (Exception x){
+            x.printStackTrace();
         }
     }
 }
