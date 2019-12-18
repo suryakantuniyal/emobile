@@ -86,7 +86,7 @@ import static drivers.pax.utils.Constant.REQUEST_TRANSACTION_TYPE_SALE;
  * Created by Luis Camayd on 10/11/2018.
  */
 public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickListener, TipsCallback {
-
+    private String orderSubTotal;
     private static final String APPROVED = "APPROVED";
     private Global global;
     private Bundle extras;
@@ -133,6 +133,7 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
         groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
         isFromMainMenu = extras.getBoolean("isFromMainMenu");
+        orderSubTotal = extras.getString("ord_subtotal", "0");
         amountDue = findViewById(R.id.amountDueCashEditPax);
         subtotal = findViewById(R.id.subtotalCashEditPax);
         tax1 = findViewById(R.id.tax1CashEditPax);
@@ -256,7 +257,7 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
         } else {
             setIVUPOSFieldListeners();
         }
-        //subtotal.setText(Global.getCurrencyFormat(orderSubTotal));
+        subtotal.setText(Global.getCurrencyFormat(orderSubTotal));
 
         invoiceJobIdTextView.setEnabled(extras.getBoolean("isFromMainMenu", false));
         invoiceJobIdTextView.setText(inv_id);
@@ -314,6 +315,7 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
             MersenneTwisterFast mersenneTwister = new MersenneTwisterFast();
             payment.setIvuLottoDrawDate(drawDateInfo.getDrawDate());
             payment.setIvuLottoNumber(mersenneTwister.generateIVULoto());
+            Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         }
 
         if (!this.extras.getBoolean("histinvoices"))
