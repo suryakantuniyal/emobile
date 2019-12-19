@@ -655,7 +655,7 @@ public class ReceiptBuilder {
             PaymentsHandler payHandler = new PaymentsHandler(context);
             List<Payment> paymentList = payHandler.getOrderPayments(order.ord_id);
             for(Payment payment:paymentList){
-                paymentMethodType = payment.getPaymentMethod().getPaymentmethod_type();
+                paymentMethodType = payment.getPaymentMethod().getPaymethod_name();
             }
             List<PaymentDetails> detailsList = payHandler
                     .getPaymentForPrintingTransactions(order.ord_id);
