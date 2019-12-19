@@ -63,7 +63,7 @@ public class EMSPaxA920 extends EMSDeviceDriver implements EMSDeviceManagerPrint
         this.edm = edm;
         myPref = new MyPreferences(activity);
 
-        POSLinkPrinter.getInstance(activity).setGray(POSLinkPrinter.GreyLevel.DEFAULT);
+        //POSLinkPrinter.getInstance(activity).setGray(POSLinkPrinter.GreyLevel.DEFAULT);
         printDataFormatter = new POSLinkPrinter.PrintDataFormatter();
         this.edm.driverDidConnectToDevice(this, false, activity);
         return true;

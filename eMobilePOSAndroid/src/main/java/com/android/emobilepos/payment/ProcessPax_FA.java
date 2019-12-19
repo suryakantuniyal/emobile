@@ -262,20 +262,20 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
         invoiceJobIdTextView.setEnabled(extras.getBoolean("isFromMainMenu", false));
         invoiceJobIdTextView.setText(inv_id);
 
-//        amountTextView.setText(
-//                Global.getCurrencyFormat(
-//                        Global.formatNumToLocale(
-//                                Double.parseDouble(extras.getString("amount")))));
-//        amountTextView.addTextChangedListener(getTextWatcher(amountTextView));
-//        amountTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if (hasFocus) {
-//                    Selection.setSelection(
-//                            amountTextView.getText(), amountTextView.getText().length());
-//                }
-//            }
-//        });
+        amountTextView.setText(
+                Global.getCurrencyFormat(
+                        Global.formatNumToLocale(
+                                Double.parseDouble(extras.getString("amount")))));
+        amountTextView.addTextChangedListener(getTextWatcher(amountTextView));
+        amountTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    Selection.setSelection(
+                            amountTextView.getText(), amountTextView.getText().length());
+                }
+            }
+        });
 
         hasBeenCreated = true;
 
@@ -352,9 +352,9 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
         payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
         payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountTextView.getText().toString()));
         // taxes
-        payment.setTax1_amount(tax1.getText().toString());
-        payment.setTax2_amount(tax2.getText().toString());
-        payment.setTax3_amount(tax3.getText().toString());
+        payment.setTax1_amount(NumberUtils.cleanCurrencyFormatedNumber(tax1.getText().toString()));
+        payment.setTax2_amount(NumberUtils.cleanCurrencyFormatedNumber(tax2.getText().toString()));
+        payment.setTax3_amount(NumberUtils.cleanCurrencyFormatedNumber(tax3.getText().toString()));
         payment.setTax1_name(tax1Lbl.getText().toString());
         payment.setTax2_name(tax2Lbl.getText().toString());
         payment.setTax3_name(tax3Lbl.getText().toString());

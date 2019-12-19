@@ -1920,9 +1920,12 @@ public class EMSDeviceDriver {
     /**
      * ------------------------END OF METHODS FOR INSTANCES--------------------------
      */
-
-
     protected void printImage(int type) {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets";
 
         if (PRINT_TO_LOG) {
@@ -2528,14 +2531,10 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.newLines(1));
                 if (Global.isIvuLoto && Global.subtotalAmount > 0 && !TextUtils.isEmpty(payArray.getTax1_amount())
                         && !TextUtils.isEmpty(payArray.getTax2_amount())) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
-                            Global.getCurrencyFormat(String.valueOf(Global.subtotalAmount)), lineWidth, 0));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax1_name(),
-                            Global.getCurrencyFormat(payArray.getTax1_amount()), lineWidth, 2));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
-                            Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax3_name(),
-                            Global.getCurrencyFormat(payArray.getTax3_amount()), lineWidth, 2));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),Global.getCurrencyFormat(String.valueOf(Global.subtotalAmount)), lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax1_name(),             Global.getCurrencyFormat(payArray.getTax1_amount()), lineWidth, 2));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),             Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax3_name(),             Global.getCurrencyFormat(payArray.getTax3_amount()), lineWidth, 2));
                 }
 
                 if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
@@ -2589,7 +2588,7 @@ public class EMSDeviceDriver {
                     encodedSignature = payArray.getPay_signature();
                     printImage(1);
                 }
-                sb.append("\n\nx").append(textHandler.lines(lineWidth / 2)).append("\n");
+                sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
                 sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
