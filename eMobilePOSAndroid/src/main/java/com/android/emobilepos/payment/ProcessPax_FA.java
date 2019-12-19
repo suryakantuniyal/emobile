@@ -251,10 +251,10 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
         // end of listeners
 
         if (!Global.isIvuLoto || isFromSalesReceipt) {
-//            findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
-//            findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
-//            findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
-//            findViewById(R.id.ivuposRow4).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow4).setVisibility(View.GONE);
         } else {
             setIVUPOSFieldListeners();
         }
