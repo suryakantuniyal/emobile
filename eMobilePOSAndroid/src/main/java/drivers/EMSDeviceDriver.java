@@ -1922,6 +1922,11 @@ public class EMSDeviceDriver {
      */
     protected void printImage(int type) {
         try {
+            /*
+            Pause before printing because it was printing the signature after the header.
+            The app was printing the image after the header.
+            Se añadió una pausa porque estaba imprimiendo la firma luego de el encabezado.
+             */
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
