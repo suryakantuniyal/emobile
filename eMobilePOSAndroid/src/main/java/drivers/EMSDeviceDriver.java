@@ -1921,16 +1921,6 @@ public class EMSDeviceDriver {
      * ------------------------END OF METHODS FOR INSTANCES--------------------------
      */
     protected void printImage(int type) {
-        try {
-            /*
-            Pause before printing because it was printing the signature after the header.
-            The app was printing the image after the header.
-            Se añadió una pausa porque estaba imprimiendo la firma luego de el encabezado.
-             */
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets";
 
         if (PRINT_TO_LOG) {
@@ -2595,6 +2585,16 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.newLines(1));
                 } else if (payArray.getPay_signature() != null && !TextUtils.isEmpty(payArray.getPay_signature())) {
                     encodedSignature = payArray.getPay_signature();
+                    try {
+                        /*
+                        Pause before printing because it was printing the signature after the header.
+                        The app was printing the image after the header.
+                        Se añadió una pausa porque estaba imprimiendo la firma luego de el encabezado.
+                         */
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     printImage(1);
                 }
                 sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
