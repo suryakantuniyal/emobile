@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -534,6 +535,7 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode == -1){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             Intent result = new Intent();
             result.putExtra("total_amount", paid_amount);
             result.putExtra("emvcontainer", new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
