@@ -1643,7 +1643,7 @@ public class MyPreferences {
 
     public String getGratuityOne() {
         if(cleanGratuity(getPreferencesValue(gratuity_one)).equals("0.0")){
-            setGratuityOne("0.1");
+            setGratuityOne("10");
         }
         return cleanGratuity(getPreferencesValue(gratuity_one));
     }
@@ -1664,7 +1664,7 @@ public class MyPreferences {
 
     public String getGratuityTwo() {
         if(cleanGratuity(getPreferencesValue(gratuity_two)).equals("0.0")){
-            setGratuityTwo("0.15");
+            setGratuityTwo("15");
         }
         return cleanGratuity( getPreferencesValue(gratuity_two));
     }
@@ -1675,7 +1675,7 @@ public class MyPreferences {
 
     public String getGratuityThree() {
         if(cleanGratuity(getPreferencesValue(gratuity_three)).equals("0.0")){
-            setGratuityThree("0.2");
+            setGratuityThree("20");
         }
         return cleanGratuity(getPreferencesValue(gratuity_three));
     }
