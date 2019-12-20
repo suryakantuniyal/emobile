@@ -931,7 +931,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             Global.showPrompt(getActivity(), R.string.config_batch_pax, result);
         }
 
-        private void confirmRestoreOrBackupAction(String nameOfSelection,boolean isBackUp,boolean isForGlobal){
+        private void confirmRestoreOrBackupAction(String nameOfSelection,final boolean isBackUp,final boolean isForGlobal){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
             alertDialog.setTitle(R.string.dlog_title_confirm);
             alertDialog.setMessage(String.format("Are you sure you want to %s?",nameOfSelection.toLowerCase()));
