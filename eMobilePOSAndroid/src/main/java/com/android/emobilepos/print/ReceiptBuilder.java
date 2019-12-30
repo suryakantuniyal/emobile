@@ -651,12 +651,8 @@ public class ReceiptBuilder {
 
             receipt.setGratuity(sb.toString());
             sb.setLength(0);
-            String paymentMethodType = "";
             PaymentsHandler payHandler = new PaymentsHandler(context);
-            List<Payment> paymentList = payHandler.getOrderPayments(order.ord_id);
-            for(Payment payment:paymentList){
-                paymentMethodType = payment.getPaymentMethod().getPaymethod_name();
-            }
+
             List<PaymentDetails> detailsList = payHandler
                     .getPaymentForPrintingTransactions(order.ord_id);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
@@ -692,6 +688,7 @@ public class ReceiptBuilder {
 
                 StringBuilder tempSB = new StringBuilder();
                 for (int i = 0; i < size; i++) {
+                    String paymentMethodType = detailsList.get(i).getPaymethod_name();
                     tempAmount = tempAmount + formatStrToDouble(
                             detailsList.get(i).getPay_amount());
                     if (Payment.PaymentType.getPaymentTypeByCode(
