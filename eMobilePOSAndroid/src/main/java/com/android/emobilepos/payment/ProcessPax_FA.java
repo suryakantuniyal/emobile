@@ -93,6 +93,7 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
     private Bundle extras;
     private EditText invoiceJobIdTextView, amountTextView;
     private RadioButton creditRadioButton;
+    private RadioButton debitRadioButton;
     private ProgressDialog myProgressDialog;
     private Payment payment;
     private boolean hasBeenCreated = false;
@@ -199,6 +200,7 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
         invoiceJobIdTextView = findViewById(R.id.invoiceJobIdTextView);
         amountTextView = findViewById(R.id.amountTextView);
         creditRadioButton = findViewById(R.id.creditRadioButton);
+        debitRadioButton = findViewById(R.id.debitRadioButton);
 
         btnProcess = findViewById(R.id.processButton);
         btnProcess.setOnClickListener(this);
@@ -422,7 +424,6 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
             }
         }).start();
     }
-
     private void processResponse() {
         Global.dismissDialog(ProcessPax_FA.this, myProgressDialog);
 
@@ -444,9 +445,9 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
             payment.setPay_resultcode(response.ResultCode);
             payment.setPay_resultmessage(response.Message);
             payment.setPay_name("");
-            payment.setCard_type(PosLinkHelper.payMethodDictionary(response.CardType));
+            payment.setCard_type(PosLinkHelper.payMethodDictionary(debitRadioButton.isChecked()?"DEBIT":response.CardType));
             payment.setProcessed("1");
-            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(response.CardType));
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(payment.getCard_type()));
 
             // Set EMV
             ApplicationInformation applicationInformation = new ApplicationInformation();
