@@ -857,7 +857,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             globalDlog.setContentView(R.layout.dlog_field_single_layout);
 
             final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
-            viewField.setInputType(InputType.TYPE_CLASS_NUMBER);
+            viewField.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
             try{
                 if (myPref.getOpenDiscount() != null) {
                     viewField.setText(myPref.getOpenDiscount());
