@@ -23,6 +23,7 @@ import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Device;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.print.ReceiptBuilder;
@@ -55,6 +56,7 @@ import util.BitmapUtils;
 
 public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, IConnectionCallback {
 
+    private static volatile EMSStar thisInstance;
     private int connectionRetries = 0;
     private boolean isNetworkPrinter = false;
     private int LINE_WIDTH = 32;
@@ -66,7 +68,6 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     private StarIoExtManager mStarIoExtManager;
     private Handler handler;
     private ProgressDialog myProgressDialog;
-    private EMSStar thisInstance;
     private String portNumber = "";
     private EMSDeviceManager edm;
     private CreditCardInfo cardManager;
@@ -76,6 +77,15 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     private Typeface typefaceBoldItalic = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
     private int FONT_SIZE_NORMAL = 20;
     private int FONT_SIZE_LARGE = 44;
+
+    public static EMSStar getInstance(){
+        if(thisInstance == null)
+            synchronized (EMSStar.class){
+                thisInstance = (thisInstance == null)? new EMSStar():thisInstance;
+            }
+
+        return thisInstance;
+    }
 
     private Runnable doUpdateViews = new Runnable() {
         public void run() {
@@ -648,8 +658,10 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         commands = builder.getCommands();
 
         try {
+            //port.beginCheckedBlock();
             port.writePort(commands, 0, commands.length);
             port.setEndCheckedBlockTimeoutMillis(30000);
+            //port.endCheckedBlock();
 //            StarPrinterStatus status = port.endCheckedBlock();
             // todo: implement status
         } catch (StarIOPortException e) {
