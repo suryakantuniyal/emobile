@@ -199,8 +199,8 @@ public class ProcessPax_FA extends AbstractPaymentFA implements View.OnClickList
 //        change = findViewById(R.id.changeEditPax);
         invoiceJobIdTextView = findViewById(R.id.invoiceJobIdTextView);
         amountTextView = findViewById(R.id.amountTextView);
-        creditRadioButton = findViewById(R.id.creditRadioButton);
-        debitRadioButton = findViewById(R.id.debitRadioButton);
+        creditRadioButton   = findViewById(R.id.creditRadioButton);
+        debitRadioButton    = findViewById(R.id.debitRadioButton);
 
         btnProcess = findViewById(R.id.processButton);
         btnProcess.setOnClickListener(this);
