@@ -1542,7 +1542,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             dlogGrandTotal = dialogLayout.findViewById(R.id.grandTotalView);
 
-            dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+            dlogGrandTotal.setText(Global.formatDoubleToCurrency(subTotal));
 
             final EditText promptTipField = dialogLayout.findViewById(R.id.otherTipAmountField);
             promptTipField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
