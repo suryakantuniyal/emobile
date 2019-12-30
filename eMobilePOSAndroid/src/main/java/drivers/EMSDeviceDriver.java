@@ -1393,6 +1393,7 @@ public class EMSDeviceDriver {
                     Global.getCurrencyFormat(granTotal), lineWidth, 0));
             sb.append("\n");
             print(sb.toString(), FORMAT);
+            sb.setLength(0);
 
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(anOrder.ord_id);
