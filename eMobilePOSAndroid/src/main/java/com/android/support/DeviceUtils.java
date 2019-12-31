@@ -497,7 +497,7 @@ public class DeviceUtils {
                 preferences.setPrinterMACAddress(portName);
                 preferences.posPrinter(false, true);
                 preferences.printerAreaSize(false, 48);
-                EMSStar aDevice = EMSStar.getInstance();
+                EMSStar aDevice = new EMSStar();
                 Global.mainPrinterManager = edm.getManager();
                 aDevice.autoConnect((Activity) context, edm, 48, true, preferences.getPrinterMACAddress(), "");
                 List<Device> devices = new ArrayList<>();

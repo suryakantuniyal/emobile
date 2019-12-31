@@ -87,7 +87,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice.connect(activity, -1, false, this);
                 break;
             case Global.STAR:
-                aDevice = EMSStar.getInstance();
+                aDevice = new EMSStar();
                 if (interfase == PrinterInterfase.BLUETOOTH)
                     promptTypeOfStarPrinter(activity);
                 else
@@ -233,7 +233,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSIngenico();
                 break;
             case Global.STAR:
-                aDevice = EMSStar.getInstance();
+                aDevice = new EMSStar();
                 break;
             case Global.GPRINTER:
                 aDevice = new EMSGPrinterPT380();
