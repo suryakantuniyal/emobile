@@ -150,7 +150,6 @@
 
     <GridView
         android:id="@+id/cardsListview"
-        listitem="@layout/main_menu_listviewadapter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/white_background"
@@ -163,5 +162,6 @@
         android:paddingTop="5dp"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
-        tools:listitem="@layout/main_menu_listviewadapter"></GridView>
+        tools:listitem="@layout/main_menu_listviewadapter"
+></GridView>
 </LinearLayout>

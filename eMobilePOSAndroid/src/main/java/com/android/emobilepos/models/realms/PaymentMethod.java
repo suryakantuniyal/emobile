@@ -126,6 +126,15 @@ public class PaymentMethod extends RealmObject {
         method.setOriginalTransid("0");
         return method;
     }
+    public static PaymentMethod getSecurePayPaxPaymentMethod() {
+        PaymentMethod method = new PaymentMethod();
+        method.setPaymethod_id("SecurePayPax");
+        method.setPaymethod_name("Secure Pay - Pax");
+        method.setPaymentmethod_type("SecurePayPax");
+        method.setImage_url("");
+        method.setOriginalTransid("0");
+        return method;
+    }
 
     @Override
     public boolean equals(Object obj) {

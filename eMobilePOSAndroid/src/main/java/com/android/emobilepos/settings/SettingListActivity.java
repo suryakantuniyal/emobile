@@ -734,8 +734,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     if (checkBoxPreference.isChecked()) {
                         promptForSignature();
                         findPreference("pref_use_pax_device_list").setEnabled(true);
+                        PayMethodsDAO.insert(PaymentMethod.getSecurePayPaxPaymentMethod());
                     } else {
                         findPreference("pref_use_pax_device_list").setEnabled(false);
+                        PayMethodsDAO.delete("SecurePayPax");
                     }
                     break;
                 case R.string.config_pay_with_card_on_file:

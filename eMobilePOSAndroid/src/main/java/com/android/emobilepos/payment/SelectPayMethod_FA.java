@@ -1080,7 +1080,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     paymentMethod.setIsactive("1");
                     paymentMethod.setPaymentmethod_type("PAX");
                     paymentMethod.setPaymethod_id("PAX");
-                    paymentMethod.setPaymethod_name("PAX");
+                    paymentMethod.setPaymethod_name("Credit/Debit Cards Processing (PAX)");
                     paymentMethod.setPaymethod_showOnline("0");
                     paymentMethod.setPriority(0);
                     payTypeList.add(paymentMethod);
