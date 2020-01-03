@@ -108,6 +108,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import drivers.star.utils.PrinterFunctions;
+import drivers.weightScales.weight.utils.weightScaleHelper;
 import drivers.EMSKDS;
 import interfaces.PayWithLoyalty;
 import main.EMSDeviceManager;
@@ -646,6 +648,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                                 startActivityForResult(intent, 0);
                                 break;
+                            case R.id.weightProduct:
+                                Product mproduct = prodHandler.getProductDetails(orderSeatProduct.orderProduct.getProd_id());
+                                startWeightScale(orderProductIdx);
+                                break;
                             case R.id.removeProduct:
                                 if (hasRemoveItemPermission) {
                                     boolean printed = orderSeatProduct.orderProduct.isPrinted();
@@ -705,12 +711,24 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 popup.getMenu().findItem(R.id.overridePrice).setEnabled(hasOverwritePermission);
                 popup.getMenu().findItem(R.id.removeProduct).setEnabled(hasRemoveItemPermission);
                 popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Double.parseDouble(orderSeatProduct.orderProduct.getProd_price_points()) > 0);
+                popup.getMenu().findItem(R.id.weightProduct).setEnabled(weightScaleHelper.checkWeightAvailability(myPref));
                 popup.show();
             }
         }
         receiptListView.smoothScrollToPosition(position);
     }
 
+    private void startWeightScale(int orderProductIndexPos) {
+        double w = Global.mainWeightScaleManager.getWeightFromScale();
+        if (w < 0) {
+            Toast.makeText(getActivity(), R.string.product_receipt_options_weight, Toast.LENGTH_SHORT).show();
+        } else {
+            getOrderingMainFa().global.order.getOrderProducts().get(orderProductIndexPos).setOrdprod_qty(String.valueOf(w));
+            receiptListView.invalidateViews();
+            reCalculate();
+        }
+
+    }
 
     @Override
     public void processPayWithLoyalty(OrderSeatProduct orderSeatProduct) {

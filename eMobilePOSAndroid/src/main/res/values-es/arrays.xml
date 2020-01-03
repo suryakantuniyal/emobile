@@ -6,6 +6,7 @@
         <item name="paymentsMethodsSettings">"Métodos de pago"</item>
         <item name="paymentProcessingSettings">"Proceso de pagos"</item>
         <item name="printingSettings">"Configuración de impresión"</item>
+        <item name="weightScaleSettings">Configuración de Pesas</item>
         <item name="productsSettings">"Configuración de productos"</item>
         <item name="accountSettings">"Configuraciones de la cuenta"</item>
         <item name="cashDrawerSettings">"Cajón de dinero"</item>
@@ -247,6 +248,14 @@
         <item name="reader_magtek">"1"</item>
         <item name="reader_rover">"2"</item>
         <item name="reader_walker">"3"</item>
+    </string-array>
+    <string-array name="weightScaleEntries">
+        <item name="scale_none">"Ninguna"</item>
+        <item name="scale_star">"Star S8200"</item>
+    </string-array>
+    <string-array name="weightScaleValues">
+        <item name="scale_none">"-1"</item>
+        <item name="scale_star">"0"</item>
     </string-array>
 
     <string-array name="cardTypes">

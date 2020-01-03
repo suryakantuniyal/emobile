@@ -885,6 +885,9 @@
     <string name="config_account_settings">Account Settings</string>
     <string name="config_product_settings">Product Settings</string>
     <string name="config_printing_settings">Printing Settings</string>
+    <string name="config_weight_scale_settings">Weight Scale Settings</string>
+    <string name="config_weight_scale_settings_scale_selection">Select Weight Scale</string>
+    <string name="config_weight_scale_settings_loading_driver_dialog">Connecting to Weight Scale…</string>
     <string name="config_other_settings">Other Settings</string>
     <string name="config_shifts">Shifts</string>
     <string name="config_cash_drawer">Cash Drawer</string>
@@ -1497,6 +1500,8 @@
     <string name="config_backup_settings_local">Backup Settings</string>
     <string name="config_restore_settings_global">Restore Settings From Global</string>
     <string name="config_restore_settings_lcoal">Restore Settings</string>
+    <string name="picked_dlog_weight">Weight</string>
+    <string name="product_receipt_options_weight">***PLEASE TARE SCALE***</string>
 
     <!--EPSON STRING VALUES-->
     <string name="handlingmsg_warn_receipt_near_end">Roll paper is nearly end.\n</string>

@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,6 +30,7 @@ import com.google.common.escape.Escaper;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
+import com.starmicronics.starmgsio.Scale;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +45,7 @@ import drivers.EMSPowaPOS;
 import drivers.EMSStar;
 import drivers.EMSmePOS;
 import drivers.EMSsnbc;
+import drivers.weightScales.WSDeviceManager;
 import io.realm.RealmList;
 import main.EMSDeviceManager;
 
@@ -106,6 +109,32 @@ public class DeviceUtils {
                 }
             }
         }
+
+        //SCAN USB PORTS AND LOAD ANY COMPATIBLE WEIGHT SCALES
+        new Thread() {
+            @Override
+            public void run() {
+                boolean connection = false;
+                WSDeviceManager wsDeviceManager;
+                wsDeviceManager = new WSDeviceManager();
+                wsDeviceManager.getManagerWS();
+                loadWeightScale(activity.getApplicationContext(), myPref, wsDeviceManager);
+                for (int i = 0; i <= 10; i++) {
+                    try {
+                        connection = wsDeviceManager.isWeightScaleConnected();
+                        if (connection) {
+                            Global.mainWeightScaleManager = wsDeviceManager.getManagerWS();
+                            Log.e("SCALE_STATUS", "SCALE WAS STARTED!");
+                            break;
+                        }
+                        sleep(500);
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
 
         EMSDeviceDriver usbDevice = getUSBDeviceDriver(activity);
         if (usbDevice instanceof EMSPowaPOS) {
@@ -221,9 +250,9 @@ public class DeviceUtils {
                     }
                 }
             }
-        } else if(MyPreferences.isAPT50()){
+        } else if (MyPreferences.isAPT50()) {
             connectApt50(activity);
-        }else if (MyPreferences.isPaxA920()) {
+        } else if (MyPreferences.isPaxA920()) {
             if (Global.mainPrinterManager == null || forceReload) {
                 edm = new EMSDeviceManager();
                 Global.mainPrinterManager = edm.getManager();
@@ -271,6 +300,8 @@ public class DeviceUtils {
             int txtAreaSize = myPref.printerAreaSize(true, -1);
             if (myPref.getPrinterType() != Global.POWA
                     && myPref.getPrinterType() != Global.MEPOS
+                    && myPref.getPrinterType() != Global.MIURA
+//                    && myPref.getPrinterType() != Global.ELOPAYPOINT
                     && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                     if (!Global.mainPrinterManager.getCurrentDevice().isConnected()) {
@@ -295,12 +326,9 @@ public class DeviceUtils {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
                 }
             }
-        }else if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
+        } else if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
             connectHPEngageOnePrimePrinter(activity, usbDevice);
         }
-//        }else if (myPref.isEpson() && usbDevice instanceof EMSEpson){
-//            connectEpsonPrinter(activity);
-//        }
         ArrayList<Device> connected = new ArrayList(Global.printerDevices);
 
         for (Device device : devices) {
@@ -324,6 +352,64 @@ public class DeviceUtils {
 //        sendBroadcast(activity);
         return sb.toString();
     }
+
+    public static void loadWeightScale(Context context, MyPreferences mPref, WSDeviceManager wsDeviceManager) {
+        //IF THERE ARE NO USB CONNECTED SCALES, THEN CONNECT VIA BLUETOOTH
+//        if (!scanUSBPeripheralsForWeightScales(context)) {
+        int currentSelectedScale = mPref.getSelectedBTweight();
+        if (currentSelectedScale != -1) {
+
+            //MATCH currentSetScale's MACADDRESS WITH ITS MACADDRESS IN THE GLOBAL.WEIGHTDEVICES
+            List<Device> devices = DeviceTableDAO.getAll();
+            if (devices.size() != 0) {
+                for (Device device : devices) {
+                    String id = device.getId();
+                    int deviceIndex = Integer.valueOf(device.getType());
+                    if (currentSelectedScale == deviceIndex && id.contains("scale")) {
+                        try {
+                            String macAddress = device.getMacAddress();
+                            if (wsDeviceManager.loadWeightScaleDriver(context, deviceIndex, true, macAddress)) {
+                                Log.e("SCALE_STATUS", "SCALE WAS STARTED!");
+                            }
+                        } catch (Exception k) {
+                            Log.e("SCALE_STATUS", "SCALE DIDN'T START..." + k.toString());
+                        }
+                    }
+                }
+            }
+        }
+//        }
+    }
+
+//    private static boolean scanUSBPeripheralsForWeightScales(Context context) {
+//        WSDeviceManager wsDeviceManager;
+//        Collection<UsbDevice> usbDevices = getUSBDevices(context);
+//        for (UsbDevice device : usbDevices) {
+//            int productId = device.getProductId();
+//            int vendorID = device.getVendorId();
+//            int scaleType = -1;
+//            switch (vendorID) {
+//                case 1305:  //StarScale S8200
+//                    scaleType = Global.STARSCALE_S8200;
+//                    break;
+//            }
+//            if (scaleType != -1) {
+//                boolean connection = false;
+//                wsDeviceManager = new WSDeviceManager();
+//                if (Global.mainWeightScaleManager == null) {
+//                    wsDeviceManager.loadWeightScaleDriver(context, scaleType, true, null);
+//                    while (!connection) {
+//                        connection = wsDeviceManager.isWeightScaleConnected();
+//                        if (connection) {
+//                            Global.mainWeightScaleManager = wsDeviceManager.getManagerWS();
+//                            return true;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     public static Collection<UsbDevice> getUSBDevices(Context context) {
         HashMap<String, UsbDevice> deviceList = new HashMap<>();
@@ -402,14 +488,12 @@ public class DeviceUtils {
                                     (preferences.isSNBC()) || (preferences.isHPEOnePrime())
                             )) {
 
-                        if(preferences.isHPEOnePrime()){
+                        if (preferences.isHPEOnePrime()) {
                             EMSDeviceDriver usbDeviceDriver = getUSBDeviceDriver((Activity) activity);
-                            if(usbDeviceDriver != null){
-                                connectHPEngageOnePrimePrinter(activity,usbDeviceDriver);
+                            if (usbDeviceDriver != null) {
+                                connectHPEngageOnePrimePrinter(activity, usbDeviceDriver);
                             }
-                        }
-
-                        else if (preferences.isSNBC()) {
+                        } else if (preferences.isSNBC()) {
 //                            DeviceUtils.connectStarTS650BT(activity);
                             EMSDeviceDriver usbDeviceDriver = getUSBDeviceDriver((Activity) activity);
                             if (usbDeviceDriver != null) {
@@ -440,45 +524,45 @@ public class DeviceUtils {
         context.getApplicationContext().registerReceiver(fingerPrintbroadcastReceiver, intentFilter);
     }
 
-    public static void connectApt50(Activity activity){
-            EMSDeviceManager edm = new EMSDeviceManager();
-            Global.mainPrinterManager = edm.getManager();
+    public static void connectApt50(Activity activity) {
+        EMSDeviceManager edm = new EMSDeviceManager();
+        Global.mainPrinterManager = edm.getManager();
 
-            String aptPrinter = "APT50 Printer";
-            if (Global.mainPrinterManager.loadMultiDriver(activity, Global.APT_50,
-                    32, true, "", "")) {
-                Log.e("APT50","Connection Successfull");
-                Device device = DeviceTableDAO.getByName(aptPrinter);
-                List<Device> devices = new ArrayList<>();
-                boolean deviceIsNew = false;
-                if (device == null) {
-                    device = new Device();
-                    deviceIsNew = true;
-                }
-                device.setId(aptPrinter);
-                device.setName(aptPrinter);
-                device.setPOS(true);
-                device.setType(String.valueOf(Global.APT_50));
-                device.setRemoteDevice(false);
-                device.setEmsDeviceManager(Global.mainPrinterManager);
-                device.setTextAreaSize(32);
-                devices.add(device);
-                DeviceTableDAO.insert(devices);
-                Global.printerDevices.add(device);
-                if (deviceIsNew) {
-                    RealmList<RealmString> values = new RealmList<>();
-                    values.add(Device.Printables.PAYMENT_RECEIPT.getRealmString());
-                    values.add(Device.Printables.PAYMENT_RECEIPT_REPRINT.getRealmString());
-                    values.add(Device.Printables.TRANSACTION_RECEIPT.getRealmString());
-                    values.add(Device.Printables.TRANSACTION_RECEIPT_REPRINT.getRealmString());
-                    values.add(Device.Printables.REPORTS.getRealmString());
-                    DeviceTableDAO.remove(values);
-                    device.setSelectedPritables(values);
-                    DeviceTableDAO.upsert(device);
-                }
-            } else {
-                Log.e("APT50","Failed to connect....");
+        String aptPrinter = "APT50 Printer";
+        if (Global.mainPrinterManager.loadMultiDriver(activity, Global.APT_50,
+                32, true, "", "")) {
+            Log.e("APT50", "Connection Successfull");
+            Device device = DeviceTableDAO.getByName(aptPrinter);
+            List<Device> devices = new ArrayList<>();
+            boolean deviceIsNew = false;
+            if (device == null) {
+                device = new Device();
+                deviceIsNew = true;
             }
+            device.setId(aptPrinter);
+            device.setName(aptPrinter);
+            device.setPOS(true);
+            device.setType(String.valueOf(Global.APT_50));
+            device.setRemoteDevice(false);
+            device.setEmsDeviceManager(Global.mainPrinterManager);
+            device.setTextAreaSize(32);
+            devices.add(device);
+            DeviceTableDAO.insert(devices);
+            Global.printerDevices.add(device);
+            if (deviceIsNew) {
+                RealmList<RealmString> values = new RealmList<>();
+                values.add(Device.Printables.PAYMENT_RECEIPT.getRealmString());
+                values.add(Device.Printables.PAYMENT_RECEIPT_REPRINT.getRealmString());
+                values.add(Device.Printables.TRANSACTION_RECEIPT.getRealmString());
+                values.add(Device.Printables.TRANSACTION_RECEIPT_REPRINT.getRealmString());
+                values.add(Device.Printables.REPORTS.getRealmString());
+                DeviceTableDAO.remove(values);
+                device.setSelectedPritables(values);
+                DeviceTableDAO.upsert(device);
+            }
+        } else {
+            Log.e("APT50", "Failed to connect....");
+        }
     }
 
     public static void connectStarTS650BT(Context context) {

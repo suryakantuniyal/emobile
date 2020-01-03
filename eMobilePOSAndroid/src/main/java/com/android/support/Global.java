@@ -104,6 +104,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import drivers.digitalpersona.DigitalPersona;
+import drivers.weightScales.WSDeviceManager;
 import interfaces.BiometricCallbacks;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
@@ -120,6 +121,7 @@ public class Global extends MultiDexApplication {
     public static final int ONEIL = 4;
     public static final int SNBC = 5;
     public static final int POWA = 6;
+    public static final int ASURA = 7;
     public static final int ISMP = 9;
     public static final int EM100 = 10;
     public static final int EM70 = 11;
@@ -132,6 +134,7 @@ public class Global extends MultiDexApplication {
     public static final int BIXOLON = 18;
     public static final int PAT215 = 19;
     public static final int MEPOS = 20;
+    public static final int MIURA = 21;
     public static final int BIXOLON_RD = 22;
     public static final int TEAMSABLE = 23;
     public static final int GPRINTER = 24;
@@ -139,10 +142,12 @@ public class Global extends MultiDexApplication {
     public static final int INGENICOMOBY85 = 26;
     public static final int PAX_A920 = 27;
     public static final int HP_EONEPRIME = 28;
-
     public static final int APT_50 = 29;
     public static final int EPSON = 30;
     public static final int KDS = 31;
+
+    //Weight Scale Devices
+    public static final int STARSCALE_S8200 = 0;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -245,7 +250,11 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
     public static Set<Device> printerDevices = new HashSet();
+    public static Set<Device> weightDevices = new HashSet();
     public static EMSDeviceManager embededMSR;
+    public static WSDeviceManager mainWeightScaleManager;
+    public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
+    public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
     public static List<EMSDeviceManager> remoteStationsPrinters = new ArrayList<>();
     public static ProgressDialog multiInventoryProgressDlog;
     public static OrderType consignmentType = OrderType.ORDER;
@@ -413,6 +422,9 @@ public class Global extends MultiDexApplication {
             case SNBC:
                 _name = "SNBC";
                 break;
+            case ASURA:
+                _name = "ASURA";
+                break;
             case PAT215:
                 _name = "PAT215";
                 break;
@@ -446,6 +458,9 @@ public class Global extends MultiDexApplication {
             case BIXOLON_RD:
             case BIXOLON:
                 _name = "BIXOLON";
+                break;
+            case MIURA:
+                _name = "MIURA";
                 break;
             case ELOPAYPOINT:
                 _name = "ELO Paypoint";
@@ -1080,14 +1095,14 @@ public class Global extends MultiDexApplication {
 
     public static boolean deviceHasMSR(int _printer_type) {
         return (_printer_type == Global.ISMP || _printer_type == Global.STAR || _printer_type == Global.BAMBOO
-                || _printer_type == Global.ZEBRA || _printer_type == Global.EM100
+                || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
                 || _printer_type == Global.KDC425 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
                 _printer_type == Global.OT310 || _printer_type == Global.ELOPAYPOINT || _printer_type == Global.PAT215);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
-        return (_device_type == Global.ISMP || _device_type == Global.POWA
+        return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
                 || _device_type == Global.KDC425 || _device_type == Global.OT310 || _device_type == Global.ELOPAYPOINT);
     }
@@ -1702,7 +1717,7 @@ public class Global extends MultiDexApplication {
 
 
     public enum BuildModel {
-        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Dolphin_Black_70e, PAT215, EM100, EM70, OT_310, PayPoint_ESY13P1;
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, EM100, EM70, OT_310, PayPoint_ESY13P1;
 
         @Override
         public String toString() {

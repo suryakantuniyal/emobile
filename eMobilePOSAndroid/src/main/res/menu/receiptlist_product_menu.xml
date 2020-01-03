@@ -4,8 +4,11 @@
         android:id="@+id/modifyProduct"
         android:title="@string/picked_dlog_modify" />
     <item
+        android:id="@+id/weightProduct"
+        android:title="@string/picked_dlog_weight" />
+    <item
         android:id="@+id/removeProduct"
-        android:title="@string/picked_dlog_remove"></item>
+        android:title="@string/picked_dlog_remove"/>
     <item
         android:id="@+id/moveProductSeat"
         android:title="@string/move_product_seat">
@@ -13,15 +16,15 @@
     </item>
     <item
         android:id="@+id/viewVariations"
-        android:title="@string/picked_dlog_view_variations"></item>
+        android:title="@string/picked_dlog_view_variations"/>
 
     <item
         android:id="@+id/payWithLoyalty"
-        android:title="@string/btn_pay_with_loyalty"></item>
+        android:title="@string/btn_pay_with_loyalty"/>
     <item
         android:id="@+id/overridePrice"
-        android:title="@string/picked_dlog_override_price"></item>
+        android:title="@string/picked_dlog_override_price"/>
     <item
         android:id="@+id/cancel"
-        android:title="@string/picked_dlog_cancel"></item>
+        android:title="@string/picked_dlog_cancel"/>
 </menu>

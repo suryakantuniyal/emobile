@@ -7,6 +7,7 @@
         <item name="paymentsMethodsSettings">Payments Methods</item>
         <item name="paymentProcessingSettings">Payment Processing</item>
         <item name="printingSettings">Printing Settings</item>
+        <item name="weightScaleSettings">Weight Scale Settings</item>
         <item name="productsSettings">Products Settings</item>
         <item name="accountSettings">Account Settings</item>
         <item name="cashDrawerSettings">Cash Drawer</item>
@@ -247,6 +248,14 @@
         <item name="reader_magtek">1</item>
         <item name="reader_rover">2</item>
         <item name="reader_walker">3</item>
+    </string-array>
+    <string-array name="weightScaleEntries">
+        <item name="scale_none">None</item>
+        <item name="scale_star">Star S8200</item>
+    </string-array>
+    <string-array name="weightScaleValues">
+        <item name="scale_none">-1</item>
+        <item name="scale_star">0</item>
     </string-array>
     <!-- Close batch hours -->
     <string-array name="closeBatchHourEntries">

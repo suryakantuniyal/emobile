@@ -109,6 +109,7 @@ import drivers.EMSEpson;
 import drivers.epson.EpsonDevices;
 import drivers.epson.SpnModelsItem;
 import drivers.pax.utils.BatchProcessing;
+import drivers.weightScales.WSDeviceManager;
 import io.realm.Realm;
 import main.EMSDeviceManager;
 
@@ -213,9 +214,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     }
 
     public enum SettingSection {
-        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
-        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIPPING_CALCULATION(10),
-        TRANSACTION(11), HANPOINT(12), SUPPORT(13), OTHERS(14), BATCH(15);
+        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), WEIGHTSCALE(6), PRODUCTS(7),
+        ACCOUNT(8), CASH_DRAWER(9), KIOSK(10), SHIPPING_CALCULATION(11),
+        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15), BATCH(16);
         int code;
 
         SettingSection(int code) {
@@ -237,24 +238,26 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case 5:
                     return PRINTING;
                 case 6:
-                    return PRODUCTS;
+                    return WEIGHTSCALE;
                 case 7:
-                    return ACCOUNT;
+                    return PRODUCTS;
                 case 8:
-                    return CASH_DRAWER;
+                    return ACCOUNT;
                 case 9:
-                    return KIOSK;
+                    return CASH_DRAWER;
                 case 10:
-                    return SHIPPING_CALCULATION;
+                    return KIOSK;
                 case 11:
-                    return TRANSACTION;
+                    return SHIPPING_CALCULATION;
                 case 12:
-                    return HANPOINT;
+                    return TRANSACTION;
                 case 13:
-                    return SUPPORT;
+                    return HANPOINT;
                 case 14:
-                    return OTHERS;
+                    return SUPPORT;
                 case 15:
+                    return OTHERS;
+                case 16:
                     return BATCH;
                 default:
                     return GENERAL;
@@ -325,6 +328,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         default:
                             return R.xml.settings_admin_printing_layout;
                     }
+                case WEIGHTSCALE:
+                    return R.xml.settings_admin_weight_scale_layout;
                 case PRODUCTS:
                     return R.xml.settings_admin_products_layout;
                 case OTHERS:
@@ -410,6 +415,16 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
+                    break;
+                case WEIGHTSCALE:
+                    prefManager.findPreference("weight_scale_selection").setDefaultValue(myPref.getSelectedBTweight());
+                    prefManager.findPreference("weight_scale_selection").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object o) {
+                            new ConnectWeightScale().execute(getActivity(), o, myPref);
+                            return true;
+                        }
+                    });
                     break;
                 case PRODUCTS:
                     configureDefaultCategory();
@@ -1780,6 +1795,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.MAGTEK, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
+                            } else if (strUpperDeviceName.contains("MIURA")) {
+                                myPref.setPrinterType(Global.MIURA);
+                                myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MIURA, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
+
                             } else if (strUpperDeviceName.contains("STAR")) {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
@@ -2009,7 +2033,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 e.printStackTrace();
             }
 
-            if (myPref.isPAT215()) {
+            if (myPref.isAsura(true, false)) {
+                myPref.setPrinterType(Global.ASURA);
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ASURA, EMSDeviceManager.PrinterInterfase.USB);
+
+            } else if (myPref.isPAT215()) {
                 edm = new EMSDeviceManager();
                 myPref.setPrinterType(Global.PAT215);
                 Global.embededMSR = edm.getManager();
@@ -2407,4 +2436,105 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             ex.printStackTrace();
         }
     }
+
+    public static class ConnectWeightScale extends AsyncTask<Object, String, Void> {
+
+        private ProgressDialog loadingScaleDriverdLog;
+        private Activity activity;
+        WSDeviceManager wsDeviceManager;
+        private boolean connection = false;
+        private boolean state =true;
+        MyPreferences mPref;
+        Thread DriverLoad;
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Object... strings) {
+            activity = (Activity) strings[0];
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showProgressDialog(activity);
+                }
+            });
+
+            final String weightTypeIndex = (String) strings[1];
+            mPref = (MyPreferences) strings[2];
+
+            //START LOADING BLUETOOTH WEIGHT SCALE DRIVER HERE!!
+            wsDeviceManager = new WSDeviceManager();
+
+            DriverLoad = new Thread(){
+                @Override
+                public void run() {
+                    //Disconnect and reset from any current connected weight scales
+                    if (Global.mainWeightScaleManager != null) {
+                        Global.mainWeightScaleManager.disconnectWeightScaleDriver();
+                        if (mPref.getSelectedBTweight() != -1) {
+                            mPref.setSelectedBTweight(-1);                                                  //Reset to none
+                        }
+                    }
+                    //Connect to new selected Weight Scale
+                    if (wsDeviceManager.loadWeightScaleDriver(activity, Integer.parseInt(weightTypeIndex), false, null)) {
+                        for (int i = 0; i <= 10; i++) {                                                     //wait for a solid connection...
+                            connection = wsDeviceManager.isWeightScaleConnected();
+                            if (connection) {                                                               //when connected,
+                                mPref.setSelectedBTweight(Integer.parseInt(weightTypeIndex));               //remember my selected option and
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(wsDeviceManager.GetDeviceName());  // get devices connection info for faster connections in
+                                if (device == null) {                                                       // the future (Like autoConnection...)
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT-scale:%s", wsDeviceManager.GetDeviceName()));
+                                device.setMacAddress(wsDeviceManager.GetMacAddress());
+                                device.setName(wsDeviceManager.GetDeviceName());
+                                device.setType(String.valueOf(wsDeviceManager.getDeviceType()));
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+                                Global.weightDevices.add(device);
+                                Global.mainWeightScaleManager = wsDeviceManager.getManagerWS();             //Once finished, set this scale as my current main WeightScale
+                                Log.e("AsyncConnectWS", "Connected to " + weightTypeIndex);
+                                break;
+                            }
+                            try {
+                                sleep(700);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } else {
+                        Log.e("AsyncConnectWS", "Connection for " + weightTypeIndex + " failed");   //If Drivers failed to load, then Print message
+                    }
+                }
+            };
+            DriverLoad.start();
+            while(state) {
+                state = DriverLoad.isAlive();
+                if (!state){
+                    Log.e("AsyncConnectWS","Thread finished");
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            Global.dismissDialog(activity, loadingScaleDriverdLog);
+        }
+
+        private void showProgressDialog(Activity activity) {
+            if (loadingScaleDriverdLog == null) {
+                loadingScaleDriverdLog = new ProgressDialog(activity);
+                loadingScaleDriverdLog.setMessage(activity.getString(R.string.config_weight_scale_settings_loading_driver_dialog));
+                loadingScaleDriverdLog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                loadingScaleDriverdLog.setCancelable(true);
+            }
+            loadingScaleDriverdLog.show();
+        }
+    }
+
 }

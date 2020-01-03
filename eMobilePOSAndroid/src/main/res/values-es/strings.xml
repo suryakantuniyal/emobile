@@ -876,6 +876,9 @@
     <string name="config_account_settings">"Configuraciones de la cuenta"</string>
     <string name="config_product_settings">"Configuración del producto"</string>
     <string name="config_printing_settings">"Configuración de impresora"</string>
+    <string name="config_weight_scale_settings">Configuración de Pesas</string>
+    <string name="config_weight_scale_settings_scale_selection">Seleccionar Pesa</string>
+    <string name="config_weight_scale_settings_loading_driver_dialog">Conectando a Pesa…</string>
     <string name="config_other_settings">"Otros ajustes"</string>
     <string name="config_shifts">"Turnos"</string>
     <string name="config_cash_drawer">"Cajón de dinero"</string>
@@ -1486,4 +1489,6 @@
     <string name="config_manager_password_required">"Requerir Contraseña de Gerente para Descuento Configurable"</string>
 
     <string name="dlog_pax_use_signatures">¿Le gustaría usar firmas?</string>
+    <string name="picked_dlog_weight">Pesar</string>
+    <string name="product_receipt_options_weight">***CALIBRE LA PESA***</string>
 </resources>

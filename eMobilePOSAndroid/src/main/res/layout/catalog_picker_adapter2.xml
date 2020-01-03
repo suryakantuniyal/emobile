@@ -21,16 +21,32 @@
         android:textAppearance="@style/blue_text_appearance"
         android:textSize="@dimen/listview_text_size" />
 
+    <Button
+        android:id="@+id/weightItemQty"
+        style="@style/smallButton"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/weight_scale_icon"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/pickerQty"
+        style="@style/text_shadow"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:text="1"
-        style="@style/text_shadow"
-                android:textAppearance="@style/black_text_appearance_unbold"
-                android:textSize="@dimen/listview_text_size" />
+        android:textAppearance="@style/black_text_appearance_unbold"
+        android:textSize="@dimen/listview_text_size" />
+
 
     <Button
         android:id="@+id/deleteItemQty"

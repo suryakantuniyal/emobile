@@ -73,6 +73,7 @@ import java.util.List;
 import java.util.UUID;
 
 import interfaces.InventoryLocationSyncCallback;
+import drivers.weightScales.weight.utils.weightScaleHelper;
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener, InventoryLocationSyncCallback {
@@ -546,7 +547,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             global.order.getOrderProducts().clear();
             global.order.getOrderProducts().addAll(orderProductsGroupBySKU);
         }
-
         OrderProduct product;
         for (ProductAttribute attribute : global.ordProdAttr) {
             if (orderProduct.getOrdprod_id().equals(attribute.getProductId())) {
@@ -1250,11 +1250,18 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                         convertView = myInflater.inflate(R.layout.catalog_picker_adapter2, null);
 
                         holder.rightText = convertView.findViewById(R.id.pickerQty);
+                        holder.weight = convertView.findViewById(R.id.weightItemQty);
                         holder.add = convertView.findViewById(R.id.addItemQty);
                         holder.delete = convertView.findViewById(R.id.deleteItemQty);
 
+                        if(weightScaleHelper.checkWeightAvailability(myPref)){
+                            holder.weight.setVisibility(View.VISIBLE);
+                            holder.weight.setEnabled(true);
+                        }else{holder.weight.setVisibility(View.GONE);}
+
                         holder.add.setFocusable(false);
                         holder.delete.setFocusable(false);
+                        holder.weight.setFocusable(false);
                         BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
 
                         updateVolumePrice(newQty);
@@ -1266,6 +1273,18 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                             holder.rightText.setText(qty_picked);
                         }
 
+                        holder.weight.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                double qty = Global.mainWeightScaleManager.getWeightFromScale();
+                                qty_picked = String.valueOf(qty);
+                                holder.rightText.setText(String.valueOf(qty));
+                                BigDecimal newQty = Global.getBigDecimalNum(String.valueOf(qty),2);
+                                updateVolumePrice(newQty);
+                                notifyDataSetChanged();
+                            }
+                        });
                         holder.add.setOnClickListener(new View.OnClickListener() {
 
                             @Override
@@ -1427,7 +1446,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             TextView rightText;
             Button add;
             Button delete;
+            Button weight;
         }
     }
-
 }

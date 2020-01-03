@@ -200,6 +200,9 @@ public class MyPreferences {
     private final String aes_iv = "aes_iv";
     private final String epsonModel = "Epson_Model";
     private final String epsonTarget = "Epson_Target";
+    //Weight Scales
+    private final String selected_BT_weight = "BT_weight";
+
     public Context context;
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
@@ -251,6 +254,13 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public void setSelectedBTweight(int index){
+        prefEditor.putInt(selected_BT_weight,index);
+        prefEditor.commit();
+    }
+    public int getSelectedBTweight(){
+        return (prefs.getInt(selected_BT_weight, -1));
+    }
     public String getAccountLogoPath() {
         return (prefs.getString("logo_path", ""));
     }
@@ -969,6 +979,18 @@ public class MyPreferences {
         }
         return false;
     }
+
+    public boolean isAsura(boolean isGet, boolean value) {
+        String device_asura = "device_asura";
+        if (isGet)
+            return prefs.getBoolean(device_asura, false);
+        else {
+            prefEditor.putBoolean(device_asura, value);
+            prefEditor.commit();
+        }
+        return false;
+    }
+
 
     public boolean isPAT215() {
         String device_pat215 = "device_pat215";
