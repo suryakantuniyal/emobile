@@ -965,6 +965,13 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtras(extras);
 
             initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Pax")) {
+            Intent intent = new Intent(this, ProcessPax_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
+
+            initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Check")) {
             Intent intent = new Intent(this, ProcessCheck_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -1078,8 +1085,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     paymentMethod = new PaymentMethod();
                     paymentMethod.setOriginalTransid("true");
                     paymentMethod.setIsactive("1");
-                    paymentMethod.setPaymentmethod_type("PAX");
-                    paymentMethod.setPaymethod_id("PAX");
+                    paymentMethod.setPaymentmethod_type("Pax");
+                    paymentMethod.setPaymethod_id("Pax");
                     paymentMethod.setPaymethod_name("Credit/Debit Cards Processing (PAX)");
                     paymentMethod.setPaymethod_showOnline("0");
                     paymentMethod.setPriority(0);

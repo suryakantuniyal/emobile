@@ -22,6 +22,19 @@ public class PaymentMethod extends RealmObject {
     @Index
     private long priority;
 
+    public String toString(){
+        String value = "";
+        value = "PaymentMethod object:"
+                +" paymethod_id:"+ paymethod_id
+                +"      paymethod_name:"+paymethod_name
+                + "     paymentmethod_type:"+paymentmethod_type
+                +"      paymethod_update:"+paymethod_update
+                +"      isactive:"+ isactive
+                +"      paymethod_showOnline:"+ paymethod_showOnline
+                +"      image_url:"+ image_url
+                +"      OriginalTransid:"+ OriginalTransid;
+        return value;
+    }
     public String getPaymethod_id() {
         return paymethod_id;
     }
@@ -126,11 +139,11 @@ public class PaymentMethod extends RealmObject {
         method.setOriginalTransid("0");
         return method;
     }
-    public static PaymentMethod getSecurePayPaxPaymentMethod() {
+    public static PaymentMethod getPaxPaymentMethod() {
         PaymentMethod method = new PaymentMethod();
-        method.setPaymethod_id("SecurePayPax");
-        method.setPaymethod_name("Secure Pay - Pax");
-        method.setPaymentmethod_type("SecurePayPax");
+        method.setPaymethod_id("Pax");
+        method.setPaymethod_name("Pax");
+        method.setPaymentmethod_type("Pax");
         method.setImage_url("");
         method.setOriginalTransid("0");
         return method;

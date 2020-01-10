@@ -79,7 +79,6 @@ import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
-import com.epson.epos2.printer.Printer;
 import com.microsoft.azure.storage.StorageException;
 import com.pax.poslink.PosLink;
 import com.pax.poslink.ProcessTransResult;
@@ -104,7 +103,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import drivers.EMSDeviceDriver;
 import drivers.EMSEpson;
 import drivers.epson.EpsonDevices;
 import drivers.epson.SpnModelsItem;
@@ -734,10 +732,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     if (checkBoxPreference.isChecked()) {
                         promptForSignature();
                         findPreference("pref_use_pax_device_list").setEnabled(true);
-                        PayMethodsDAO.insert(PaymentMethod.getSecurePayPaxPaymentMethod());
+                        PayMethodsDAO.insert(PaymentMethod.getPaxPaymentMethod());
                     } else {
                         findPreference("pref_use_pax_device_list").setEnabled(false);
-                        PayMethodsDAO.delete("SecurePayPax");
+                        PayMethodsDAO.delete("Pax");
                     }
                     break;
                 case R.string.config_pay_with_card_on_file:
