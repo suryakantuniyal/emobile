@@ -59,6 +59,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     private boolean isNetworkPrinter = false;
     private int LINE_WIDTH = 32;
     private int PAPER_WIDTH;
+    private boolean isRemotePrint = false;
     private String portSettings;
     private String portName;
     private String scannedData = "";
@@ -272,7 +273,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     private void printReceipt(Receipt receipt) {
-        if (myPref.isRasterModePrint()) {
+        if (myPref.isRasterModePrint() && !isRemotePrint) {
             printRasterReceipt(receipt);
         } else {
             printTextReceipt(receipt);
@@ -867,6 +868,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
+            isRemotePrint = true;
 
             ReceiptBuilder receiptBuilder = new ReceiptBuilder(activity, LINE_WIDTH);
             Receipt receipt = receiptBuilder.getRemoteStation(orders, ordID);
@@ -879,6 +881,7 @@ public class EMSStar extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             e.printStackTrace();
             Crashlytics.logException(e);
         }
+        isRemotePrint = false;
         return result;
     }
 
