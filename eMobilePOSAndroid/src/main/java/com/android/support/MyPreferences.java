@@ -1734,4 +1734,7 @@ public class MyPreferences {
     public String getPrefEmbeddedBarcodeType(){
         return getPreferencesValue(pref_embedded_barcode_type);
     }
+    public void setDefaultPaymentMethod(String defaultPaymentMethod){
+        setPreferencesValue(pref_default_payment_method,defaultPaymentMethod);
+    }
 }

@@ -735,6 +735,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         PayMethodsDAO.insert(PaymentMethod.getPaxPaymentMethod());
                     } else {
                         findPreference("pref_use_pax_device_list").setEnabled(false);
+                        myPref.setDefaultPaymentMethod("0");
                         PayMethodsDAO.delete("Pax");
                     }
                     break;
