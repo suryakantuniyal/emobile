@@ -106,31 +106,6 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
     @Override
     public Filter getFilter() {
         return new MyFilter();
-//            @Override
-//            protected FilterResults performFiltering(CharSequence constraint) {
-//                String charString = constraint.toString();
-//                FilterResults filterResults = new FilterResults();
-//                if (charString.isEmpty()) {
-//                    mFilteredList = vehicleLists;
-//                } else {
-//                    List<VehicleList> filteredList = new ArrayList<>();
-//                    for (VehicleList projectsModel : vehicleLists) {
-//                        if (projectsModel.getName().contains(charString) || projectsModel.getStatus().contains(charString)) {
-//                            filteredList.add(projectsModel);
-//                        }
-//                    }
-//                    mFilteredList = filteredList;
-//                }
-//                filterResults.values = mFilteredList;
-//                return filterResults;
-//            }
-//
-//            @Override
-//            protected void publishResults(CharSequence constraint, FilterResults results) {
-//                mFilteredList = (List<VehicleList>) results.values;
-//                notifyDataSetChanged();
-//            }
-//        };
     }
 
 

@@ -19,7 +19,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,10 +28,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.innobins.innotrack.R;
+import com.innobins.innotrack.activity.Reports.ReportsActivity;
 import com.innobins.innotrack.adapter.ViewPagerAdapter;
+import com.innobins.innotrack.api.APIServices;
 import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.model.VehicleList;
 import com.innobins.innotrack.network.ResponseOnlineVehicle;
+import com.innobins.innotrack.utils.URLContstant;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import org.json.JSONArray;
@@ -42,11 +45,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import com.innobins.innotrack.R;
-import com.innobins.innotrack.activity.Reports.ReportsActivity;
-import com.innobins.innotrack.api.APIServices;
-import com.innobins.innotrack.utils.URLContstant;
 
 public class  Main2Activity  extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -91,9 +89,6 @@ public class  Main2Activity  extends BaseActivity
         setSupportActionBar(toolbar);
         CheckGPS();
         parseView();
-
-
-
 
 
 /*

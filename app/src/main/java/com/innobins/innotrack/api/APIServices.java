@@ -24,6 +24,7 @@ import com.innobins.innotrack.network.ResponseCallbackEvents;
 import com.innobins.innotrack.network.ResponseOnlineVehicle;
 import com.innobins.innotrack.network.ResponseStringCallback;
 import com.innobins.innotrack.parser.TraccerParser;
+import com.innobins.innotrack.utils.URLContstant;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,8 +33,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.innobins.innotrack.utils.URLContstant;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
@@ -292,6 +291,8 @@ public static void GetAllVehicle(final Context context,String userName,String pa
                 BACKOFF_MULT));
         RestapiCall.getInstance(context).addToRequestQueue(jsObjRequest);
     }
+
+
     public static Double doubleToDecimalConverter(Double dob) {
         double speed = dob;
         DecimalFormat df = new DecimalFormat("#.##");

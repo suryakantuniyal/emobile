@@ -2,7 +2,6 @@ package com.innobins.innotrack.activity;
 
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +11,6 @@ import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,14 +20,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.innobins.innotrack.home.BaseActivity;
-import com.innobins.innotrack.home.HomeActivity;
-import com.innobins.innotrack.utils.UtilsFunctions;
-import com.rampo.updatechecker.UpdateChecker;
-import com.rampo.updatechecker.notice.Notice;
-
 import com.innobins.innotrack.R;
+import com.innobins.innotrack.home.HomeActivity;
 import com.innobins.innotrack.utils.URLContstant;
+import com.innobins.innotrack.utils.UtilsFunctions;
 
 
 /**
@@ -191,14 +185,14 @@ public class   SplashActivity extends AppCompatActivity {
         }, SPLASH_TIME_OUT);
         Tryingbar = Snackbar.make(coordinatorLayout, "Trying to connect server.....",Snackbar.LENGTH_INDEFINITE);
         Alertbar = Snackbar
-                .make(coordinatorLayout, "Unable to connect the server!", Snackbar.LENGTH_INDEFINITE)
+                .make(coordinatorLayout, "No Internet Connection", Snackbar.LENGTH_INDEFINITE)
                 .setAction("RETRY", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Alertbar.dismiss();
                         View sbView = Tryingbar.getView();
                         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                        textView.setTextColor(Color.GREEN);
+                        textView.setTextColor(Color.BLACK);
                         Tryingbar.show();
                         Continousservercheck();
                         Counter = 0;
