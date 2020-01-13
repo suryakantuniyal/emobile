@@ -661,7 +661,7 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         Matcher match = pt.matcher(c);
         while (match.find()) {
             String s = match.group();
-            c = c.replaceAll("\\" + s, "");
+            c = c.replaceAll(String.format("\\%s", s), "");
         }
         return c;
     }
