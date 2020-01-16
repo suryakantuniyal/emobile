@@ -37,6 +37,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -91,7 +92,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private VolumePricesHandler volPriceHandler;
     private MenuProdGV_Adapter prodListAdapter;
     private RefreshReceiptViewCallback callBackRefreshView;
-    private MyEditText searchField;
+    private EditText searchField;
     private ListViewAdapter tempLVAdapter;
     private Dialog dialog;
     private boolean isSubcategory = false;
@@ -119,8 +120,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_catalog_layout, container, false);
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
-        searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
-        searchField.setIsForSearching(getActivity(), getOrderingMainFa().invisibleSearchMain);
+        searchField = (EditText) view.findViewById(R.id.catalogSearchField);
+       // searchField.setIsForSearching(getActivity(), getOrderingMainFa().invisibleSearchMain);
         catalogList = (AbsListView) view.findViewById(R.id.catalogListview);
         catalogList.setOnItemClickListener(this);
         catalogIsPortrait = Global.isPortrait(getActivity());
