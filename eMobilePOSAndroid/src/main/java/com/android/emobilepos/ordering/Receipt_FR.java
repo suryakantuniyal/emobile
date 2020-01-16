@@ -661,6 +661,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     } else {
                                         proceedToRemove(orderProductIdx);
                                     }
+                                    mainLVAdapter.notifyDataSetChanged();
                                 } else {
                                     Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                                 }
