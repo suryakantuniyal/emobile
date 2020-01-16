@@ -122,6 +122,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         searchField = (EditText) view.findViewById(R.id.catalogSearchField);
        // searchField.setIsForSearching(getActivity(), getOrderingMainFa().invisibleSearchMain);
+        //this
         catalogList = (AbsListView) view.findViewById(R.id.catalogListview);
         catalogList.setOnItemClickListener(this);
         catalogIsPortrait = Global.isPortrait(getActivity());
