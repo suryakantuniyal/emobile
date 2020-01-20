@@ -283,6 +283,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                 holder.itemQty = convertView.findViewById(R.id.itemQty);
                 holder.itemName = convertView.findViewById(R.id.itemName);
                 holder.itemAmount = convertView.findViewById(R.id.itemAmount);
+                holder.itemAttribute = convertView.findViewById(R.id.attribute);
                 holder.distQty = convertView.findViewById(R.id.distQty);
                 holder.distAmount = convertView.findViewById(R.id.distAmount);
                 holder.granTotal = convertView.findViewById(R.id.granTotal);
@@ -377,6 +378,7 @@ public class OrderProductListAdapter extends BaseAdapter {
             holder.itemName.setText(product.getOrdprod_desc());
         } else if (attDisplay.equalsIgnoreCase("prod_name")) {
             holder.itemName.setText(product.getOrdprod_name());
+            holder.itemAttribute.setText(product.getOrdprod_desc());
         } else if (attDisplay.equalsIgnoreCase("prod_extradesc")) {
             holder.itemName.setText(product.getProd_extradesc());
         }
@@ -411,6 +413,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         TextView itemQty;
         TextView itemName;
         TextView itemAmount;
+        TextView itemAttribute;
         TextView distQty;
         TextView distAmount;
         TextView granTotal;

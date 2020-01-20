@@ -5,7 +5,7 @@
     android:gravity="center"
     android:orientation="horizontal" >
 
-        <ImageView
+    <ImageView
         android:id="@+id/catalogItemPic"
         android:layout_width="@dimen/catalog_listview_img_size"
         android:layout_height="@dimen/catalog_listview_img_size"
@@ -19,63 +19,73 @@
         android:layout_width="0dip"
         android:layout_weight="3"
         android:layout_height="wrap_content"
-        android:orientation="vertical" 
+        android:orientation="vertical"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="5dp">
 
-        <TextView
-            android:id="@+id/catalogItemName"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/catalog_port_prod_name"
-        	android:textAppearance="@style/black_text_appearance"
-        	style="@style/text_shadow"
-            android:text="" />
+            android:orientation="horizontal"
+            android:weightSum="2">
+            <TextView
+                android:id="@+id/catalogItemName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/catalog_port_prod_name"
+                android:textAppearance="@style/black_text_appearance"
+                style="@style/text_shadow"
+                android:text="productname" />
 
-        <TextView
-            android:id="@+id/catalogItemInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:textSize="@dimen/catalog_port_prod_desc"
-        	android:textAppearance="@style/grey_text_appearance_unbold"
-        	style="@style/text_shadow"
-            android:singleLine="true"
-            android:text="" />
+            <TextView
+                android:id="@+id/catalogItemInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:layout_weight="0.5"
+                android:paddingBottom="5dp"
+                android:textSize="@dimen/catalog_port_prod_desc"
+                android:textAppearance="@style/grey_text_appearance_unbold"
+                style="@style/text_shadow"
+                android:singleLine="true"
+                android:gravity="center"
+                android:text="attribute" />
+        </LinearLayout>
 
-        <LinearLayout 
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-        <TextView
-            android:id="@+id/catalogItemQty"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/catalog_port_prod_qty"
-        	android:textAppearance="@style/red_text_appearance_unbold"
-        	style="@style/text_shadow"
-            android:text="" />
+            <TextView
+                android:id="@+id/catalogItemQty"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/catalog_port_prod_qty"
+                android:textAppearance="@style/red_text_appearance_unbold"
+                style="@style/text_shadow"
+                android:text="itemqty" />
 
-        <TextView
-            android:id="@+id/catalogItemPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:textSize="@dimen/catalog_port_prod_price"
-        	android:textAppearance="@style/blue_text_appearance_unbold"
-        	style="@style/text_shadow"
-            android:text="" />
+            <TextView
+                android:id="@+id/catalogItemPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:textSize="@dimen/catalog_port_prod_price"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                style="@style/text_shadow"
+                android:text="price" />
         </LinearLayout>
-               <TextView
+        <TextView
             android:id="@+id/catalogConsignmentQty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/catalog_port_prod_qty"
-        	android:textAppearance="@style/green_text_appearance_unbold"
-        	style="@style/text_shadow"
-            android:text="" />
+            android:textAppearance="@style/green_text_appearance_unbold"
+            style="@style/text_shadow"
+            android:text="onsgnment" />
     </LinearLayout>
 
     <ImageView
@@ -83,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-       android:layout_marginRight="20dp"
+        android:layout_marginRight="20dp"
         android:src="@drawable/add_blue" />
 
 </LinearLayout>
