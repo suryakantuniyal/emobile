@@ -1852,6 +1852,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             product.setOverwrite_price(null);
         } else {
             getOrderingMainFa().global.order.getOrderProducts().remove(product);
+            setupListView();
         }
         receiptListView.invalidateViews();
         reCalculate();
