@@ -325,9 +325,9 @@ public class OrderProductListAdapter extends BaseAdapter {
         LinearLayout test = view.findViewById(R.id.receipt_attribute_ll);
         LayoutInflater inf = LayoutInflater.from(activity);
         View vw = inf.inflate(R.layout.order_productreceipt_attributes, null);
-        TextView attributeTitle = vw.findViewById(R.id.receipt_attribute_title);
+        //TextView attributeTitle = vw.findViewById(R.id.receipt_attribute_title);
         TextView attributeValue = vw.findViewById(R.id.receipt_attribute_value);
-        attributeTitle.setText("  "+attribute+":");
+       // attributeTitle.setText("  "+attribute+":");
         attributeValue.setText(attributesSelected.get(attribute));
         test.addView(vw);
     }

@@ -86,6 +86,16 @@
             android:textAppearance="@style/green_text_appearance_unbold"
             style="@style/text_shadow"
             android:text="onsgnment" />
+
+
+        <LinearLayout
+            android:id="@+id/catalog_attribute_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <ImageView

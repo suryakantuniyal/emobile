@@ -10,11 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.database.ProductsAttrHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
@@ -22,6 +25,9 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import util.json.UIUtils;
 
@@ -41,6 +47,11 @@ public class MenuProdGV_Adapter extends CursorAdapter {
     //    private long lastClickTime = 0;
     private boolean isFastScanning = false;
     private boolean isRestMode = false;
+
+    private ProductsAttrHandler prodAttrHandler;
+    private LinkedHashMap<String, List<String>> attributesMap;
+    private String[] attributesKey;
+    private LinkedHashMap<String, String> attributesSelected;
 
     public MenuProdGV_Adapter(Catalog_FR _this, Activity context, Cursor c, int flags, ImageLoader _imageLoader) {
         super(context, c, flags);
@@ -75,6 +86,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         if (holder.i_prod_name != -1) {
             if (holder.title != null)
                 holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
+                getproductAttribute(view,cursor);
 
             String urlLink = cursor.getString(holder.i_prod_img_name);
             if (holder.itemImage != null) {
@@ -207,6 +219,28 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         ImageView iconImage, itemImage;
 
         int i_id, i_prod_name, i_chain_price, i_master_price, i_volume_price, i_pricelevel_price, i_prod_desc, i_prod_img_name, i_consignment_qty;
+    }
+
+
+    private void getproductAttribute(View view, Cursor cursor){
+        prodAttrHandler = new ProductsAttrHandler(activity);
+        attributesMap = prodAttrHandler.getAttributesMap(cursor.getString(holder.i_prod_name));
+        attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
+        attributesSelected = prodAttrHandler.getDefaultAttributes(cursor.getString(holder.i_id));
+        int attributesSize = attributesMap.size();
+        for (int i = 0; i < attributesSize; i++) {
+            addAttributeButton(view, attributesKey[i]);
+        }
+    }
+    private void addAttributeButton(View view, String attribute) {
+        LinearLayout test = view.findViewById(R.id.catalog_attribute_ll);
+        LayoutInflater inf = LayoutInflater.from(activity);
+        View vw = inf.inflate(R.layout.order_productreceipt_attributes, null);
+       // TextView attributeTitle = vw.findViewById(R.id.receipt_attribute_title);
+        TextView attributeValue = vw.findViewById(R.id.receipt_attribute_value);
+       // attributeTitle.setText("  "+attribute+":");
+        attributeValue.setText(attributesSelected.get(attribute));
+        test.addView(vw);
     }
 
 //    public String getQty(String id) {
