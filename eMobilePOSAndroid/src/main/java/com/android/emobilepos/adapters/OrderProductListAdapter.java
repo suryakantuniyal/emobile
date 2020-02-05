@@ -11,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.database.ProductsAttrHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.orders.OrderProduct;
@@ -25,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import interfaces.PayWithLoyalty;
@@ -44,6 +47,11 @@ public class OrderProductListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private MyPreferences myPref;
     private PayWithLoyalty payWithLoyalty;
+
+    private ProductsAttrHandler prodAttrHandler;
+    private LinkedHashMap<String, List<String>> attributesMap;
+    private String[] attributesKey;
+    private LinkedHashMap<String, String> attributesSelected;
 
     public OrderProductListAdapter(Activity activity, List<OrderProduct> orderProducts,
                                    OrderingMain_FA orderingMainFa) {
@@ -246,6 +254,7 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        final OrderProduct product = orderSeatProductList.get(position).orderProduct;
         ViewHolder holder;
         RowType type = orderSeatProductList.get(position).rowType;
         if (convertView == null) {
@@ -280,10 +289,10 @@ public class OrderProductListAdapter extends BaseAdapter {
                 convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.GONE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.VISIBLE);
+                getproductAttribute(convertView,product);
                 holder.itemQty = convertView.findViewById(R.id.itemQty);
                 holder.itemName = convertView.findViewById(R.id.itemName);
                 holder.itemAmount = convertView.findViewById(R.id.itemAmount);
-                holder.itemAttribute = convertView.findViewById(R.id.attribute);
                 holder.distQty = convertView.findViewById(R.id.distQty);
                 holder.distAmount = convertView.findViewById(R.id.distAmount);
                 holder.granTotal = convertView.findViewById(R.id.granTotal);
@@ -300,6 +309,27 @@ public class OrderProductListAdapter extends BaseAdapter {
         convertView.setTag(holder);
 
         return convertView;
+    }
+
+    private void getproductAttribute(View view,OrderProduct product){
+        prodAttrHandler = new ProductsAttrHandler(activity);
+        attributesMap = prodAttrHandler.getAttributesMap(product.getOrdprod_name());
+        attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
+        attributesSelected = prodAttrHandler.getDefaultAttributes(product.getProd_id());
+        int attributesSize = attributesMap.size();
+        for (int i = 0; i < attributesSize; i++) {
+            addAttributeButton(view, attributesKey[i]);
+        }
+    }
+    private void addAttributeButton(View view, String attribute) {
+        LinearLayout test = view.findViewById(R.id.receipt_attribute_ll);
+        LayoutInflater inf = LayoutInflater.from(activity);
+        View vw = inf.inflate(R.layout.order_productreceipt_attributes, null);
+        TextView attributeTitle = vw.findViewById(R.id.receipt_attribute_title);
+        TextView attributeValue = vw.findViewById(R.id.receipt_attribute_value);
+        attributeTitle.setText("  "+attribute+":");
+        attributeValue.setText(attributesSelected.get(attribute));
+        test.addView(vw);
     }
 
     public void setHolderValues(ViewHolder holder, final int pos) {
@@ -378,7 +408,6 @@ public class OrderProductListAdapter extends BaseAdapter {
             holder.itemName.setText(product.getOrdprod_desc());
         } else if (attDisplay.equalsIgnoreCase("prod_name")) {
             holder.itemName.setText(product.getOrdprod_name());
-            holder.itemAttribute.setText(product.getOrdprod_desc());
         } else if (attDisplay.equalsIgnoreCase("prod_extradesc")) {
             holder.itemName.setText(product.getProd_extradesc());
         }
@@ -413,7 +442,6 @@ public class OrderProductListAdapter extends BaseAdapter {
         TextView itemQty;
         TextView itemName;
         TextView itemAmount;
-        TextView itemAttribute;
         TextView distQty;
         TextView distAmount;
         TextView granTotal;

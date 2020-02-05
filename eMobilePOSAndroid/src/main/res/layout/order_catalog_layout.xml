@@ -84,7 +84,7 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <ListView
         android:id="@+id/catalogListview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -94,6 +94,6 @@
         android:fastScrollEnabled="true"
         android:paddingTop="5dp"
         android:scrollingCache="false" >
-    </android.support.v7.widget.RecyclerView>
+    </ListView>
 
 </LinearLayout>
