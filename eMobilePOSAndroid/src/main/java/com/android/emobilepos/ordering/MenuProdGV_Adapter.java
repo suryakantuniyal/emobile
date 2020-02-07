@@ -181,6 +181,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
         if (isPortrait) {
             holder.title = retView.findViewById(R.id.catalogItemName);
+            holder.productAttribute = retView.findViewById(R.id.catalog_attribute_ll);
             holder.qty = retView.findViewById(R.id.catalogItemQty);
             holder.consignment_qty = retView.findViewById(R.id.catalogConsignmentQty);
             holder.amount = retView.findViewById(R.id.catalogItemPrice);
@@ -218,6 +219,8 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         TextView title, qty, amount, detail, consignment_qty, productNameTxt;
         ImageView iconImage, itemImage;
 
+        LinearLayout productAttribute;
+
         int i_id, i_prod_name, i_chain_price, i_master_price, i_volume_price, i_pricelevel_price, i_prod_desc, i_prod_img_name, i_consignment_qty;
     }
 
@@ -228,19 +231,21 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
         attributesSelected = prodAttrHandler.getDefaultAttributes(cursor.getString(holder.i_id));
         int attributesSize = attributesMap.size();
+
+        holder.productAttribute.removeAllViews();
         for (int i = 0; i < attributesSize; i++) {
             addAttributeButton(view, attributesKey[i]);
         }
     }
     private void addAttributeButton(View view, String attribute) {
-        LinearLayout test = view.findViewById(R.id.catalog_attribute_ll);
+        //LinearLayout test = view.findViewById(R.id.catalog_attribute_ll);
         LayoutInflater inf = LayoutInflater.from(activity);
         View vw = inf.inflate(R.layout.order_productreceipt_attributes, null);
        // TextView attributeTitle = vw.findViewById(R.id.receipt_attribute_title);
         TextView attributeValue = vw.findViewById(R.id.receipt_attribute_value);
        // attributeTitle.setText("  "+attribute+":");
         attributeValue.setText(attributesSelected.get(attribute));
-        test.addView(vw);
+        holder.productAttribute.addView(vw);
     }
 
 //    public String getQty(String id) {
